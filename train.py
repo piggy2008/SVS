@@ -42,7 +42,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 16,
     'last_iter': 0,
-    'lr': 1e-3,
+    'lr': 1e-2,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.95,
@@ -130,21 +130,33 @@ def fix_parameters(parameters):
 def main():
 
     net = SNet(cfg=None).cuda(device_id).train()
-
+    bkbone, flow_modules, remains = [], [], []
+    for name, param in net.named_parameters():
+        if 'bkbone' in name or 'bkbone' in name:
+            bkbone.append(param)
+        elif 'flow' in name or 'linearf' in name or 'decoder' in name:
+            flow_modules.append(param)
+        else:
+            remains.append(param)
     # fix_parameters(net.named_parameters())
-    optimizer = optim.SGD([
-        {'params': [param for name, param in net.named_parameters() if name[-4:] == 'bias'],
-         'lr': 2 * args['lr']},
-        {'params': [param for name, param in net.named_parameters() if name[-4:] != 'bias'],
-         'lr': args['lr'], 'weight_decay': args['weight_decay']}
-    ], momentum=args['momentum'])
+    # optimizer = optim.SGD([
+    #     {'params': [param for name, param in net.named_parameters() if name[-4:] == 'bias'],
+    #      'lr': 2 * args['lr']},
+    #     {'params': [param for name, param in net.named_parameters() if name[-4:] != 'bias'],
+    #      'lr': args['lr'], 'weight_decay': args['weight_decay']}
+    # ], momentum=args['momentum'])
+
+    optimizer = optim.SGD([{'params': bkbone}, {'params': flow_modules}, {'params': remains}],
+                          lr=args['lr'], momentum=args['momentum'],
+                          weight_decay=args['weight_decay'], nesterov=True)
 
     if len(args['snapshot']) > 0:
         print('training resumes from ' + args['snapshot'])
         net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth')))
         optimizer.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '_optim.pth')))
-        optimizer.param_groups[0]['lr'] = 2 * args['lr']
+        optimizer.param_groups[0]['lr'] = 0.5 * args['lr']
         optimizer.param_groups[1]['lr'] = args['lr']
+        optimizer.param_groups[1]['lr'] = 0.5 * args['lr']
 
     net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
@@ -166,9 +178,11 @@ def train(net, optimizer):
 
         for i, data in enumerate(train_loader):
 
-            optimizer.param_groups[0]['lr'] = 2 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                 ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+                                                            ) ** args['lr_decay']
+            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
@@ -238,8 +252,6 @@ def print_log(total_loss, loss0, loss1, loss2, batch_size, curr_iter, optimizer,
            optimizer.param_groups[1]['lr'])
     print(log)
     open(log_path, 'a').write(log + '\n')
-
-
 
 if __name__ == '__main__':
     main()
