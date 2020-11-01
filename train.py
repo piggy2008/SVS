@@ -37,7 +37,7 @@ args = {
     'dilation': False,
     'L2': False,
     'KL': False,
-    'iter_num': 60000,
+    'iter_num': 100000,
     'iter_save': 20000,
     'iter_start_seq': 0,
     'train_batch_size': 16,
