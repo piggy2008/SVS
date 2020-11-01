@@ -256,7 +256,9 @@ class SNet(nn.Module):
         self.linearr4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr5 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-
+        self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
         self.initialize()
 
@@ -278,7 +280,11 @@ class SNet(nn.Module):
         out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h
+        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
+
+        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
 
 
 
