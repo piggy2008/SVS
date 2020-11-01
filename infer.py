@@ -132,6 +132,7 @@ def main():
                     start = time.time()
 
                     _, prediction, _, _, _, _ = net(img_var, flow_var)
+                    prediction = torch.sigmoid(prediction)
 
                     end = time.time()
                     print('running time:', (end - start))
