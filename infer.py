@@ -123,7 +123,11 @@ def main():
                         img = Image.open(os.path.join(root, img_name + '.png')).convert('RGB')
                     else:
                         img = Image.open(os.path.join(root, img_name + '.jpg')).convert('RGB')
-                    flow = Image.open(os.path.join(flow_root, img_name + '.jpg')).convert('RGB')
+                    if name == 'davis':
+                        flow = Image.open(os.path.join(flow_root, img_name + '.png')).convert('RGB')
+                    else:
+                        flow = Image.open(os.path.join(flow_root, img_name + '.jpg')).convert('RGB')
+                    # flow = Image.open(os.path.join(flow_root, img_name + '.jpg')).convert('RGB')
                     shape = img.size
                     img = img.resize(args['input_size'])
                     flow = flow.resize(args['input_size'])
