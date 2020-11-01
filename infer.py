@@ -41,6 +41,7 @@ to_pil = transforms.ToPILImage()
 
 # to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
 # gt_root = os.path.join(davis_path, 'GT')
+# flow_root = os.path.join(davis_path, 'flow')
 # imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
