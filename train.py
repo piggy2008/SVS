@@ -22,7 +22,7 @@ from utils.utils_mine import load_part_of_model, load_part_of_model2
 import random
 
 cudnn.benchmark = True
-device_id = 2
+device_id = 0
 
 torch.manual_seed(2019)
 # torch.cuda.set_device(device_id)
@@ -33,6 +33,7 @@ ckpt_path = './ckpt'
 exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
+    'gnn': True,
     'se_layer': False,
     'dilation': False,
     'L2': False,
@@ -41,7 +42,7 @@ args = {
     'iter_num': 60000,
     'iter_save': 20000,
     'iter_start_seq': 0,
-    'train_batch_size': 10,
+    'train_batch_size': 2,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -134,7 +135,7 @@ def fix_parameters(parameters):
 
 def main():
 
-    net = SNet(cfg=None).cuda(device_id).train()
+    net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name or 'bkbone' in name:
