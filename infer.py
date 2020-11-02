@@ -112,7 +112,7 @@ def main():
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _ = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
@@ -136,7 +136,7 @@ def main():
 
                     start = time.time()
 
-                    _, prediction, _, _, _, _ = net(img_var, flow_var)
+                    _, prediction, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
