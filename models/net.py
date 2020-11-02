@@ -7,6 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from MGA.ResNet import ResNet34
+from module.ConGRUCell import ConvGRUCell
 
 def weight_init(module):
     for n, m in module.named_children():
@@ -83,7 +84,7 @@ class ResNet(nn.Module):
         self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
 
 class SFM(nn.Module):
-    def __init__(self):
+    def __init__(self, GNN=False):
         super(SFM, self).__init__()
         self.conv1h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
@@ -111,6 +112,11 @@ class SFM(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
+        self.GNN = GNN
+        if self.GNN:
+            self.conGRU = ConvGRUCell(64, 64, 1)
+            self.iterate_time = 5
+
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
             high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
@@ -122,7 +128,25 @@ class SFM(nn.Module):
         out2l = self.conv2l(out1l)
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
-        fuse  = out2h * out2l * out2f
+        if self.GNN:
+            for passing in range(self.iterate_time):
+                message_h = out2l + out2f
+                message_l = out2h + out2f
+                msssage_f = out2h + out2l
+
+                h_h = self.conGRU(message_h, out2h)
+                h_l = self.conGRU(message_l, out2l)
+                h_f = self.conGRU(msssage_f, out2f)
+
+                out2h = h_h.clone()
+                out2l = h_l.clone()
+                out2f = h_f.clone()
+
+                if passing == self.iterate_time - 1:
+                    fuse = out2h * out2l * out2f
+        else:
+            fuse = out2h * out2l * out2f
+
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
@@ -176,7 +200,7 @@ class CFM(nn.Module):
 class Decoder_flow(nn.Module):
     def __init__(self):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM()
+        self.cfm45  = SFM(GNN=True)
         self.cfm34  = SFM()
         self.cfm23  = SFM()
 
