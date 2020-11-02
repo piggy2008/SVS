@@ -198,11 +198,11 @@ class CFM(nn.Module):
         weight_init(self)
 
 class Decoder_flow(nn.Module):
-    def __init__(self):
+    def __init__(self, GNN=False):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM(GNN=False)
-        self.cfm34  = SFM()
-        self.cfm23  = SFM()
+        self.cfm45  = SFM(GNN=GNN)
+        self.cfm34  = SFM(GNN=GNN)
+        self.cfm23  = SFM(GNN=False)
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
@@ -255,7 +255,7 @@ class Decoder(nn.Module):
 
 
 class SNet(nn.Module):
-    def __init__(self, cfg):
+    def __init__(self, cfg, GNN=False):
         super(SNet, self).__init__()
         self.cfg      = cfg
         self.bkbone   = ResNet()
@@ -270,8 +270,8 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         # self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow()
-        self.decoder2 = Decoder_flow()
+        self.decoder1 = Decoder_flow(GNN=GNN)
+        self.decoder2 = Decoder_flow(GNN=GNN)
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
