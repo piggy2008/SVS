@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import joint_transforms
 from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path
 from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder
-from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise
+from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
 from torch.backends import cudnn
 import time
@@ -37,10 +37,11 @@ args = {
     'dilation': False,
     'L2': False,
     'KL': False,
-    'iter_num': 100000,
+    'structure': True,
+    'iter_num': 60000,
     'iter_save': 20000,
     'iter_start_seq': 0,
-    'train_batch_size': 16,
+    'train_batch_size': 10,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -114,6 +115,10 @@ if args['L2']:
     # criterion_pair = CriterionPairWise(scale=0.5).cuda()
 if args['KL']:
     criterion_kl = CriterionKL3().cuda()
+
+if args['structure']:
+    criterion_str = CriterionStructure().cuda()
+
 log_path = os.path.join(ckpt_path, exp_name, str(datetime.datetime.now()) + '.txt')
 
 total_loss_record, loss0_record, loss1_record, loss2_record = AvgMeter(), AvgMeter(), AvgMeter(), AvgMeter()
@@ -218,16 +223,16 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
 
     out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f = net(inputs, flows)
 
-    loss0 = criterion(out1u, labels)
-    loss1 = criterion(out2u, labels)
-    loss2 = criterion(out2r, labels)
-    loss3 = criterion(out3r, labels)
-    loss4 = criterion(out4r, labels)
-    loss5 = criterion(out5r, labels)
+    loss0 = criterion_str(out1u, labels)
+    loss1 = criterion_str(out2u, labels)
+    loss2 = criterion_str(out2r, labels)
+    loss3 = criterion_str(out3r, labels)
+    loss4 = criterion_str(out4r, labels)
+    loss5 = criterion_str(out5r, labels)
 
-    loss6 = criterion(out2f, labels)
-    loss7 = criterion(out3f, labels)
-    loss8 = criterion(out4f, labels)
+    loss6 = criterion_str(out2f, labels)
+    loss7 = criterion_str(out3f, labels)
+    loss8 = criterion_str(out4f, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16
