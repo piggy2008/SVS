@@ -23,10 +23,11 @@ torch.cuda.set_device(0)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-02 03:43:38'
+exp_name = 'VideoSaliency_2020-11-02 13:44:25'
 
 
 args = {
+    'gnn': True,
     'snapshot': '40000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
@@ -74,7 +75,7 @@ imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 def main():
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = SNet(cfg=None)
+    net = SNet(cfg=None, GNN=args['gnn'])
 
     print ('load snapshot \'%s\' for testing' % args['snapshot'])
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
