@@ -81,7 +81,7 @@ class ResNet(nn.Module):
         return out2, out3, out4, out5
 
     def initialize(self):
-        self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
+        self.load_state_dict(torch.load('../pre-trained/resnet50-19c8e357.pth'), strict=False)
 
 class SFM(nn.Module):
     def __init__(self, GNN=False):
@@ -116,6 +116,9 @@ class SFM(nn.Module):
         if self.GNN:
             self.conGRU = ConvGRUCell(64, 64, 1)
             self.iterate_time = 5
+            self.relation_h = TMC()
+            self.relation_l = TMC()
+            self.relation_f = TMC()
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -130,9 +133,9 @@ class SFM(nn.Module):
         out2f = self.conv2f(out1f)
         if self.GNN:
             for passing in range(self.iterate_time):
-                message_h = out2l + out2f
-                message_l = out2h + out2f
-                msssage_f = out2h + out2l
+                message_h = self.relation_h(out2l, out2h) + self.relation_h(out2f, out2h)
+                message_l = self.relation_l(out2h, out2l) + self.relation_l(out2f, out2l)
+                msssage_f = self.relation_f(out2h, out2f) + self.relation_f(out2l, out2f)
 
                 h_h = self.conGRU(message_h, out2h)
                 h_l = self.conGRU(message_l, out2l)
@@ -197,12 +200,37 @@ class CFM(nn.Module):
     def initialize(self):
         weight_init(self)
 
+class TMC(nn.Module):
+    def __init__(self):
+        super(TMC, self).__init__()
+        self.channel = nn.Conv2d(64, 64, 1, bias=True)
+        self.spatial = nn.Conv2d(64, 1, 1, bias=True)
+
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, value, query):
+        query_feat = self.spatial(query)
+        query_feat = nn.Sigmoid()(query_feat)
+
+        value_spatial_feat = query_feat * value
+
+        # channel-wise attention
+        feat_vec = F.adaptive_avg_pool2d(value_spatial_feat, (1, 1))
+        feat_vec = self.channel(feat_vec)
+        feat_vec = nn.Softmax(dim=1)(feat_vec) * feat_vec.shape[1]
+        value_weighted_feat = value_spatial_feat * feat_vec
+
+        final_feat = value_weighted_feat + value
+        return final_feat
+
 class Decoder_flow(nn.Module):
     def __init__(self, GNN=False):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM(GNN=False)
+        self.cfm45  = SFM(GNN=GNN)
         self.cfm34  = SFM(GNN=GNN)
-        self.cfm23  = SFM(GNN=GNN)
+        self.cfm23  = SFM(GNN=False)
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
@@ -270,7 +298,7 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         # self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow(GNN=GNN)
+        self.decoder1 = Decoder_flow(GNN=False)
         self.decoder2 = Decoder_flow(GNN=GNN)
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -317,3 +345,8 @@ class SNet(nn.Module):
         #     self.load_state_dict(torch.load(self.cfg.snapshot))
         # else:
         weight_init(self)
+
+# if __name__ == '__main__':
+#     net = SNet(cfg=None, GNN=True)
+#     input = torch.zeros([1, 3, 380, 380])
+#     out = net(input, input)
