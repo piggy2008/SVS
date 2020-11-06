@@ -14,6 +14,7 @@ from utils.utils_mine import load_part_of_model2, MaxMinNormalization
 import time
 from matplotlib import pyplot as plt
 
+
 torch.manual_seed(2018)
 
 # set which gpu to use
@@ -23,7 +24,7 @@ torch.cuda.set_device(0)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-03 12:35:19'
+exp_name = 'VideoSaliency_2020-11-06 06:45:44'
 
 
 args = {
