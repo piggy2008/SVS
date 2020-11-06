@@ -1,28 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.net import weight_init
-# def weight_init(module):
-#     for n, m in module.named_children():
-#         print('initialize: '+n)
-#         if isinstance(m, nn.Conv2d):
-#             nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
-#             if m.bias is not None:
-#                 nn.init.zeros_(m.bias)
-#         elif isinstance(m, (nn.BatchNorm2d, nn.InstanceNorm2d)):
-#             nn.init.ones_(m.weight)
-#             if m.bias is not None:
-#                 nn.init.zeros_(m.bias)
-#         elif isinstance(m, nn.Linear):
-#             nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
-#             if m.bias is not None:
-#                 nn.init.zeros_(m.bias)
-#         elif isinstance(m, nn.Sequential):
-#             weight_init(m)
-#         elif isinstance(m, nn.ReLU):
-#             pass
-#         else:
-#             m.initialize()
 
 class TMC(nn.Module):
     def __init__(self):
