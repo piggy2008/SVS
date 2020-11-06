@@ -120,9 +120,9 @@ class SFM(nn.Module):
         if self.GNN:
             self.conGRU = ConvGRUCell(64, 64, 1)
             self.iterate_time = 5
-            self.relation_hl = TMC()
-            self.relation_hf = TMC()
-            self.relation_lf = TMC()
+            self.relation_h = TMC()
+            self.relation_l = TMC()
+            self.relation_f = TMC()
 
             # self.relation_hl = MMTM(64, 64, 4)
             # self.relation_hf = MMTM(64, 64, 4)
