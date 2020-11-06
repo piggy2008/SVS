@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from utils.utils_mine import visualize_vec
 
 class TMC(nn.Module):
     def __init__(self):
@@ -22,9 +23,9 @@ class TMC(nn.Module):
         # channel-wise attention
         feat_vec = F.adaptive_avg_pool2d(value_spatial_feat, (1, 1))
         feat_vec = self.channel(feat_vec)
-        print(nn.Softmax(dim=1)(feat_vec))
+        visualize_vec(feat_vec, 'a.png')
         feat_vec = nn.Softmax(dim=1)(feat_vec) * feat_vec.shape[1]
-        print(feat_vec)
+        visualize_vec(feat_vec, 'b.png')
         value_weighted_feat = value_spatial_feat * feat_vec
 
         final_feat = value_weighted_feat + value
