@@ -86,7 +86,7 @@ def visualize_vec(input_vec, save_path):
     input = np.squeeze(input)
     input = np.tile(input, (64, 1))
     plt.imshow(input)
-    plt.colorbar()
+    # plt.colorbar()
     plt.savefig(save_path)
 
 if __name__ == '__main__':
