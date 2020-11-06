@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #coding=utf-8
-
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -10,6 +10,8 @@ from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
 from module.MMTM import MMTM
+
+from utils.utils_mine import visualize
 
 def weight_init(module):
     for n, m in module.named_children():
@@ -118,13 +120,13 @@ class SFM(nn.Module):
         if self.GNN:
             self.conGRU = ConvGRUCell(64, 64, 1)
             self.iterate_time = 5
-            # self.relation_hl = TMC()
-            # self.relation_hf = TMC()
-            # self.relation_lf = TMC()
+            self.relation_hl = TMC()
+            self.relation_hf = TMC()
+            self.relation_lf = TMC()
 
-            self.relation_hl = MMTM(64, 64, 4)
-            self.relation_hf = MMTM(64, 64, 4)
-            self.relation_lf = MMTM(64, 64, 4)
+            # self.relation_hl = MMTM(64, 64, 4)
+            # self.relation_hf = MMTM(64, 64, 4)
+            # self.relation_lf = MMTM(64, 64, 4)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -139,16 +141,20 @@ class SFM(nn.Module):
         out2f = self.conv2f(out1f)
         if self.GNN:
             for passing in range(self.iterate_time):
-                # message_h = self.relation_h(out2l, out2h) + self.relation_h(out2f, out2h)
-                # message_l = self.relation_l(out2h, out2l) + self.relation_l(out2f, out2l)
-                # message_f = self.relation_f(out2h, out2f) + self.relation_f(out2l, out2f)
-
-                message_h1, message_l1 = self.relation_hl(out2h, out2l)
-                message_h2, message_f1 = self.relation_hf(out2h, out2f)
-                message_l2, message_f2 = self.relation_lf(out2l, out2f)
-                message_h = message_h1 + message_h2
-                message_l = message_l1 + message_l2
-                message_f = message_f1 + message_f2
+                message_h = self.relation_h(out2l, out2h) + self.relation_h(out2f, out2h)
+                message_l = self.relation_l(out2h, out2l) + self.relation_l(out2f, out2l)
+                message_f = self.relation_f(out2h, out2f) + self.relation_f(out2l, out2f)
+                visualize(message_h, '../message_h.png')
+                visualize(out2l, '../out2l.png')
+                visualize(out2h, '../out2h.png')
+                visualize(out2f, '../out2f.png')
+                sys.exit()
+                # message_h1, message_l1 = self.relation_hl(out2h, out2l)
+                # message_h2, message_f1 = self.relation_hf(out2h, out2f)
+                # message_l2, message_f2 = self.relation_lf(out2l, out2f)
+                # message_h = message_h1 + message_h2
+                # message_l = message_l1 + message_l2
+                # message_f = message_f1 + message_f2
 
                 h_h = self.conGRU(message_h, out2h)
                 h_l = self.conGRU(message_l, out2l)
@@ -286,7 +292,7 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         # self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow(GNN=GNN)
+        self.decoder1 = Decoder_flow(GNN=False)
         self.decoder2 = Decoder_flow(GNN=GNN)
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
