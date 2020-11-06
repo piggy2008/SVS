@@ -23,7 +23,7 @@ import random
 
 cudnn.benchmark = True
 
-device_id = 2
+device_id = 3
 
 
 torch.manual_seed(2019)
