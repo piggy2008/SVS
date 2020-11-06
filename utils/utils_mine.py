@@ -1,5 +1,7 @@
 import torch
 from models.net import SNet
+from matplotlib import pyplot as plt
+plt.style.use('classic')
 
 def MaxMinNormalization(x,Max,Min):
     x = (x - Min) / (Max - Min)
@@ -69,6 +71,14 @@ def load_part_of_model2(new_model, src_model_path, device_id=0):
 
     new_model.load_state_dict(m_dict)
     return new_model
+
+def visualize(input, save_path):
+    input = input.data.cpu().numpy()
+    for i in range(input.shape[1]):
+        plt.subplot(8, 8, i + 1)
+        plt.imshow(input[0, i, :, :])
+
+    plt.savefig(save_path)
 
 if __name__ == '__main__':
     ckpt_path = './ckpt'
