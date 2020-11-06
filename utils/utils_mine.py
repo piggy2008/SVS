@@ -1,5 +1,6 @@
 import torch
 # from models.net import SNet
+import numpy as np
 from matplotlib import pyplot as plt
 plt.style.use('classic')
 
@@ -80,6 +81,14 @@ def visualize(input, save_path):
 
     plt.savefig(save_path)
 
+def visualize_vec(input_vec, save_path):
+    input = input_vec.data.cpu().numpy()
+    input = np.squeeze(input)
+    input = np.tile(input, (64, 1))
+    plt.imshow(input)
+    plt.colorbar()
+    plt.savefig(save_path)
+
 if __name__ == '__main__':
     ckpt_path = './ckpt'
     exp_name = 'VideoSaliency_2019-05-14 17:13:16'
@@ -90,6 +99,8 @@ if __name__ == '__main__':
         'save_results': True,  # whether to save the resulting masks
         'input_size': (473, 473)
     }
+    a = torch.rand([1, 64, 1, 1])
+    visualize_vec(a, 'a.png')
     # from MGA.mga_model import MGA_Network
     # a = MGA_Network(nInputChannels=3, n_classes=1, os=16,
     #             img_backbone_type='resnet101', flow_backbone_type='resnet34')
