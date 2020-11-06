@@ -165,7 +165,7 @@ class SFM(nn.Module):
                 out2f = h_f.clone()
 
                 if passing == self.iterate_time - 1:
-                    fuse = out2h * out2l * out2f
+                    fuse = out2h + out2l + out2f
         else:
             fuse = out2h * out2l * out2f
 
