@@ -124,9 +124,9 @@ class SFM(nn.Module):
             # self.relation_l = TMC()
             # self.relation_f = TMC()
 
-            self.relation_hl = MMTM(64, 64, 4)
-            self.relation_hf = MMTM(64, 64, 4)
-            self.relation_lf = MMTM(64, 64, 4)
+            self.relation_hl = MMTM(64, 64, 2)
+            self.relation_hf = MMTM(64, 64, 2)
+            self.relation_lf = MMTM(64, 64, 2)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -165,7 +165,7 @@ class SFM(nn.Module):
                 out2f = h_f.clone()
 
                 if passing == self.iterate_time - 1:
-                    fuse = out2h + out2l + out2f
+                    fuse = (out2h + out2f) * (out2l + out2f)
         else:
             fuse = out2h * out2l * out2f
 
