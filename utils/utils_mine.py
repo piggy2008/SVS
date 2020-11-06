@@ -1,5 +1,5 @@
 import torch
-from models.net import SNet
+# from models.net import SNet
 from matplotlib import pyplot as plt
 plt.style.use('classic')
 
@@ -95,13 +95,13 @@ if __name__ == '__main__':
     #             img_backbone_type='resnet101', flow_backbone_type='resnet34')
     # load_MGA(a, '../pre-trained/MGA_trained.pth')
     import os
-    net = SNet(cfg=None).cuda()
-    net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
-    torch.save(net.state_dict(), '../pre-trained/SNet.pth')
-    net = load_part_of_model(net, '../pre-trained/SNet.pth')
-    input = torch.zeros([2, 3, 380, 380]).cuda()
-    output = net(input, input)
-    print(output[0].size())
+    # net = SNet(cfg=None).cuda()
+    # net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
+    # torch.save(net.state_dict(), '../pre-trained/SNet.pth')
+    # net = load_part_of_model(net, '../pre-trained/SNet.pth')
+    # input = torch.zeros([2, 3, 380, 380]).cuda()
+    # output = net(input, input)
+    # print(output[0].size())
     # src_model_path = os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth')
     # net = R3Net(motion='GRU')
     # net = load_part_of_model(net, src_model_path)
