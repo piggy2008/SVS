@@ -29,7 +29,7 @@ exp_name = 'VideoSaliency_2020-11-06 06:45:44'
 
 args = {
     'gnn': True,
-    'snapshot': '60000',  # your snapshot filename (exclude extension name)
+    'snapshot': '20000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -43,10 +43,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-# gt_root = os.path.join(davis_path, 'GT')
-# flow_root = os.path.join(davis_path, 'flow')
-# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+#to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+#gt_root = os.path.join(davis_path, 'GT')
+#flow_root = os.path.join(davis_path, 'flow')
+#imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
