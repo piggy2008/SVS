@@ -120,13 +120,13 @@ class SFM(nn.Module):
         if self.GNN:
             # self.conGRU = ConvGRUCell(64, 64, 1)
             self.iterate_time = 5
-            self.relation_h = TMC()
-            self.relation_l = TMC()
-            self.relation_f = TMC()
+            # self.relation_h = TMC()
+            # self.relation_l = TMC()
+            # self.relation_f = TMC()
 
-            # self.relation_hl = MMTM(64, 64, 2)
-            # self.relation_hf = MMTM(64, 64, 2)
-            # self.relation_lf = MMTM(64, 64, 2)
+            self.relation_hl = MMTM(64, 64, 2)
+            self.relation_hf = MMTM(64, 64, 2)
+            self.relation_lf = MMTM(64, 64, 2)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -141,24 +141,24 @@ class SFM(nn.Module):
         out2f = self.conv2f(out1f)
         if self.GNN:
             for passing in range(self.iterate_time):
-                message_h = self.relation_h(out2l, out2h) + self.relation_h(out2f, out2h)
-                message_l = self.relation_l(out2h, out2l) + self.relation_l(out2f, out2l)
-                message_f = self.relation_f(out2h, out2f) + self.relation_f(out2l, out2f)
+                # message_h = self.relation_h(out2l, out2h) + self.relation_h(out2f, out2h)
+                # message_l = self.relation_l(out2h, out2l) + self.relation_l(out2f, out2l)
+                # message_f = self.relation_f(out2h, out2f) + self.relation_f(out2l, out2f)
                 # visualize(message_h, 'message_h.png')
                 # visualize(out2l, 'out2l.png')
                 # visualize(out2h, 'out2h.png')
                 # visualize(out2f, 'out2f.png')
                 # sys.exit()
-                # message_h1, message_l1 = self.relation_hl(out2h, out2l)
-                # message_h2, message_f1 = self.relation_hf(out2h, out2f)
-                # message_l2, message_f2 = self.relation_lf(out2l, out2f)
-                # message_h = message_h1 + message_h2
-                # message_l = message_l1 + message_l2
-                # message_f = message_f1 + message_f2
+                message_h1, message_l1 = self.relation_hl(out2h, out2l)
+                message_h2, message_f1 = self.relation_hf(out2h, out2f)
+                message_l2, message_f2 = self.relation_lf(out2l, out2f)
+                message_h = message_h1 + message_h2
+                message_l = message_l1 + message_l2
+                message_f = message_f1 + message_f2
 
-                h_h = F.relu(message_l) * out2l + F.relu(message_f) * out2f
-                h_l = F.relu(message_h) * out2h + F.relu(message_f) * out2f
-                h_f = F.relu(message_h) * out2h + F.relu(message_l) * out2l
+                h_h = F.sigmoid(message_l) * out2l + F.sigmoid(message_f) * out2f
+                h_l = F.sigmoid(message_h) * out2h + F.sigmoid(message_f) * out2f
+                h_f = F.sigmoid(message_h) * out2h + F.sigmoid(message_l) * out2l
 
                 out2h = h_h.clone()
                 out2l = h_l.clone()
