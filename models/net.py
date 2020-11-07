@@ -222,7 +222,7 @@ class CFM(nn.Module):
 class Decoder_flow(nn.Module):
     def __init__(self, GNN=False):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM(GNN=GNN)
+        self.cfm45  = SFM(GNN=False)
         self.cfm34  = SFM(GNN=GNN)
         self.cfm23  = SFM(GNN=False)
 
