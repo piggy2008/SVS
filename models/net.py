@@ -156,16 +156,16 @@ class SFM(nn.Module):
                 message_l = message_l1 + message_l2
                 message_f = message_f1 + message_f2
 
-                h_h = message_l * out2l + message_f * out2f
-                h_l = message_h * out2h + message_f * out2f
-                h_f = message_h * out2h + message_l * out2l
+                h_h = F.relu(message_l) * out2l + F.relu(message_f) * out2f
+                h_l = F.relu(message_h) * out2h + F.relu(message_f) * out2f
+                h_f = F.relu(message_h) * out2h + F.relu(message_l) * out2l
 
                 out2h = h_h.clone()
                 out2l = h_l.clone()
                 out2f = h_f.clone()
 
                 if passing == self.iterate_time - 1:
-                    fuse = (out2h + out2f) * (out2l + out2f)
+                    fuse = out2h * out2l * out2f
         else:
             fuse = out2h * out2l * out2f
 
