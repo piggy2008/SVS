@@ -118,7 +118,7 @@ class SFM(nn.Module):
                                     nn.ReLU(inplace=True))
         self.GNN = GNN
         if self.GNN:
-            self.conGRU = ConvGRUCell(64, 64, 1)
+            # self.conGRU = ConvGRUCell(64, 64, 1)
             self.iterate_time = 5
             # self.relation_h = TMC()
             # self.relation_l = TMC()
@@ -156,9 +156,9 @@ class SFM(nn.Module):
                 message_l = message_l1 + message_l2
                 message_f = message_f1 + message_f2
 
-                h_h = self.conGRU(message_h, out2h)
-                h_l = self.conGRU(message_l, out2l)
-                h_f = self.conGRU(message_f, out2f)
+                h_h = message_l * out2l + message_f * out2f
+                h_l = message_h * out2h + message_f * out2f
+                h_f = message_h * out2h + message_l * out2l
 
                 out2h = h_h.clone()
                 out2l = h_l.clone()
@@ -222,7 +222,7 @@ class CFM(nn.Module):
 class Decoder_flow(nn.Module):
     def __init__(self, GNN=False):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM(GNN=False)
+        self.cfm45  = SFM(GNN=GNN)
         self.cfm34  = SFM(GNN=GNN)
         self.cfm23  = SFM(GNN=False)
 
