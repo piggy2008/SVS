@@ -23,7 +23,7 @@ import random
 
 cudnn.benchmark = True
 
-device_id = 3
+device_id = 1
 
 
 torch.manual_seed(2019)
@@ -72,7 +72,7 @@ joint_transform = joint_transforms.Compose([
     joint_transforms.RandomCrop(args['crop_size']),
     # joint_transforms.ColorJitter(hue=[-0.1, 0.1], saturation=0.05),
     joint_transforms.RandomHorizontallyFlip(),
-    joint_transforms.RandomRotate(30)
+    joint_transforms.RandomRotate(45)
 ])
 
 # joint_transform = joint_transforms.Compose([
