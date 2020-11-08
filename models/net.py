@@ -129,7 +129,7 @@ class SFM(nn.Module):
             self.relation_lf = MMTM(64, 64, 2)
             self.conv_gh = nn.Conv2d(64, 1, 1, bias=True)
             self.conv_gl = nn.Conv2d(64, 1, 1, bias=True)
-            self.conv_gh = nn.Conv2d(64, 1, 1, bias=True)
+            self.conv_gf = nn.Conv2d(64, 1, 1, bias=True)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
