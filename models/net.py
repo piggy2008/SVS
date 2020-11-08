@@ -127,6 +127,9 @@ class SFM(nn.Module):
             self.relation_hl = MMTM(64, 64, 2)
             self.relation_hf = MMTM(64, 64, 2)
             self.relation_lf = MMTM(64, 64, 2)
+            self.conv_gh = nn.Conv2d(64, 1, 1, bias=True)
+            self.conv_gl = nn.Conv2d(64, 1, 1, bias=True)
+            self.conv_gh = nn.Conv2d(64, 1, 1, bias=True)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -152,9 +155,9 @@ class SFM(nn.Module):
                 message_h1, message_l1 = self.relation_hl(out2h, out2l)
                 message_h2, message_f1 = self.relation_hf(out2h, out2f)
                 message_l2, message_f2 = self.relation_lf(out2l, out2f)
-                message_h = message_h1 + message_h2
-                message_l = message_l1 + message_l2
-                message_f = message_f1 + message_f2
+                message_h = self.conv_gh(message_h1 + message_h2)
+                message_l = self.conv_gl(message_l1 + message_l2)
+                message_f = self.conv_gf(message_f1 + message_f2)
 
                 h_h = F.sigmoid(message_l) * out2l + F.sigmoid(message_f) * out2f
                 h_l = F.sigmoid(message_h) * out2h + F.sigmoid(message_f) * out2f
@@ -224,7 +227,7 @@ class Decoder_flow(nn.Module):
         super(Decoder_flow, self).__init__()
         self.cfm45  = SFM(GNN=GNN)
         self.cfm34  = SFM(GNN=GNN)
-        self.cfm23  = SFM(GNN=False)
+        self.cfm23  = SFM(GNN=GNN)
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
