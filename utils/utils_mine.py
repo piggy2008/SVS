@@ -54,9 +54,9 @@ def load_part_of_model(new_model, src_model_path, device_id=0):
     src_model = torch.load(src_model_path, map_location='cuda:' + str(device_id))
     m_dict = new_model.state_dict()
     for k in src_model.keys():
-        print(k)
-        param = src_model.get(k)
-        m_dict[k].data = param
+        if k in m_dict.keys():
+            param = src_model.get(k)
+            m_dict[k].data = param
 
     new_model.load_state_dict(m_dict)
     return new_model
