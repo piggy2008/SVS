@@ -224,7 +224,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out1f, out2f, out3f, out4f = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -233,12 +233,13 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss4 = criterion_str(out4r, labels)
     loss5 = criterion_str(out5r, labels)
 
-    loss6 = criterion_str(out2f, labels)
-    loss7 = criterion_str(out3f, labels)
-    loss8 = criterion_str(out4f, labels)
+    loss6 = criterion_str(out1f, labels)
+    loss7 = criterion_str(out2f, labels)
+    loss8 = criterion_str(out3f, labels)
+    loss9 = criterion_str(out4f, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss6 / 4 + loss7 / 8 + loss8 / 16
+                 + loss6 / 2 + loss7 / 4 + loss8 / 8 + loss9 / 16
 
     total_loss.backward()
     optimizer.step()
