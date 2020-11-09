@@ -166,7 +166,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/F3Net', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
