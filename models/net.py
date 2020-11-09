@@ -419,16 +419,16 @@ class SNet(nn.Module):
         super(SNet, self).__init__()
         self.cfg      = cfg
         self.bkbone   = ResNet()
-        self.flow_bkbone = ResNet34(nInputChannels=3, os=16, pretrained=False)
+        # self.flow_bkbone = ResNet34(nInputChannels=3, os=16, pretrained=False)
         self.squeeze5 = nn.Sequential(nn.Conv2d(2048, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.squeeze4 = nn.Sequential(nn.Conv2d(1024, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.squeeze3 = nn.Sequential(nn.Conv2d( 512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.squeeze2 = nn.Sequential(nn.Conv2d( 256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.flow_align4 = nn.Sequential(nn.Conv2d(512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align3 = nn.Sequential(nn.Conv2d(256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align4 = nn.Sequential(nn.Conv2d(2048, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align3 = nn.Sequential(nn.Conv2d(1024, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align2 = nn.Sequential(nn.Conv2d(512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align1 = nn.Sequential(nn.Conv2d(256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
         self.decoder1 = Decoder_flow(GNN=GNN)
         self.decoder2 = Decoder_flow(GNN=GNN)
@@ -449,8 +449,8 @@ class SNet(nn.Module):
 
     def forward(self, x, flow, shape=None):
         out2h, out3h, out4h, out5v = self.bkbone(x) # layer1, layer2, layer3, layer4
-        flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
-        # print('flow size:', flow_layer4.size(), '--- image size:', out5v.size())
+        flow_layer1, flow_layer2, flow_layer3, flow_layer4 = self.bkbone(flow)
+        # flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out1f, out2f, out3f, out4f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f)
@@ -479,8 +479,3 @@ class SNet(nn.Module):
         #     self.load_state_dict(torch.load(self.cfg.snapshot))
         # else:
         weight_init(self)
-
-if __name__ == '__main__':
-    net = SNet(cfg=None, GNN=True)
-    input = torch.zeros([2, 3, 380, 380])
-    out = net(input, input)
