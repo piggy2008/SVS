@@ -18,18 +18,18 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2018)
 
 # set which gpu to use
-torch.cuda.set_device(3)
+torch.cuda.set_device(0)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-08 15:17:09'
+exp_name = 'VideoSaliency_2020-11-09 03:57:02'
 
 
 args = {
     'gnn': True,
-    'snapshot': '40000',  # your snapshot filename (exclude extension name)
+    'snapshot': '20000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
