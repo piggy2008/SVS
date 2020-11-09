@@ -35,7 +35,7 @@ ckpt_path = './ckpt'
 exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
-    'gnn': True,
+    'gnn': False,
     'se_layer': False,
     'dilation': False,
     'L2': False,
@@ -44,7 +44,7 @@ args = {
     'iter_num': 60000,
     'iter_save': 20000,
     'iter_start_seq': 0,
-    'train_batch_size': 10,
+    'train_batch_size': 14,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
