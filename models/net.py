@@ -451,7 +451,6 @@ class SNet(nn.Module):
         out2h, out3h, out4h, out5v = self.bkbone(x) # layer1, layer2, layer3, layer4
         flow_layer1, flow_layer2, flow_layer3, flow_layer4 = self.bkbone(flow)
         # flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
-        # print('flow size:', flow_layer4.size(), '--- image size:', out5v.size())
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out1f, out2f, out3f, out4f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f)
