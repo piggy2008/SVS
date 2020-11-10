@@ -467,8 +467,8 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow(GNN=GNN)
-        self.decoder2 = Decoder_flow(GNN=GNN)
+        self.decoder1 = Decoder_flow2(GNN=GNN)
+        self.decoder2 = Decoder_flow2(GNN=GNN)
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
@@ -490,8 +490,8 @@ class SNet(nn.Module):
         flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out1f, out2f, out3f, out4f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
-        out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f)
-        out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1)
+        out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1, pred_flow1 = self.decoder1(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f)
+        out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred2, pred_flow2 = self.decoder2(out2h, out3h, out4h, out5v, out1f, out2f, out3f, out4f, pred1, pred_flow1)
 
         shape = x.size()[2:] if shape is None else shape
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
@@ -507,7 +507,10 @@ class SNet(nn.Module):
         out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
         out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h, out1f, out2f, out3f, out4f
+        pred1f = F.interpolate(self.linearp1(pred_flow1), size=shape, mode='bilinear')
+        pred2f = F.interpolate(self.linearp2(pred_flow2), size=shape, mode='bilinear')
+
+        return pred1a, pred2a, out2h, out3h, out4h, out5h, out1f, out2f, out3f, out4f, pred1f, pred2f
 
 
 
