@@ -204,7 +204,8 @@ class GFM(nn.Module):
             out3fl = self.conv3fl(out2fl) + out1fl
             out4fl = self.conv4fl(out3fl)
         else:
-            fuse = (out2h * out2l) * (out2fh * out2fl) * (out2fh + out2h) * (out2fl + out2l)
+            # fuse = (out2h * out2l) * (out2fh * out2fl) * (out2fh + out2h) * (out2fl + out2l)
+            fuse = out2h * out2l * out2fh * out2fl
             out3h = self.conv3h(fuse) + out1h
             out4h = self.conv4h(out3h)
             out3l = self.conv3l(fuse) + out1l
@@ -425,10 +426,10 @@ class SNet(nn.Module):
         self.squeeze3 = nn.Sequential(nn.Conv2d( 512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.squeeze2 = nn.Sequential(nn.Conv2d( 256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.flow_align4 = nn.Sequential(nn.Conv2d(512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align3 = nn.Sequential(nn.Conv2d(256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align4 = nn.Sequential(nn.Conv2d(2048, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align3 = nn.Sequential(nn.Conv2d(1024, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align2 = nn.Sequential(nn.Conv2d(512, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.flow_align1 = nn.Sequential(nn.Conv2d(256, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
         self.decoder1 = Decoder_flow(GNN=GNN)
         self.decoder2 = Decoder_flow(GNN=GNN)
