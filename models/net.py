@@ -482,6 +482,9 @@ class SNet(nn.Module):
         self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
+        self.lineara1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.lineara2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+
         self.initialize()
 
     def forward(self, x, flow, shape=None):
@@ -507,8 +510,8 @@ class SNet(nn.Module):
         out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
         out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        pred1f = F.interpolate(self.linearp1(pred_flow1), size=shape, mode='bilinear')
-        pred2f = F.interpolate(self.linearp2(pred_flow2), size=shape, mode='bilinear')
+        pred1f = F.interpolate(self.lineara1(pred_flow1), size=shape, mode='bilinear')
+        pred2f = F.interpolate(self.lineara2(pred_flow2), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out1f, out2f, out3f, out4f, pred1f, pred2f
 
