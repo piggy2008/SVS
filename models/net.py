@@ -11,7 +11,7 @@ from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
 from module.MMTM import MMTM
 
-from utils.utils_mine import visualize
+# from utils.utils_mine import visualize
 
 def weight_init(module):
     for n, m in module.named_children():
