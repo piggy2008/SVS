@@ -1,5 +1,5 @@
 import torch
-
+from models.net import SNet
 import numpy as np
 from matplotlib import pyplot as plt
 plt.style.use('classic')
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     # a = MGA_Network(nInputChannels=3, n_classes=1, os=16,
     #             img_backbone_type='resnet101', flow_backbone_type='resnet34')
     # load_MGA(a, '../pre-trained/MGA_trained.pth')
-    from models.net import SNet
+
     net = SNet(cfg=None).cuda()
     net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
     torch.save(net.state_dict(), '../pre-trained/SNet.pth')
