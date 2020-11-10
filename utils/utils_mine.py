@@ -1,5 +1,5 @@
 import torch
-# from models.net import SNet
+
 import numpy as np
 from matplotlib import pyplot as plt
 plt.style.use('classic')
@@ -100,15 +100,15 @@ if __name__ == '__main__':
         'input_size': (473, 473)
     }
     a = torch.rand([1, 64, 1, 1])
-    visualize_vec(a, 'a.png')
+    # visualize_vec(a, 'a.png')
     # from MGA.mga_model import MGA_Network
     # a = MGA_Network(nInputChannels=3, n_classes=1, os=16,
     #             img_backbone_type='resnet101', flow_backbone_type='resnet34')
     # load_MGA(a, '../pre-trained/MGA_trained.pth')
-    import os
-    # net = SNet(cfg=None).cuda()
-    # net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
-    # torch.save(net.state_dict(), '../pre-trained/SNet.pth')
+    from models.net import SNet
+    net = SNet(cfg=None).cuda()
+    net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
+    torch.save(net.state_dict(), '../pre-trained/SNet.pth')
     # net = load_part_of_model(net, '../pre-trained/SNet.pth')
     # input = torch.zeros([2, 3, 380, 380]).cuda()
     # output = net(input, input)
