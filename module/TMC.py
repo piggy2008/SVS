@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils.utils_mine import visualize_vec
+# from utils.utils_mine import visualize_vec
 
 class TMC(nn.Module):
     def __init__(self):
