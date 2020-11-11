@@ -137,7 +137,7 @@ def fix_parameters(parameters):
 
 def main():
 
-    net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = SNet(cfg=None).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name or 'bkbone' in name:
@@ -164,7 +164,7 @@ def main():
         optimizer.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '_optim.pth')))
         optimizer.param_groups[0]['lr'] = 0.5 * args['lr']
         optimizer.param_groups[1]['lr'] = args['lr']
-        optimizer.param_groups[2]['lr'] = args['lr']
+        optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
     net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
@@ -190,7 +190,7 @@ def train(net, optimizer):
                                                                 ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
@@ -224,7 +224,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out1f, out2f, out3f, out4f, out1a, out2a = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -233,16 +233,16 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss4 = criterion_str(out4r, labels)
     loss5 = criterion_str(out5r, labels)
 
-    loss6 = criterion_str(out1f, labels)
+    # loss6 = criterion_str(out1f, labels)
     loss7 = criterion_str(out2f, labels)
     loss8 = criterion_str(out3f, labels)
     loss9 = criterion_str(out4f, labels)
 
-    loss10 = criterion_str(out1a, labels)
-    loss11 = criterion_str(out2a, labels)
+    # loss10 = criterion_str(out1a, labels)
+    # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss6 / 2 + loss7 / 4 + loss8 / 8 + loss9 / 16 + (loss10 + loss11) / 2
+                 + loss7 / 4 + loss8 / 8 + loss9 / 16
 
     total_loss.backward()
     optimizer.step()
