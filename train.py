@@ -140,7 +140,7 @@ def main():
     net = SNet(cfg=None).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
-        if 'bkbone' in name or 'bkbone' in name:
+        if 'bkbone' in name:
             bkbone.append(param)
         elif 'flow' in name or 'linearf' in name or 'decoder' in name:
             flow_modules.append(param)
@@ -242,7 +242,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss7 / 4 + loss8 / 8 + loss9 / 16
+                 + loss7 / 2 + loss8 / 4 + loss9 / 8
 
     total_loss.backward()
     optimizer.step()
