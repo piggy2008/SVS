@@ -10,6 +10,7 @@ from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
 from module.MMTM import MMTM
+from module.alternate import Alternate
 
 # from utils.utils_mine import visualize
 
@@ -317,6 +318,10 @@ class Decoder_flow(nn.Module):
         self.cfm34  = SFM()
         self.cfm23  = SFM()
 
+        self.alternate45 = Alternate()
+        self.alternate34 = Alternate()
+        self.alternate23 = Alternate()
+
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
             refine5      = F.interpolate(fback, size=out5v.size()[2:], mode='bilinear')
@@ -324,11 +329,14 @@ class Decoder_flow(nn.Module):
             refine3      = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
-            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
+            refine4_flow = self.alternate45(out4f, refine4)
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, refine4_flow)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            refine3_flow = self.alternate34(out4b, refine3)
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + refine3_flow)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + out3b + refine2)
+            refine2_flow = self.alternate34(out3b, refine2)
+            out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + refine2_flow)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
