@@ -23,7 +23,7 @@ import random
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 1
 
 
 torch.manual_seed(2019)
@@ -44,7 +44,7 @@ args = {
     'iter_num': 60000,
     'iter_save': 20000,
     'iter_start_seq': 0,
-    'train_batch_size': 2,
+    'train_batch_size': 14,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -164,7 +164,7 @@ def main():
         optimizer.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '_optim.pth')))
         optimizer.param_groups[0]['lr'] = 0.5 * args['lr']
         optimizer.param_groups[1]['lr'] = args['lr']
-        optimizer.param_groups[2]['lr'] = args['lr']
+        optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
     net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
@@ -190,7 +190,7 @@ def train(net, optimizer):
                                                                 ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
