@@ -10,7 +10,7 @@ from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
 from module.MMTM import MMTM
-from module.alternate import Alternate
+from module.alternate import Alternate, Alternate2
 
 # from utils.utils_mine import visualize
 
@@ -318,24 +318,24 @@ class Decoder_flow(nn.Module):
         self.cfm34  = SFM()
         self.cfm23  = SFM()
 
-        self.alternate45 = Alternate()
-        self.alternate34 = Alternate()
-        self.alternate23 = Alternate()
+        self.alternate45 = Alternate2()
+        self.alternate34 = Alternate2()
+        self.alternate23 = Alternate2()
 
-    def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
+    def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None, fback_sal=None):
         if fback is not None:
             refine5      = F.interpolate(fback, size=out5v.size()[2:], mode='bilinear')
             refine4      = F.interpolate(fback, size=out4h.size()[2:], mode='bilinear')
             refine3      = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
-            refine4_flow = self.alternate45(out4f, refine4)
+            refine4_flow = self.alternate45(out4f, fback_sal)
             out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, refine4_flow)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            refine3_flow = self.alternate34(out4b, refine3)
+            refine3_flow = self.alternate34(out4b, fback_sal)
             out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + refine3_flow)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            refine2_flow = self.alternate34(out3b, refine2)
+            refine2_flow = self.alternate34(out3b, fback_sal)
             out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + refine2_flow)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
@@ -450,7 +450,7 @@ class SNet(nn.Module):
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out2f, out3f, out4f = self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
-        out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
+        out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1, self.linearp1(pred1))
 
         shape = x.size()[2:] if shape is None else shape
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
