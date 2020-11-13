@@ -332,7 +332,7 @@ class Decoder_flow(nn.Module):
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
             refine4_flow = self.alternate45(out4f, fback_sal)
-            out4h = self.EP(out4h, refine4)
+            # out4h = self.EP(out4h, refine4)
             out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4_flow)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
             refine3_flow = self.alternate34(out4b, fback_sal)
@@ -474,9 +474,9 @@ class SNet(nn.Module):
         out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
-        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
 
