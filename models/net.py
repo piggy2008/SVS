@@ -440,9 +440,9 @@ class SNet(nn.Module):
         self.linearr4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr5 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-        # self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        # self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        # self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         # self.EP = EP()
 
         self.initialize()
