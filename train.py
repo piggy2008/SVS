@@ -190,7 +190,7 @@ def train(net, optimizer):
                                                                 ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
