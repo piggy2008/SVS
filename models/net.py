@@ -11,6 +11,7 @@ from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
 from module.MMTM import MMTM
 from module.alternate import Alternate, Alternate2
+from module.EP import EP
 
 # from utils.utils_mine import visualize
 
@@ -321,6 +322,7 @@ class Decoder_flow(nn.Module):
         self.alternate45 = Alternate2()
         self.alternate34 = Alternate2()
         self.alternate23 = Alternate2()
+        self.EP = EP()
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None, fback_sal=None):
         if fback is not None:
@@ -330,7 +332,8 @@ class Decoder_flow(nn.Module):
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
             refine4_flow = self.alternate45(out4f, fback_sal)
-            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, refine4_flow)
+            out4h = self.EP(out4h, refine4)
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4_flow)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
             refine3_flow = self.alternate34(out4b, fback_sal)
             out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + refine3_flow)
@@ -437,9 +440,10 @@ class SNet(nn.Module):
         self.linearr4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr5 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-        self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.EP = EP()
 
         self.initialize()
 
@@ -453,17 +457,26 @@ class SNet(nn.Module):
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1, self.linearp1(pred1))
 
         shape = x.size()[2:] if shape is None else shape
+
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
         pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
+        # ep_map = self.EP(out2h, pred1)
+        # tmp = ep_map.data.cpu().numpy()
+        # tmp2 = out2h.data.cpu().numpy()
+        # plt.subplot(2, 1, 1)
+        # plt.imshow(tmp[0, 0])
+        # plt.subplot(2, 1, 2)
+        # plt.imshow(tmp2[0, 0])
+        # plt.show()
 
         out2h = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
         out3h = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
         out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
-        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
 
