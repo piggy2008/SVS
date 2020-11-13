@@ -319,9 +319,9 @@ class Decoder_flow(nn.Module):
         self.cfm34  = SFM()
         self.cfm23  = SFM()
 
-        # self.alternate45 = Alternate2()
-        # self.alternate34 = Alternate2()
-        # self.alternate23 = Alternate2()
+        self.alternate45 = Alternate2()
+        self.alternate34 = Alternate2()
+        self.alternate23 = Alternate2()
         self.EP = EP()
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None, fback_sal=None):
@@ -331,13 +331,15 @@ class Decoder_flow(nn.Module):
             refine3      = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
-            # refine4_flow = self.alternate45(out4f, fback_sal)
+            refine4_flow = self.alternate45(out4f, fback_sal)
             out4h = self.EP(out4h, refine4)
-            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4_flow)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            refine3_flow = self.alternate34(out4b, fback_sal)
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + refine3_flow)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2)
+            refine2_flow = self.alternate34(out3b, fback_sal)
+            out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + refine2_flow)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
@@ -438,9 +440,9 @@ class SNet(nn.Module):
         self.linearr4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr5 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-        self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         # self.EP = EP()
 
         self.initialize()
@@ -472,9 +474,9 @@ class SNet(nn.Module):
         out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
-        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
 
