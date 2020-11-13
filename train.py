@@ -35,7 +35,7 @@ ckpt_path = './ckpt'
 exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
-    'gnn': False,
+    'gnn': True,
     'se_layer': False,
     'dilation': False,
     'L2': False,
@@ -137,14 +137,16 @@ def fix_parameters(parameters):
 
 def main():
 
-    net = SNet(cfg=None).cuda(device_id).train()
+    net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
             bkbone.append(param)
         elif 'flow' in name or 'linearf' in name or 'decoder' in name:
+            print('flow related:', name)
             flow_modules.append(param)
         else:
+            print('remains:', name)
             remains.append(param)
     # fix_parameters(net.named_parameters())
     # optimizer = optim.SGD([
