@@ -41,7 +41,7 @@ args = {
     'L2': False,
     'KL': False,
     'structure': True,
-    'iter_num': 60000,
+    'iter_num': 80000,
     'iter_save': 8000,
     'iter_start_seq': 0,
     'train_batch_size': 16,
