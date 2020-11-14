@@ -122,9 +122,9 @@ class GFM(nn.Module):
 
         self.gnn_update = ConvGRUCell(64, 64, 1)
         self.iterate_time = 3
-        # self.relation_h = TMC()
-        # self.relation_l = TMC()
-        # self.relation_f = TMC()
+        self.relation_h = TMC()
+        self.relation_l = TMC()
+        self.relation_f = TMC()
 
         # self.relation_hl = MMTM(64, 64, 2)
         # self.relation_hf = MMTM(64, 64, 2)
@@ -148,14 +148,24 @@ class GFM(nn.Module):
         out2f = self.conv2f(out1f)
         if self.GNN:
             for passing in range(self.iterate_time):
-                e_hl = F.sigmoid(self.gnn_edge_gh(out2h - out2l))
-                e_lh = F.sigmoid(self.gnn_edge_gh(out2l - out2h))
+                # e_hl = F.sigmoid(self.gnn_edge_gh(out2h - out2l))
+                # e_lh = F.sigmoid(self.gnn_edge_gh(out2l - out2h))
+                #
+                # e_hf = F.sigmoid(self.gnn_edge_gf(out2h - out2f))
+                # e_fh = F.sigmoid(self.gnn_edge_gf(out2f - out2h))
+                #
+                # e_lf = F.sigmoid(self.gnn_edge_gl(out2l - out2f))
+                # e_fl = F.sigmoid(self.gnn_edge_gl(out2f - out2l))
 
-                e_hf = F.sigmoid(self.gnn_edge_gf(out2h - out2f))
-                e_fh = F.sigmoid(self.gnn_edge_gf(out2f - out2h))
+                e_hl = F.sigmoid(self.gnn_edge_gh(self.relation_h(out2h, out2l)))
+                e_lh = F.sigmoid(self.gnn_edge_gl(self.relation_l(out2l, out2h)))
 
-                e_lf = F.sigmoid(self.gnn_edge_gl(out2l - out2f))
-                e_fl = F.sigmoid(self.gnn_edge_gl(out2f - out2l))
+                e_hf = F.sigmoid(self.gnn_edge_gh(self.relation_h(out2h, out2f)))
+                e_fh = F.sigmoid(self.gnn_edge_gf(self.relation_f(out2f, out2h)))
+
+                e_lf = F.sigmoid(self.gnn_edge_gl(self.relation_l(out2l, out2f)))
+                e_fl = F.sigmoid(self.gnn_edge_gf(self.relation_f(out2f, out2l)))
+
                 message_h = e_hl * out2h + e_hf * out2h
                 message_l = e_lh * out2l + e_lf * out2l
                 message_f = e_fh * out2f + e_fl * out2f
@@ -396,7 +406,7 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         # self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow2()
+        self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
