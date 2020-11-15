@@ -76,7 +76,7 @@ imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 def main():
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = SNet(cfg=None)
+    net = SNet(cfg=None, GNN=args['gnn'])
 
     print ('load snapshot \'%s\' for testing' % args['snapshot'])
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
