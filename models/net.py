@@ -122,13 +122,13 @@ class GFM(nn.Module):
 
         self.gnn_update = ConvGRUCell(64, 64, 1)
         self.iterate_time = 2
-        # self.relation_h = TMC()
-        # self.relation_l = TMC()
-        # self.relation_f = TMC()
+        self.relation_h = TMC()
+        self.relation_l = TMC()
+        self.relation_f = TMC()
 
-        self.relation_h = MMTM(64, 64, 2)
-        self.relation_l = MMTM(64, 64, 2)
-        self.relation_f = MMTM(64, 64, 2)
+        # self.relation_h = MMTM(64, 64, 2)
+        # self.relation_l = MMTM(64, 64, 2)
+        # self.relation_f = MMTM(64, 64, 2)
         # self.relation_ffl = MMTM(64, 64, 2)
         self.gnn_edge_gh = nn.Conv2d(64, 1, 3, padding=1, bias=True)
         self.gnn_edge_gl = nn.Conv2d(64, 1, 3, padding=1, bias=True)
@@ -156,18 +156,27 @@ class GFM(nn.Module):
                 #
                 # e_lf = F.sigmoid(self.gnn_edge_gl(out2l - out2f))
                 # e_fl = F.sigmoid(self.gnn_edge_gl(out2f - out2l))
-                out2hl, out2lh = self.relation_h(out2h, out2l)
-                out2lf, out2fl = self.relation_l(out2l, out2f)
-                out2hf, out2fh = self.relation_h(out2h, out2f)
 
-                e_hl = F.sigmoid(self.gnn_edge_gh(out2hl))
-                e_lh = F.sigmoid(self.gnn_edge_gl(out2lh))
+                e_hl = F.sigmoid(self.gnn_edge_gh(self.relation_h(out2h, out2l)))
+                e_lh = F.sigmoid(self.gnn_edge_gl(self.relation_l(out2l, out2h)))
 
-                e_hf = F.sigmoid(self.gnn_edge_gh(out2hf))
-                e_fh = F.sigmoid(self.gnn_edge_gf(out2fh))
+                e_hf = F.sigmoid(self.gnn_edge_gh(self.relation_h(out2h, out2f)))
+                e_fh = F.sigmoid(self.gnn_edge_gf(self.relation_f(out2f, out2h)))
 
-                e_lf = F.sigmoid(self.gnn_edge_gl(out2lf))
-                e_fl = F.sigmoid(self.gnn_edge_gf(out2fl))
+                e_lf = F.sigmoid(self.gnn_edge_gl(self.relation_l(out2l, out2f)))
+                e_fl = F.sigmoid(self.gnn_edge_gf(self.relation_f(out2f, out2l)))
+
+                # out2hl, out2lh = self.relation_h(out2h, out2l)
+                # out2lf, out2fl = self.relation_l(out2l, out2f)
+                # out2hf, out2fh = self.relation_h(out2h, out2f)
+                # e_hl = F.sigmoid(self.gnn_edge_gh(out2hl))
+                # e_lh = F.sigmoid(self.gnn_edge_gl(out2lh))
+                #
+                # e_hf = F.sigmoid(self.gnn_edge_gh(out2hf))
+                # e_fh = F.sigmoid(self.gnn_edge_gf(out2fh))
+                #
+                # e_lf = F.sigmoid(self.gnn_edge_gl(out2lf))
+                # e_fl = F.sigmoid(self.gnn_edge_gf(out2fl))
 
                 message_h = e_hl * out2h + e_hf * out2h
                 message_l = e_lh * out2l + e_lf * out2l
