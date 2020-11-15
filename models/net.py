@@ -121,7 +121,7 @@ class GFM(nn.Module):
         self.GNN = GNN
 
         self.gnn_update = ConvGRUCell(64, 64, 1)
-        self.iterate_time = 2
+        self.iterate_time = 3
         self.relation_h = TMC()
         self.relation_l = TMC()
         self.relation_f = TMC()
@@ -349,7 +349,7 @@ class Decoder_flow2(nn.Module):
     def __init__(self, GNN=False):
         super(Decoder_flow2, self).__init__()
         self.cfm45  = GFM(GNN=GNN)
-        self.cfm34  = GFM()
+        self.cfm34  = GFM(GNN=GNN)
         self.cfm23  = SFM()
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
