@@ -42,11 +42,11 @@ args = {
     'KL': False,
     'structure': True,
     'iter_num': 80000,
-    'iter_save': 8000,
+    'iter_save': 2000,
     'iter_start_seq': 0,
     'train_batch_size': 14,
     'last_iter': 0,
-    'lr': 1e-2,
+    'lr': 1e-5,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.9,
@@ -138,7 +138,7 @@ def fix_parameters(parameters):
 def main():
 
     net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
-    bkbone, flow_modules, remains = [], [], []
+    bkbone, flow_modules, gnn_modules, remains = [], [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
             bkbone.append(param)
@@ -147,7 +147,7 @@ def main():
             flow_modules.append(param)
         elif 'gnn' in name:
             print('gnn related:', name)
-            flow_modules.append(param)
+            gnn_modules.append(param)
         else:
             print('remains:', name)
             remains.append(param)
