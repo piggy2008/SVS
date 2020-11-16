@@ -42,17 +42,17 @@ args = {
     'KL': False,
     'structure': True,
     'iter_num': 80000,
-    'iter_save': 2000,
+    'iter_save': 8000,
     'iter_start_seq': 0,
     'train_batch_size': 14,
     'last_iter': 0,
-    'lr': 1e-5,
+    'lr': 1e-2,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.9,
     'snapshot': '',
-    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
-    # 'pretrain': '',
+    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
+    'pretrain': '',
     'mga_model_path': 'pretrained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
@@ -142,9 +142,9 @@ def main():
     for name, param in net.named_parameters():
         if 'bkbone' in name:
             bkbone.append(param)
-        # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
-        #     print('flow related:', name)
-        #     flow_modules.append(param)
+        elif 'flow' in name or 'linearf' in name or 'decoder' in name:
+            print('flow related:', name)
+            flow_modules.append(param)
         elif 'gnn' in name:
             print('gnn related:', name)
             flow_modules.append(param)
@@ -191,11 +191,13 @@ def train(net, optimizer):
 
         for i, data in enumerate(train_loader):
 
-            optimizer.param_groups[0]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                 ) ** args['lr_decay']
-            optimizer.param_groups[1]['lr'] = 100 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+                                                            ) ** args['lr_decay']
+            optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
