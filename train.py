@@ -42,9 +42,9 @@ args = {
     'KL': False,
     'structure': True,
     'iter_num': 80000,
-    'iter_save': 2000,
+    'iter_save': 8000,
     'iter_start_seq': 0,
-    'train_batch_size': 14,
+    'train_batch_size': 12,
     'last_iter': 0,
     'lr': 1e-5,
     'lr_decay': 0.9,
@@ -159,7 +159,7 @@ def main():
     #      'lr': args['lr'], 'weight_decay': args['weight_decay']}
     # ], momentum=args['momentum'])
 
-    optimizer = optim.SGD([{'params': bkbone}, {'params': flow_modules}, {'params': remains}],
+    optimizer = optim.SGD([{'params': bkbone}, {'params': flow_modules}, {'params': gnn_modules}, {'params': remains}],
                           lr=args['lr'], momentum=args['momentum'],
                           weight_decay=args['weight_decay'], nesterov=True)
 
