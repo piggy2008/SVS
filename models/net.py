@@ -324,6 +324,10 @@ class GNN_Embedding(nn.Module):
         self.gnn_edgef = nn.Conv2d(64, 1, 3, padding=1, bias=True)
 
     def forward(self, out3h, out4h, out5v, fback=None):
+        fback_size = fback.size()[2:]
+        out5v_size = out5v.size()[2:]
+        out4h_size = out4h.size()[2:]
+
         fback = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
         out5v = F.interpolate(out5v, size=out3h.size()[2:], mode='bilinear')
         out4h = F.interpolate(out4h, size=out3h.size()[2:], mode='bilinear')
@@ -386,6 +390,10 @@ class GNN_Embedding(nn.Module):
         out3h = out3h + fback
         out4h = out4h + fback
         out5v = out5v + fback
+
+        fback = F.interpolate(fback, size=fback_size, mode='bilinear')
+        out4h = F.interpolate(out4h, size=out4h_size, mode='bilinear')
+        out5v = F.interpolate(out5v, size=out5v_size, mode='bilinear')
 
         return out3h, out4h, out5v, fback
 
