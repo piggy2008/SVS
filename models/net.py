@@ -308,6 +308,88 @@ class CFM(nn.Module):
     def initialize(self):
         weight_init(self)
 
+class GNN_Embedding(nn.Module):
+    def __init__(self):
+        super(GNN_Embedding, self).__init__()
+        self.gnn_update = ConvGRUCell(64, 64, 1)
+        self.iterate_time = 3
+        self.relation3 = TMC()
+        self.relation4 = TMC()
+        self.relation5 = TMC()
+        self.relationf = TMC()
+
+        self.gnn_edge3 = nn.Conv2d(64, 1, 3, padding=1, bias=True)
+        self.gnn_edge4 = nn.Conv2d(64, 1, 3, padding=1, bias=True)
+        self.gnn_edge5 = nn.Conv2d(64, 1, 3, padding=1, bias=True)
+        self.gnn_edgef = nn.Conv2d(64, 1, 3, padding=1, bias=True)
+
+    def forward(self, out3h, out4h, out5v, fback=None):
+        fback = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
+        out5v = F.interpolate(out5v, size=out3h.size()[2:], mode='bilinear')
+        out4h = F.interpolate(out4h, size=out3h.size()[2:], mode='bilinear')
+
+        for passing in range(self.iterate_time):
+            # e_hl = F.sigmoid(self.gnn_edge_gh(out2h - out2l))
+            # e_lh = F.sigmoid(self.gnn_edge_gh(out2l - out2h))
+            #
+            # e_hf = F.sigmoid(self.gnn_edge_gf(out2h - out2f))
+            # e_fh = F.sigmoid(self.gnn_edge_gf(out2f - out2h))
+            #
+            # e_lf = F.sigmoid(self.gnn_edge_gl(out2l - out2f))
+            # e_fl = F.sigmoid(self.gnn_edge_gl(out2f - out2l))
+
+            e3 = F.sigmoid(self.gnn_edge3(self.relation3(out3h, fback)))
+            e4 = F.sigmoid(self.gnn_edge4(self.relation4(out4h, fback)))
+            e5 = F.sigmoid(self.gnn_edge5(self.relation4(out5v, fback)))
+            ef3 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out3h)))
+            ef4 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out4h)))
+            ef5 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out5v)))
+
+            # out2hl, out2lh = self.relation_h(out2h, out2l)
+            # out2lf, out2fl = self.relation_l(out2l, out2f)
+            # out2hf, out2fh = self.relation_h(out2h, out2f)
+            # e_hl = F.sigmoid(self.gnn_edge_gh(out2hl))
+            # e_lh = F.sigmoid(self.gnn_edge_gl(out2lh))
+            #
+            # e_hf = F.sigmoid(self.gnn_edge_gh(out2hf))
+            # e_fh = F.sigmoid(self.gnn_edge_gf(out2fh))
+            #
+            # e_lf = F.sigmoid(self.gnn_edge_gl(out2lf))
+            # e_fl = F.sigmoid(self.gnn_edge_gf(out2fl))
+
+            message3 = e3 * fback
+            message4 = e4 * fback
+            message5 = e5 * fback
+            messagef = ef3 * out3h + ef4 * out4h + ef5 * out5v
+            # message_h = self.conv_gh(message_h)
+            # message_l = self.conv_gl(message_l)
+            # message_f = self.conv_gf(message_f)
+            # visualize(message_h, 'message_h.png')
+            # visualize(out2l, 'out2l.png')
+            # visualize(out2h, 'out2h.png')
+            # visualize(out2f, 'out2f.png')
+            # sys.exit()
+
+            # message_h = self.conv_gh(message_h1 + message_h2)
+            # message_l = self.conv_gl(message_l1 + message_l2)
+            # message_f = self.conv_gf(message_f1 + message_f2)
+            h3 = self.gnn_update(message3, out3h)
+            h4 = self.gnn_update(message4, out4h)
+            h5 = self.gnn_update(message5, out5v)
+            hf = self.gnn_update(messagef, fback)
+
+            out3h = h3.clone()
+            out4h = h4.clone()
+            out5v = h5.clone()
+            fback = hf.clone()
+
+        out3h = out3h + fback
+        out4h = out4h + fback
+        out5v = out5v + fback
+
+        return out3h, out4h, out5v, fback
+
+
 class Decoder_flow(nn.Module):
     def __init__(self):
         super(Decoder_flow, self).__init__()
@@ -418,8 +500,9 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         # self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow2(GNN=GNN)
-        self.decoder2 = Decoder_flow2(GNN=GNN)
+        self.decoder1 = Decoder_flow()
+        self.decoder2 = Decoder_flow()
+        self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
@@ -442,6 +525,7 @@ class SNet(nn.Module):
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out2f, out3f, out4f = self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
+        out3h, out4h, out5v, pred1 = self.gnn_embedding(out3h, out4h, out5v, pred1)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
 
         shape = x.size()[2:] if shape is None else shape
