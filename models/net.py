@@ -389,6 +389,9 @@ class GNN_Embedding(nn.Module):
 
         return out3h, out4h, out5v, fback
 
+    def initialize(self):
+        weight_init(self)
+
 
 class Decoder_flow(nn.Module):
     def __init__(self):
