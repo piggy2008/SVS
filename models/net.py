@@ -313,10 +313,10 @@ class GNN_Embedding(nn.Module):
         super(GNN_Embedding, self).__init__()
         self.gnn_update = ConvGRUCell(64, 64, 1)
         self.iterate_time = 3
-        self.relation3 = TMC()
-        self.relation4 = TMC()
-        self.relation5 = TMC()
-        self.relationf = TMC()
+        # self.relation3 = TMC()
+        # self.relation4 = TMC()
+        # self.relation5 = TMC()
+        # self.relationf = TMC()
 
         self.gnn_edge3 = nn.Conv2d(64, 1, 3, padding=1, bias=True)
         self.gnn_edge4 = nn.Conv2d(64, 1, 3, padding=1, bias=True)
@@ -342,12 +342,12 @@ class GNN_Embedding(nn.Module):
             # e_lf = F.sigmoid(self.gnn_edge_gl(out2l - out2f))
             # e_fl = F.sigmoid(self.gnn_edge_gl(out2f - out2l))
 
-            e3 = F.sigmoid(self.gnn_edge3(self.relation3(out3h, fback)))
-            e4 = F.sigmoid(self.gnn_edge4(self.relation4(out4h, fback)))
-            e5 = F.sigmoid(self.gnn_edge5(self.relation4(out5v, fback)))
-            ef3 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out3h)))
-            ef4 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out4h)))
-            ef5 = F.sigmoid(self.gnn_edgef(self.relationf(fback, out5v)))
+            e3 = F.sigmoid(self.gnn_edge3(out3h + fback))
+            e4 = F.sigmoid(self.gnn_edge4(out4h + fback))
+            e5 = F.sigmoid(self.gnn_edge5(out5v + fback))
+            ef3 = F.sigmoid(self.gnn_edgef(fback + out3h))
+            ef4 = F.sigmoid(self.gnn_edgef(fback + out4h))
+            ef5 = F.sigmoid(self.gnn_edgef(fback + out5v))
 
             # out2hl, out2lh = self.relation_h(out2h, out2l)
             # out2lf, out2fl = self.relation_l(out2l, out2f)
@@ -361,9 +361,9 @@ class GNN_Embedding(nn.Module):
             # e_lf = F.sigmoid(self.gnn_edge_gl(out2lf))
             # e_fl = F.sigmoid(self.gnn_edge_gf(out2fl))
 
-            message3 = e3 * fback
-            message4 = e4 * fback
-            message5 = e5 * fback
+            message3 = e3 * (fback + out3h)
+            message4 = e4 * (fback + out4h)
+            message5 = e5 * (fback + out5v)
             messagef = ef3 * out3h + ef4 * out4h + ef5 * out5v
             # message_h = self.conv_gh(message_h)
             # message_l = self.conv_gl(message_l)
