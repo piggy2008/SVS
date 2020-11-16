@@ -142,8 +142,11 @@ def main():
     for name, param in net.named_parameters():
         if 'bkbone' in name:
             bkbone.append(param)
-        elif 'flow' in name or 'linearf' in name or 'decoder' in name:
-            print('flow related:', name)
+        # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
+        #     print('flow related:', name)
+        #     flow_modules.append(param)
+        elif 'gnn' in name:
+            print('gnn related:', name)
             flow_modules.append(param)
         else:
             print('remains:', name)
@@ -164,9 +167,9 @@ def main():
         print('training resumes from ' + args['snapshot'])
         net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth')))
         optimizer.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '_optim.pth')))
-        optimizer.param_groups[0]['lr'] = 0.5 * args['lr']
-        optimizer.param_groups[1]['lr'] = args['lr']
-        optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
+        optimizer.param_groups[0]['lr'] = 1 * args['lr']
+        optimizer.param_groups[1]['lr'] = 100 * args['lr']
+        optimizer.param_groups[2]['lr'] = 1 * args['lr']
 
     net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
