@@ -536,9 +536,8 @@ class SNet(nn.Module):
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         out2f, out3f, out4f = self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
-        out3h, out4h, out5v, pred1 = self.gnn_embedding(out3h, out4h, out5v, pred1)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
-
+        out3h, out4h, out5v, pred2 = self.gnn_embedding(out3h, out4h, out5v, pred2)
         shape = x.size()[2:] if shape is None else shape
 
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')

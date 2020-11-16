@@ -46,13 +46,13 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 14,
     'last_iter': 0,
-    'lr': 1e-2,
+    'lr': 1e-5,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
-    'momentum': 0.95,
+    'momentum': 0.9,
     'snapshot': '',
-    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-07-24 15:18:51', '100000.pth'),
-    'pretrain': '',
+    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
+    # 'pretrain': '',
     'mga_model_path': 'pretrained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
@@ -240,22 +240,22 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss8 = criterion_str(out3f, labels)
     loss9 = criterion_str(out4f, labels)
 
-    loss2_d = criterion_str(out2r, F.sigmoid(out2u))
-    loss3_d = criterion_str(out3r, F.sigmoid(out2u))
-    loss4_d = criterion_str(out4r, F.sigmoid(out2u))
-    loss5_d = criterion_str(out5r, F.sigmoid(out2u))
-
-    loss7_d = criterion_str(out2f, F.sigmoid(out2u))
-    loss8_d = criterion_str(out3f, F.sigmoid(out2u))
-    loss9_d = criterion_str(out4f, F.sigmoid(out2u))
+    # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
+    # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
+    # loss4_d = criterion_str(out4r, F.sigmoid(out2u))
+    # loss5_d = criterion_str(out5r, F.sigmoid(out2u))
+    #
+    # loss7_d = criterion_str(out2f, F.sigmoid(out2u))
+    # loss8_d = criterion_str(out3f, F.sigmoid(out2u))
+    # loss9_d = criterion_str(out4f, F.sigmoid(out2u))
 
     # loss10 = criterion_str(out1a, labels)
     # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss7 / 2 + loss8 / 4 + loss9 / 8
-    distill_loss = loss2_d / 2 + loss3_d / 4 + loss4_d / 8 + loss5_d / 16 + loss7_d / 2 + loss8_d / 4 + loss9_d / 8
-    total_loss = total_loss + distill_loss
+    # distill_loss = loss2_d / 2 + loss3_d / 4 + loss4_d / 8 + loss5_d / 16 + loss7_d / 2 + loss8_d / 4 + loss9_d / 8
+    # total_loss = total_loss + distill_loss
     total_loss.backward()
     optimizer.step()
 
