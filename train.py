@@ -167,9 +167,9 @@ def main():
         print('training resumes from ' + args['snapshot'])
         net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth')))
         optimizer.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '_optim.pth')))
-        optimizer.param_groups[0]['lr'] = 1 * args['lr']
-        optimizer.param_groups[1]['lr'] = 100 * args['lr']
-        optimizer.param_groups[2]['lr'] = 1 * args['lr']
+        optimizer.param_groups[0]['lr'] = 0.5 * args['lr']
+        optimizer.param_groups[1]['lr'] = args['lr']
+        optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
     net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
@@ -191,9 +191,9 @@ def train(net, optimizer):
 
         for i, data in enumerate(train_loader):
 
-            optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[0]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                 ) ** args['lr_decay']
-            optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[1]['lr'] = 100 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
