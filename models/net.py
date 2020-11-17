@@ -538,7 +538,7 @@ class SNet(nn.Module):
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
         self.decoder1 = Decoder()
-        self.decoder2 = Decoder()
+        self.decoder2 = Decoder_flow()
         self.decoder3 = Decoder_flow3()
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -565,7 +565,7 @@ class SNet(nn.Module):
         out1f, out2f, out3f, out4f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2), self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
         out2h, out3h, out4h, out5v, pred1 = self.decoder1(out2h, out3h, out4h, out5v)
         out1f, out2f, out3f, out4f, pred2 = self.decoder3(out1f, out2f, out3f, out4f, pred1)
-        out2h, out3h, out4h, out5v, pred3 = self.decoder2(out2h, out3h, out4h, out5v, pred2)
+        out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
         # out3h, out4h, out5v, pred2 = self.gnn_embedding(out3h, out4h, out5v, pred2)
         shape = x.size()[2:] if shape is None else shape
 

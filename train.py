@@ -44,12 +44,12 @@ args = {
     'iter_num': 80000,
     'iter_save': 8000,
     'iter_start_seq': 0,
-    'train_batch_size': 18,
+    'train_batch_size': 16,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
-    'momentum': 0.9,
+    'momentum': 0.95,
     'snapshot': '',
     # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
     'pretrain': '',
@@ -145,7 +145,7 @@ def main():
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
         #     flow_modules.append(param)
-        elif 'decoder3' in name or 'linearf' in name or 'flow' in name:
+        elif 'decoder3' in name or 'linearf' in name or 'flow' in name or 'decoder2' in name:
             print('decoder3 related:', name)
             flow_modules.append(param)
         else:
@@ -171,7 +171,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet2.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
