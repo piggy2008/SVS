@@ -87,7 +87,7 @@ class ResNet(nn.Module):
         return out2, out3, out4, out5
 
     def initialize(self):
-        self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
+        self.load_state_dict(torch.load('../pre-trained/resnet50-19c8e357.pth'), strict=False)
 
 class GFM(nn.Module):
     def __init__(self, GNN=False):
@@ -424,9 +424,9 @@ class Decoder_flow(nn.Module):
             # out4h = self.EP(out4h, refine4)
             out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine4)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2)
+            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine3)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
@@ -669,3 +669,8 @@ class SNet2(nn.Module):
         #     self.load_state_dict(torch.load(self.cfg.snapshot))
         # else:
         weight_init(self)
+
+if __name__ == '__main__':
+        net = SNet(cfg=None)
+        input = torch.zeros([2, 3, 380, 380])
+        output = net(input, input)
