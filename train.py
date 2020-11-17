@@ -284,4 +284,3 @@ def print_log(total_loss, loss0, loss1, loss2, batch_size, curr_iter, optimizer,
 
 if __name__ == '__main__':
     main()
->>>>>>> 7b54c7b71205dcf6ace72b734c9b5b7a3b563fff
