@@ -543,6 +543,7 @@ class SNet(nn.Module):
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
         self.linearr2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -569,7 +570,8 @@ class SNet(nn.Module):
         shape = x.size()[2:] if shape is None else shape
 
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
-        pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
+        pred2a = F.interpolate(self.linearp2(pred3), size=shape, mode='bilinear')
+        pred_flow = F.interpolate(self.linearp_flow(pred2), size=shape, mode='bilinear')
         # ep_map = self.EP(out2h, pred1)
         # tmp = ep_map.data.cpu().numpy()
         # tmp2 = out2h.data.cpu().numpy()
@@ -588,7 +590,7 @@ class SNet(nn.Module):
         out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
         out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
+        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f, pred_flow
 
     def initialize(self):
         # if self.cfg.snapshot:
