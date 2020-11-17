@@ -107,8 +107,8 @@ if __name__ == '__main__':
     # load_MGA(a, '../pre-trained/MGA_trained.pth')
 
     net = SNet(cfg=None).cuda()
-    net = fuse_MGA_F3Net('../pre-trained/MGA_trained.pth', '../pre-trained/F3Net', net)
-    torch.save(net.state_dict(), '../pre-trained/SNet.pth')
+    net = fuse_MGA_F3Net('pre-trained/MGA_trained.pth', 'pre-trained/F3Net', net)
+    torch.save(net.state_dict(), 'pre-trained/SNet2.pth')
     # net = load_part_of_model(net, '../pre-trained/SNet.pth')
     # input = torch.zeros([2, 3, 380, 380]).cuda()
     # output = net(input, input)
