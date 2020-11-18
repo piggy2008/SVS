@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import numpy as np
+from matplotlib import pyplot as plt
+
 
 class MMTM(nn.Module):
     def __init__(self, dim_a, dim_b, ratio):
@@ -43,3 +45,61 @@ class MMTM(nn.Module):
         sk_out = sk_out.view(sk_out.shape + (1,) * dim_diff)
 
         return a * vis_out, b * sk_out
+
+class SETriplet(nn.Module):
+    def __init__(self, dim_a, dim_b, dim_c, dim_out):
+        super(SETriplet, self).__init__()
+        dim = dim_a + dim_b + dim_c
+        # self.fc_squeeze = nn.Linear(dim, dim_out)
+        self.fc_one = nn.Sequential(
+            nn.Linear(dim, dim_out),
+            nn.ReLU(inplace=True),
+            nn.Linear(dim_out, dim_a),
+            nn.Sigmoid()
+        )
+        self.fc_anthoer = nn.Sequential(
+            nn.Linear(dim, dim_out),
+            nn.ReLU(inplace=True),
+            nn.Linear(dim_out, dim_b),
+            nn.Sigmoid()
+        )
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.softmax = nn.Softmax(dim=1)
+
+        self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+
+    def initialize(self):
+        nn.init.kaiming_normal_(self.fc_squeeze.weight, mode='fan_in', nonlinearity='relu')
+        nn.init.kaiming_normal_(self.fc_a.weight, mode='fan_in', nonlinearity='relu')
+        nn.init.kaiming_normal_(self.fc_b.weight, mode='fan_in', nonlinearity='relu')
+
+    def forward(self, a, b, c):
+        batch, channel, _, _ = a.size()
+        combined = torch.cat([a, b, c], dim=1)
+        combined_fc = self.avg_pool(combined).view(batch, channel * 3)
+        excitation1 = self.fc_one(combined_fc).view(batch, channel, 1, 1)
+        excitation2 = self.fc_anthoer(combined_fc).view(batch, channel, 1, 1)
+
+        weighted_feat_a = a + excitation1 * b + excitation2 * c
+        weighted_feat_b = b + excitation1 * a + excitation2 * c
+        weighted_feat_c = c + excitation1 * a + excitation2 * b
+
+        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
+        atten_a = self.gate_a(feat_cat)
+        atten_b = self.gate_b(feat_cat)
+        atten_c = self.gate_c(feat_cat)
+
+        attention_vector = torch.cat([atten_a, atten_b, atten_c], dim=1)
+        attention_vector = self.softmax(attention_vector)
+        attention_vector_a, attention_vector_b, attention_vector_c = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :], attention_vector[:, 2:3, :, :]
+
+        merge_feature = a * attention_vector_a + b * attention_vector_b + c * attention_vector_c
+        return merge_feature
+
+if __name__ == '__main__':
+        input = torch.zeros([2, 64, 24, 24])
+        net = SETriplet(64, 64, 64, 64)
+        output = net(input, input, input)
+
