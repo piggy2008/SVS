@@ -145,7 +145,7 @@ def main():
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
         #     flow_modules.append(param)
-        elif 'decoder' in name or 'linearf' in name or 'flow' in name or 'decoder' in name:
+        elif 'decoder' in name or 'linearf' in name or 'flow' in name:
             print('decoder related:', name)
             flow_modules.append(param)
         else:
