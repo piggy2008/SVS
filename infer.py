@@ -24,7 +24,7 @@ torch.cuda.set_device(0)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-18 03:54:55'
+exp_name = 'VideoSaliency_2020-11-18 08:05:05'
 
 
 args = {
@@ -116,7 +116,7 @@ def main():
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
@@ -140,7 +140,7 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
