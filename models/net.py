@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM
+from module.MMTM import MMTM, SETriplet
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 
@@ -246,6 +246,8 @@ class SFM(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
+
+        # self.se_triplet = SETriplet(64, 64, 64, 64)
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
             high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
@@ -258,6 +260,7 @@ class SFM(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         fuse  = out2h * out2l * out2f
+        # fuse = self.se_triplet(out2h, out2l, out2f)
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
@@ -543,10 +546,10 @@ class SNet(nn.Module):
         self.linearr4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr5 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-        self.linearf1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         # self.EP = EP()
 
         self.initialize()
@@ -587,10 +590,10 @@ class SNet(nn.Module):
         out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
-        out1f = F.interpolate(self.linearf1(out1f), size=shape, mode='bilinear')
-        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
+        out1f = F.interpolate(self.linearr2(out1f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearr3(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearr4(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearr5(out4f), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out1f, out2f, out3f, out4f, pred3a
 
