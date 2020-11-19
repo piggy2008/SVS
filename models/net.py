@@ -535,11 +535,11 @@ class SNet(nn.Module):
 
         self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow()
-        self.decoder3 = Decoder_flow()
+        # self.decoder3 = Decoder_flow()
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
         self.linearr2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)

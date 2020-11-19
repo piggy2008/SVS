@@ -232,7 +232,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out3_flow = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
