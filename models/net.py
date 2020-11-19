@@ -270,6 +270,60 @@ class SFM(nn.Module):
 
         return out4l, out4h, out4f
 
+class SFM2(nn.Module):
+    def __init__(self):
+        super(SFM2, self).__init__()
+        self.conv1h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+
+        self.conv1l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+
+        self.conv1f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+
+        self.se_triplet = SETriplet(64, 64, 64, 64)
+
+    def forward(self, low, high, flow):
+        if high.size()[2:] != low.size()[2:]:
+            high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
+        if flow.size()[2:] != low.size()[2:]:
+            flow = F.interpolate(flow, size=low.size()[2:], mode='bilinear')
+        out1h = self.conv1h(high)
+        out2h = self.conv2h(out1h)
+        out1l = self.conv1l(low)
+        out2l = self.conv2l(out1l)
+        out1f = self.conv1f(flow)
+        out2f = self.conv2f(out1f)
+        # fuse = out2h * out2l * out2f
+        fuse = self.se_triplet(out2h, out2l, out2f)
+        out3h = self.conv3h(fuse) + out1h
+        out4h = self.conv4h(out3h)
+        out3l = self.conv3l(fuse) + out1l
+        out4l = self.conv4l(out3l)
+        out3f = self.conv3f(fuse) + out1f
+        out4f = self.conv4f(out3f)
+
+        return out4l, out4h, out4f
+
     def initialize(self):
         weight_init(self)
 
@@ -406,9 +460,9 @@ class GNN_Embedding(nn.Module):
 class Decoder_flow(nn.Module):
     def __init__(self):
         super(Decoder_flow, self).__init__()
-        self.cfm45  = SFM()
-        self.cfm34  = SFM()
-        self.cfm23  = SFM()
+        self.cfm45  = SFM2()
+        self.cfm34  = SFM2()
+        self.cfm23  = SFM2()
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
@@ -535,11 +589,11 @@ class SNet(nn.Module):
 
         self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow()
-        # self.decoder3 = Decoder_flow()
+        self.decoder3 = Decoder_flow()
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        # self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
         self.linearr2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -563,19 +617,19 @@ class SNet(nn.Module):
         # out4f = F.interpolate(out4f, size=out5v.size()[2:], mode='bilinear')
         # print(out2f.shape, out3f.shape, out4f.shape)
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
-        # out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
+        out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
 
-        # out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
-        # out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
-        # out4f = F.interpolate(out4f, size=out4f_scale, mode='bilinear')
-        # out2h, out3h, out4h, out5v, out1f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
+        out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
+        out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
+        out4f = F.interpolate(out4f, size=out4f_scale, mode='bilinear')
+        out2h, out3h, out4h, out5v, out1f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
         # out3h, out4h, out5v, pred2 = self.gnn_embedding(out3h, out4h, out5v, pred2)
         shape = x.size()[2:] if shape is None else shape
 
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
         pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
-        # pred3a = F.interpolate(self.linearp_flow(pred3), size=shape, mode='bilinear')
+        pred3a = F.interpolate(self.linearp_flow(pred3), size=shape, mode='bilinear')
         # ep_map = self.EP(out2h, pred1)
         # tmp = ep_map.data.cpu().numpy()
         # tmp2 = out2h.data.cpu().numpy()
@@ -591,11 +645,11 @@ class SNet(nn.Module):
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
         # out1f = F.interpolate(self.linearr2(out1f), size=shape, mode='bilinear')
-        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
+        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f, pred3a
 
     def initialize(self):
         # if self.cfg.snapshot:

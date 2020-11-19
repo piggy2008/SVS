@@ -232,7 +232,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out3f_flow = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -245,7 +245,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss7 = criterion_str(out3f, labels)
     loss8 = criterion_str(out4f, labels)
 
-    # loss9 = criterion_str(out3_flow, labels)
+    loss9 = criterion_str(out3f_flow, labels)
 
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
@@ -260,7 +260,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss6 / 4 + loss7 / 8 + loss8 / 16
+                 + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
     # distill_loss = loss2_d / 2 + loss3_d / 4 + loss4_d / 8 + loss5_d / 16 + loss7_d / 2 + loss8_d / 4 + loss9_d / 8
     # total_loss = total_loss + distill_loss
     total_loss.backward()
