@@ -3,6 +3,27 @@ import torch.nn as nn
 import numpy as np
 from matplotlib import pyplot as plt
 
+def weight_init(module):
+    for n, m in module.named_children():
+        print('initialize: '+n)
+        if isinstance(m, nn.Conv2d):
+            nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, (nn.BatchNorm2d, nn.InstanceNorm2d)):
+            nn.init.ones_(m.weight)
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Linear):
+            nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Sequential):
+            weight_init(m)
+        elif isinstance(m, nn.ReLU):
+            pass
+        else:
+            m.initialize()
 
 class MMTM(nn.Module):
     def __init__(self, dim_a, dim_b, ratio):
@@ -71,9 +92,7 @@ class SETriplet(nn.Module):
         self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
 
     def initialize(self):
-        nn.init.kaiming_normal_(self.fc_squeeze.weight, mode='fan_in', nonlinearity='relu')
-        nn.init.kaiming_normal_(self.fc_a.weight, mode='fan_in', nonlinearity='relu')
-        nn.init.kaiming_normal_(self.fc_b.weight, mode='fan_in', nonlinearity='relu')
+        weight_init(self)
 
     def forward(self, a, b, c):
         batch, channel, _, _ = a.size()
