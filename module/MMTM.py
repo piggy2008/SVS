@@ -22,6 +22,10 @@ def weight_init(module):
             weight_init(m)
         elif isinstance(m, nn.ReLU):
             pass
+        elif isinstance(m, nn.Sigmoid):
+            pass
+        elif isinstance(m, nn.Softmax):
+            pass
         else:
             m.initialize()
 
