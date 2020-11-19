@@ -145,7 +145,7 @@ def main():
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
         #     flow_modules.append(param)
-        elif 'decoder' in name or 'linearf' in name or 'flow' in name:
+        elif 'flow' in name or 'linearf' in name or 'decoder' in name:
             print('decoder related:', name)
             flow_modules.append(param)
         else:
@@ -192,11 +192,12 @@ def train(net, optimizer):
         for i, data in enumerate(train_loader):
 
             optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
-                                                                ) ** args['lr_decay']
+                                                                  ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
             optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
-                                                            ) ** args['lr_decay']
+                                                                  ) ** args['lr_decay']
+            #
             # optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
             #                                                 ) ** args['lr_decay']
             #
@@ -231,7 +232,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out1f, out2f, out3f, out4f, out3_flow = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out3_flow = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -240,11 +241,11 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss4 = criterion_str(out4r, labels)
     loss5 = criterion_str(out5r, labels)
 
-    loss6 = criterion_str(out1f, labels)
-    loss7 = criterion_str(out2f, labels)
-    loss8 = criterion_str(out3f, labels)
-    loss9 = criterion_str(out4f, labels)
-    loss10 = criterion_str(out3_flow, labels)
+    loss6 = criterion_str(out2f, labels)
+    loss7 = criterion_str(out3f, labels)
+    loss8 = criterion_str(out4f, labels)
+
+    loss9 = criterion_str(out3_flow, labels)
 
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
@@ -259,7 +260,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss7 / 2 + loss8 / 4 + loss9 / 8 + loss6 / 2 + loss10 / 2
+                 + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
     # distill_loss = loss2_d / 2 + loss3_d / 4 + loss4_d / 8 + loss5_d / 16 + loss7_d / 2 + loss8_d / 4 + loss9_d / 8
     # total_loss = total_loss + distill_loss
     total_loss.backward()
