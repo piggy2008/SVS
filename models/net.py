@@ -591,9 +591,9 @@ class SNet(nn.Module):
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
         # out1f = F.interpolate(self.linearr2(out1f), size=shape, mode='bilinear')
-        out2f = F.interpolate(self.linearr3(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearr4(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearr5(out4f), size=shape, mode='bilinear')
+        out2f = F.interpolate(self.linearr2(out2f), size=shape, mode='bilinear')
+        out3f = F.interpolate(self.linearr3(out3f), size=shape, mode='bilinear')
+        out4f = F.interpolate(self.linearr4(out4f), size=shape, mode='bilinear')
 
         return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f
 
