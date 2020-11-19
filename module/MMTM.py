@@ -26,6 +26,8 @@ def weight_init(module):
             pass
         elif isinstance(m, nn.Softmax):
             pass
+        elif isinstance(m, nn.AdaptiveAvgPool2d):
+            pass
         else:
             m.initialize()
 
