@@ -24,12 +24,12 @@ torch.cuda.set_device(0)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-18 14:22:04'
+exp_name = 'VideoSaliency_2020-11-19 03:19:39'
 
 
 args = {
     'gnn': True,
-    'snapshot': '16000',  # your snapshot filename (exclude extension name)
+    'snapshot': '5000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -116,7 +116,7 @@ def main():
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
@@ -140,7 +140,7 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction)
 
                     end = time.time()
