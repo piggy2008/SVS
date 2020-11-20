@@ -522,25 +522,30 @@ class Decoder_flow2(nn.Module):
 class Decoder_flow3(nn.Module):
     def __init__(self):
         super(Decoder_flow3, self).__init__()
-        self.cfm45 = CFM()
-        self.cfm34 = CFM()
-        self.cfm23 = CFM()
+        self.cfm45 = SFM()
+        self.cfm34 = SFM()
+        self.cfm23 = SFM()
 
-    def forward(self, out1f, out2f, out3f, out4f, fback=None):
+    def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
-            refine4 = F.interpolate(fback, size=out4f.size()[2:], mode='bilinear')
-            refine3 = F.interpolate(fback, size=out3f.size()[2:], mode='bilinear')
-            refine2 = F.interpolate(fback, size=out2f.size()[2:], mode='bilinear')
-            refine1 = F.interpolate(fback, size=out1f.size()[2:], mode='bilinear')
-            out4f = out4f + refine4
-            out3f, out3v = self.cfm45(out3f + refine3, out4f)
-            out2f, out2v = self.cfm34(out2f + refine2, out3v)
-            out1f, pred = self.cfm23(out1f + refine1, out2v)
+            refine5 = F.interpolate(fback, size=out5v.size()[2:], mode='bilinear')
+            refine4 = F.interpolate(fback, size=out4h.size()[2:], mode='bilinear')
+            refine3 = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
+            refine2 = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
+            out5v = out5v + refine5
+
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
+            out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
+            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2)
         else:
-            out3f, out3v = self.cfm45(out3f, out4f)
-            out2f, out2v = self.cfm34(out2f, out3v)
-            out1f, pred = self.cfm23(out1f, out2v)
-        return out1f, out2f, out3f, out4f, pred
+            out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
+            out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
+            out3h, out3v, out3b = self.cfm34(out3h, out4v, out3f + out4b)
+            out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
+            out2h, pred, out2b = self.cfm23(out2h, out3v, out2f + out3b)
+        return out2h, out3h, out4h, out5v, out2b, out3b, out4b, pred
 
     def initialize(self):
         weight_init(self)
@@ -587,8 +592,8 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow()
-        self.decoder2 = Decoder_flow()
+        self.decoder1 = Decoder_flow3()
+        self.decoder2 = Decoder_flow3()
         self.decoder3 = Decoder_flow()
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
