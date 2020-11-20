@@ -270,6 +270,9 @@ class SFM(nn.Module):
 
         return out4l, out4h, out4f
 
+    def initialize(self):
+        weight_init(self)
+
 class SFM2(nn.Module):
     def __init__(self):
         super(SFM2, self).__init__()
