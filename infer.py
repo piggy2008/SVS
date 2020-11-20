@@ -24,12 +24,12 @@ torch.cuda.set_device(0)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-19 07:34:01'
+exp_name = 'VideoSaliency_2020-11-20 02:12:32'
 
 
 args = {
     'gnn': True,
-    'snapshot': '20000',  # your snapshot filename (exclude extension name)
+    'snapshot': '15000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
