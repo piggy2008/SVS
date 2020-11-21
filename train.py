@@ -23,7 +23,7 @@ import random
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 1
 
 
 torch.manual_seed(2019)
@@ -42,7 +42,7 @@ args = {
     'KL': False,
     'structure': True,
     'iter_num': 80000,
-    'iter_save': 5000,
+    'iter_save': 2000,
     'iter_start_seq': 0,
     'train_batch_size': 12,
     'last_iter': 0,
