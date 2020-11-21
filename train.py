@@ -20,13 +20,19 @@ import time
 from utils.utils_mine import load_part_of_model, load_part_of_model2
 # from module.morphology import Erosion2d
 import random
+import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 1
+device_id = 0
 
+torch.manual_seed(2020)
+torch.cuda.manual_seed(2020)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
-torch.manual_seed(2019)
+random.seed(2020)
+np.random.seed(2020)
 # torch.cuda.set_device(device_id)
 
 
@@ -44,7 +50,7 @@ args = {
     'iter_num': 80000,
     'iter_save': 2000,
     'iter_start_seq': 0,
-    'train_batch_size': 15,
+    'train_batch_size': 12,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
