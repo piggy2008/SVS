@@ -45,12 +45,12 @@ args = {
     'se_layer': False,
     'dilation': False,
     'L2': False,
-    'KL': False,
+    'KL': True,
     'structure': True,
     'iter_num': 80000,
-    'iter_save': 2000,
+    'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 12,
+    'train_batch_size': 2,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -238,7 +238,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out3f_flow = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out2f_k, out3f_k, out4f_k, pred3_k, out3f_flow = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -251,7 +251,12 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss7 = criterion_str(out3f, labels)
     loss8 = criterion_str(out4f, labels)
 
+    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # print(loss6_k, '---', loss7_k)
     loss9 = criterion_str(out3f_flow, labels)
+
 
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
@@ -267,8 +272,8 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
-    # distill_loss = loss2_d / 2 + loss3_d / 4 + loss4_d / 8 + loss5_d / 16 + loss7_d / 2 + loss8_d / 4 + loss9_d / 8
-    # total_loss = total_loss + distill_loss
+    distill_loss = loss6_k + loss7_k + loss8_k
+    total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()
     optimizer.step()
 

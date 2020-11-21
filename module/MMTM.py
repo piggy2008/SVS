@@ -84,7 +84,13 @@ class SETriplet(nn.Module):
             nn.Linear(dim_out, dim_a),
             nn.Sigmoid()
         )
-        self.fc_anthoer = nn.Sequential(
+        self.fc_two = nn.Sequential(
+            nn.Linear(dim, dim_out),
+            nn.ReLU(inplace=True),
+            nn.Linear(dim_out, dim_b),
+            nn.Sigmoid()
+        )
+        self.fc_three = nn.Sequential(
             nn.Linear(dim, dim_out),
             nn.ReLU(inplace=True),
             nn.Linear(dim_out, dim_b),
@@ -105,10 +111,11 @@ class SETriplet(nn.Module):
         combined = torch.cat([a, b, c], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, channel * 3)
         excitation1 = self.fc_one(combined_fc).view(batch, channel, 1, 1)
-        excitation2 = self.fc_anthoer(combined_fc).view(batch, channel, 1, 1)
+        excitation2 = self.fc_two(combined_fc).view(batch, channel, 1, 1)
+        excitation3 = self.fc_three(combined_fc).view(batch, channel, 1, 1)
 
-        weighted_feat_a = a + excitation1 * b + excitation2 * c
-        weighted_feat_b = b + excitation1 * a + excitation2 * c
+        weighted_feat_a = a + excitation2 * b + excitation3 * c
+        weighted_feat_b = b + excitation1 * a + excitation3 * c
         weighted_feat_c = c + excitation1 * a + excitation2 * b
 
         feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)

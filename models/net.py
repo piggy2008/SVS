@@ -653,11 +653,11 @@ class SNet(nn.Module):
         out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
         # out1f = F.interpolate(self.linearr2(out1f), size=shape, mode='bilinear')
-        out2f = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
-        out3f = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
-        out4f = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
+        out2ff = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
+        out3ff = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
+        out4ff = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2f, out3f, out4f, pred3a
+        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2ff, out3ff, out4ff, out2f, out3f, out4f, pred3, pred3a
 
     def initialize(self):
         # if self.cfg.snapshot:
