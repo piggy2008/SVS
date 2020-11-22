@@ -318,11 +318,11 @@ class SFM2(nn.Module):
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
         out2h_r, out2l_r, out2f_r, fuse = self.se_triplet(out2h, out2l, out2f)
-        out3h = self.conv3h(fuse) + out1h
+        out3h = self.conv3h(out2h_r) + out1h
         out4h = self.conv4h(out3h)
-        out3l = self.conv3l(fuse) + out1l
+        out3l = self.conv3l(out2l_r) + out1l
         out4l = self.conv4l(out3l)
-        out3f = self.conv3f(fuse) + out1f
+        out3f = self.conv3f(out2f_r) + out1f
         out4f = self.conv4f(out3f)
 
         return out4l, out4h, out4f
