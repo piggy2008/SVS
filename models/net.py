@@ -317,12 +317,12 @@ class SFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
-        fuse = self.se_triplet(out2h, out2l, out2f)
-        out3h = self.conv3h(fuse) + out1h
+        out2h_r, out2l_r, out2f_r, fuse = self.se_triplet(out2h, out2l, out2f)
+        out3h = self.conv3h(out2h_r) + out1h
         out4h = self.conv4h(out3h)
-        out3l = self.conv3l(fuse) + out1l
+        out3l = self.conv3l(out2l_r) + out1l
         out4l = self.conv4l(out3l)
-        out3f = self.conv3f(fuse) + out1f
+        out3f = self.conv3f(out2f_r) + out1f
         out4f = self.conv4f(out3f)
 
         return out4l, out4h, out4f
@@ -647,17 +647,18 @@ class SNet(nn.Module):
         # plt.imshow(tmp2[0, 0])
         # plt.show()
 
-        out2h = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
-        out3h = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
-        out4h = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
-        out5h = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
+        out2h_p = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
+        out3h_p = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
+        out4h_p = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
+        out5h_p = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
 
         # out1f = F.interpolate(self.linearr2(out1f), size=shape, mode='bilinear')
-        out2ff = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
-        out3ff = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
-        out4ff = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
+        out2f_p = F.interpolate(self.linearf2(out2f), size=shape, mode='bilinear')
+        out3f_p = F.interpolate(self.linearf3(out3f), size=shape, mode='bilinear')
+        out4f_p = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
-        return pred1a, pred2a, out2h, out3h, out4h, out5h, out2ff, out3ff, out4ff, out2f, out3f, out4f, pred3, pred3a
+        return pred1a, pred2a, out2h_p, out3h_p, out4h_p, out5h_p, out2h, out3h, out4h, out5v,\
+               out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3, pred3a
 
     def initialize(self):
         # if self.cfg.snapshot:

@@ -128,7 +128,10 @@ class SETriplet(nn.Module):
         attention_vector_a, attention_vector_b, attention_vector_c = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :], attention_vector[:, 2:3, :, :]
 
         merge_feature = a * attention_vector_a + b * attention_vector_b + c * attention_vector_c
-        return merge_feature
+        out_a = torch.relu((a + merge_feature) / 2)
+        out_b = torch.relu((b + merge_feature) / 2)
+        out_c = torch.relu((c + merge_feature) / 2)
+        return out_a, out_b, out_c, merge_feature
 
 if __name__ == '__main__':
         input = torch.zeros([2, 64, 24, 24])
