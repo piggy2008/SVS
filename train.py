@@ -238,7 +238,8 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # plt.show()
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out2f, out3f, out4f, out2f_k, out3f_k, out4f_k, pred3_k, out3f_flow = net(inputs, flows)
+    out1u, out2u, out2r, out3r, out4r, out5r, out2r_k, out3r_k, out4r_k, out5r_k, out2f, out3f, out4f, \
+    out2f_k, out3f_k, out4f_k, pred3_k, out3f_flow = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -246,6 +247,11 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss3 = criterion_str(out3r, labels)
     loss4 = criterion_str(out4r, labels)
     loss5 = criterion_str(out5r, labels)
+
+    loss2_k = criterion_kl(F.adaptive_avg_pool2d(out2r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss3_k = criterion_kl(F.adaptive_avg_pool2d(out3r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss4_k = criterion_kl(F.adaptive_avg_pool2d(out4r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss5_k = criterion_kl(F.adaptive_avg_pool2d(out5r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
 
     loss6 = criterion_str(out2f, labels)
     loss7 = criterion_str(out3f, labels)
@@ -272,7 +278,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
-    distill_loss = loss6_k + loss7_k + loss8_k
+    distill_loss = loss6_k + loss7_k + loss8_k + loss2_k + loss3_k + loss4_k + loss5_k
     total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()
     optimizer.step()
