@@ -29,7 +29,7 @@ exp_name = 'VideoSaliency_2020-11-21 14:21:23'
 
 args = {
     'gnn': True,
-    'snapshot': '16000',  # your snapshot filename (exclude extension name)
+    'snapshot': '20000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -140,7 +140,7 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
 
                     end = time.time()
