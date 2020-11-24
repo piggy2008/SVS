@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM, SETriplet
+from module.MMTM import MMTM, SETriplet, SETriplet2
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 
@@ -303,7 +303,7 @@ class SFM2(nn.Module):
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
 
-        self.se_triplet = SETriplet(64, 64, 64, 64)
+        self.se_triplet = SETriplet2(64, 64, 64, 64)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:

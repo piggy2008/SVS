@@ -2,6 +2,14 @@ import torch
 import torch.nn as nn
 import numpy as np
 from matplotlib import pyplot as plt
+from module.GCN import GCN
+
+coarse_adj_list = [
+            # 1  2  3
+            [0.333, 0.333, 0.333],  # 1
+            [0.333, 0.333, 0.333],  # 2
+            [0.333, 0.333, 0.333],  # 3
+        ]
 
 def weight_init(module):
     for n, m in module.named_children():
@@ -27,6 +35,8 @@ def weight_init(module):
         elif isinstance(m, nn.Softmax):
             pass
         elif isinstance(m, nn.AdaptiveAvgPool2d):
+            pass
+        elif isinstance(m, GCN):
             pass
         else:
             m.initialize()
@@ -133,8 +143,69 @@ class SETriplet(nn.Module):
         out_c = torch.relu((c + merge_feature) / 2)
         return out_a, out_b, out_c, merge_feature
 
+class SETriplet2(nn.Module):
+    def __init__(self, dim_a, dim_b, dim_c, dim_out):
+        super(SETriplet2, self).__init__()
+        dim = dim_a + dim_b + dim_c
+
+        self.gcn = GCN(3, 64, 64)
+        self.adj = torch.from_numpy(np.array(coarse_adj_list)).float()
+
+        self.fc_one = nn.Sequential(
+            nn.Linear(dim, dim_a),
+            nn.Sigmoid()
+        )
+        self.fc_two = nn.Sequential(
+            nn.Linear(dim, dim_b),
+            nn.Sigmoid()
+        )
+        self.fc_three = nn.Sequential(
+            nn.Linear(dim, dim_c),
+            nn.Sigmoid()
+        )
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.softmax = nn.Softmax(dim=1)
+
+        self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, a, b, c):
+        batch, channel, _, _ = a.size()
+        combined = torch.cat([a, b, c], dim=1)
+        combined_fc = self.avg_pool(combined).view(batch, 3, channel)
+        batch_adj = self.adj.repeat(batch, 1, 1)
+        batch_adj = batch_adj.cuda()
+        feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
+
+        excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
+        excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
+        excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
+
+        weighted_feat_a = a + excitation2 * b + excitation3 * c
+        weighted_feat_b = b + excitation1 * a + excitation3 * c
+        weighted_feat_c = c + excitation1 * a + excitation2 * b
+
+        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
+        atten_a = self.gate_a(feat_cat)
+        atten_b = self.gate_b(feat_cat)
+        atten_c = self.gate_c(feat_cat)
+
+        attention_vector = torch.cat([atten_a, atten_b, atten_c], dim=1)
+        attention_vector = self.softmax(attention_vector)
+        attention_vector_a, attention_vector_b, attention_vector_c = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :], attention_vector[:, 2:3, :, :]
+
+        merge_feature = a * attention_vector_a + b * attention_vector_b + c * attention_vector_c
+        out_a = torch.relu((a + merge_feature) / 2)
+        out_b = torch.relu((b + merge_feature) / 2)
+        out_c = torch.relu((c + merge_feature) / 2)
+        return out_a, out_b, out_c, merge_feature
+
 if __name__ == '__main__':
         input = torch.zeros([2, 64, 24, 24])
-        net = SETriplet(64, 64, 64, 64)
+        net = SETriplet2(64, 64, 64, 64)
         output = net(input, input, input)
 
