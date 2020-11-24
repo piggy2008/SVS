@@ -52,7 +52,7 @@ args = {
     'iter_num': 80000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 8,
+    'train_batch_size': 6,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -300,7 +300,6 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
     distill_loss = loss6_k + loss7_k + loss8_k
     if args['distillation']:
-        print('aaa')
         total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
     else:
         total_loss = total_loss + 0.1 * distill_loss
