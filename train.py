@@ -15,9 +15,10 @@ from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_p
 from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
+from MGA.mga_model import MGA_Network
 from torch.backends import cudnn
 import time
-from utils.utils_mine import load_part_of_model, load_part_of_model2
+from utils.utils_mine import load_part_of_model, load_part_of_model2, load_MGA
 # from module.morphology import Erosion2d
 import random
 import numpy as np
@@ -42,6 +43,7 @@ exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
     'gnn': True,
+    'distillation': True,
     'se_layer': False,
     'dilation': False,
     'L2': False,
@@ -50,7 +52,7 @@ args = {
     'iter_num': 80000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 14,
+    'train_batch_size': 8,
     'last_iter': 0,
     'lr': 1e-2,
     'lr_decay': 0.9,
@@ -59,7 +61,7 @@ args = {
     'snapshot': '',
     # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
     'pretrain': '',
-    'mga_model_path': 'pretrained/MGA_trained.pth',
+    'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
     # 'imgs_file': 'video_saliency/train_all_DAFB2_DAVSOD_5f.txt',
@@ -142,6 +144,13 @@ def fix_parameters(parameters):
             parameter.requires_grad = False
 
 def main():
+    teacher = None
+    if args['distillation']:
+        teacher = MGA_Network(nInputChannels=3, n_classes=1, os=16,
+                              img_backbone_type='resnet101', flow_backbone_type='resnet34')
+        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id)
+        teacher.eval()
+        teacher.cuda(device_id)
 
     net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
@@ -186,10 +195,10 @@ def main():
     check_mkdir(ckpt_path)
     check_mkdir(os.path.join(ckpt_path, exp_name))
     open(log_path, 'w').write(str(args) + '\n\n')
-    train(net, optimizer)
+    train(net, optimizer, teacher)
 
 
-def train(net, optimizer):
+def train(net, optimizer, teacher=None):
     curr_iter = args['last_iter']
     while True:
 
@@ -209,7 +218,7 @@ def train(net, optimizer):
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
             inputs, flows, labels = data
-            train_single(net, inputs, flows, labels, optimizer, curr_iter)
+            train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             curr_iter += 1
 
             if curr_iter % args['iter_save'] == 0:
@@ -224,10 +233,13 @@ def train(net, optimizer):
                            os.path.join(ckpt_path, exp_name, '%d_optim.pth' % curr_iter))
                 return
 
-def train_single(net, inputs, flows, labels, optimizer, curr_iter):
+def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     inputs = Variable(inputs).cuda(device_id)
     flows = Variable(flows).cuda(device_id)
     labels = Variable(labels).cuda(device_id)
+
+
+
 
     # prediction = torch.nn.Sigmoid()(prediction)
     # prediction = prediction.data.cpu().numpy()
@@ -248,10 +260,10 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     loss4 = criterion_str(out4r, labels)
     loss5 = criterion_str(out5r, labels)
 
-    loss2_k = criterion_kl(F.adaptive_avg_pool2d(out2r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss3_k = criterion_kl(F.adaptive_avg_pool2d(out3r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss4_k = criterion_kl(F.adaptive_avg_pool2d(out4r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss5_k = criterion_kl(F.adaptive_avg_pool2d(out5r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss2_k = criterion_kl(F.adaptive_avg_pool2d(out2r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss3_k = criterion_kl(F.adaptive_avg_pool2d(out3r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss4_k = criterion_kl(F.adaptive_avg_pool2d(out4r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss5_k = criterion_kl(F.adaptive_avg_pool2d(out5r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
 
     loss6 = criterion_str(out2f, labels)
     loss7 = criterion_str(out3f, labels)
@@ -263,7 +275,15 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
     # print(loss6_k, '---', loss7_k)
     loss9 = criterion_str(out3f_flow, labels)
 
-
+    if args['distillation']:
+        prediction, _, _, _, _ = teacher(inputs, flows)
+        loss0_t = criterion_str(out1u, F.sigmoid(prediction))
+        loss1_t = criterion_str(out2u, F.sigmoid(prediction))
+        loss2_t = criterion_str(out2r, F.sigmoid(prediction))
+        loss3_t = criterion_str(out3r, F.sigmoid(prediction))
+        loss4_t = criterion_str(out4r, F.sigmoid(prediction))
+        loss5_t = criterion_str(out5r, F.sigmoid(prediction))
+        distill_loss_t = (loss0_t + loss1_t) / 2 + loss2_t / 2 + loss3_t / 4 + loss4_t / 8 + loss5_t / 16
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
     # loss4_d = criterion_str(out4r, F.sigmoid(out2u))
@@ -278,8 +298,11 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter):
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
-    distill_loss = loss6_k + loss7_k + loss8_k + loss5_k + loss4_k + loss3_k + loss2_k
-    total_loss = total_loss + 0.1 * distill_loss
+    distill_loss = loss6_k + loss7_k + loss8_k
+    if args['distillation']:
+        total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
+    else:
+        total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()
     optimizer.step()
 
