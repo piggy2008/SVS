@@ -44,8 +44,6 @@ exp_name = 'VideoSaliency' + '_' + time_str
 args = {
     'gnn': True,
     'distillation': True,
-    'se_layer': False,
-    'dilation': False,
     'L2': False,
     'KL': True,
     'structure': True,
@@ -238,9 +236,6 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     flows = Variable(flows).cuda(device_id)
     labels = Variable(labels).cuda(device_id)
 
-
-
-
     # prediction = torch.nn.Sigmoid()(prediction)
     # prediction = prediction.data.cpu().numpy()
     # prediction = F.upsample(prediction, size=(), mode='bilinear', align_corners=True)
@@ -300,7 +295,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
     distill_loss = loss6_k + loss7_k + loss8_k
     if args['distillation']:
-        total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
+        total_loss = total_loss + 0.1 * distill_loss + 0.9 * distill_loss_t
     else:
         total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()
