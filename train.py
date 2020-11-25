@@ -44,8 +44,6 @@ exp_name = 'VideoSaliency' + '_' + time_str
 args = {
     'gnn': True,
     'distillation': True,
-    'se_layer': False,
-    'dilation': False,
     'L2': False,
     'KL': True,
     'structure': True,
