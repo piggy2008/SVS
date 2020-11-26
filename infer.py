@@ -61,14 +61,15 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(visal_path, 'GT')
 # imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
-# to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
-# gt_root = os.path.join(vos_path, 'GT')
-# imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
+to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
+gt_root = os.path.join(vos_path, 'GT')
+flow_root = os.path.join(vos_path, 'flow')
+imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
@@ -105,7 +106,8 @@ def main():
                 print(img_name)
                 if video != img_name.split('/')[0]:
                     video = img_name.split('/')[0]
-                    continue
+                    if name != 'VOS':
+                        continue
                     if name == 'VOS' or name == 'DAVSOD':
                         img = Image.open(os.path.join(root, img_name + '.png')).convert('RGB')
                     else:
@@ -118,8 +120,8 @@ def main():
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _ = net(img_var, flow_var)
-                    prediction = torch.sigmoid(prediction)
+                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
+                    prediction = torch.sigmoid(prediction3)
 
                     end = time.time()
                     pre_predict = prediction
