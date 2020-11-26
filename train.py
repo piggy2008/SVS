@@ -55,7 +55,7 @@ args = {
     'lr': 1e-2,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
-    'momentum': 0.925,
+    'momentum': 0.95,
     'snapshot': '',
     # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
     'pretrain': '',
@@ -295,7 +295,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
                  + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
     distill_loss = loss6_k + loss7_k + loss8_k
     if args['distillation']:
-        total_loss = total_loss + 0.1 * distill_loss + 0.9 * distill_loss_t
+        total_loss = total_loss + 0.3 * distill_loss + 0.9 * distill_loss_t
     else:
         total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()

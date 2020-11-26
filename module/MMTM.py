@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 from matplotlib import pyplot as plt
 from module.GCN import GCN
+import math
 
 coarse_adj_list = [
             # 1  2  3
@@ -23,7 +24,9 @@ def weight_init(module):
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
         elif isinstance(m, nn.Linear):
-            nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
+            stdv = 1. / math.sqrt(m.weight.size(1))
+            m.weight.data.uniform_(-stdv, stdv)
+            # nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
             if m.bias is not None:
                 nn.init.zeros_(m.bias)
         elif isinstance(m, nn.Sequential):
