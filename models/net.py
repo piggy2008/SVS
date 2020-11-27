@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM, SETriplet, SETriplet2
+from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 
@@ -88,6 +88,65 @@ class ResNet(nn.Module):
 
     def initialize(self):
         self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
+
+class GFM2(nn.Module):
+    def __init__(self, GNN=False):
+        super(GFM2, self).__init__()
+        self.conv1h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4h = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+
+        self.conv1l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4l = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+
+        self.conv1f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv2f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv3f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                    nn.ReLU(inplace=True))
+        self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        self.GNN = GNN
+    def forward(self, low, high, flow, feedback):
+        if high.size()[2:] != low.size()[2:]:
+            high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
+        if flow.size()[2:] != low.size()[2:]:
+            flow = F.interpolate(flow, size=low.size()[2:], mode='bilinear')
+
+        out1h = self.conv1h(high)
+        out2h = self.conv2h(out1h)
+        out1l = self.conv1l(low)
+        out2l = self.conv2l(out1l)
+        out1f = self.conv1f(flow)
+        out2f = self.conv2f(out1f)
+        if self.GNN:
+            fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
+        else:
+            fuse = out2h * out2l * out2f
+        out3h = self.conv3h(fuse) + out1h
+        out4h = self.conv4h(out3h)
+        out3l = self.conv3l(fuse) + out1l
+        out4l = self.conv4l(out3l)
+        out3f = self.conv3f(fuse) + out1f
+        out4f = self.conv4f(out3f)
+
+        return out4l, out4h, out4f
+
+    def initialize(self):
+        weight_init(self)
 
 class GFM(nn.Module):
     def __init__(self, GNN=False):
