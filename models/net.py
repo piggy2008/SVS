@@ -87,7 +87,7 @@ class ResNet(nn.Module):
         return out2, out3, out4, out5
 
     def initialize(self):
-        self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
+        self.load_state_dict(torch.load('../pre-trained/resnet50-19c8e357.pth'), strict=False)
 
 class GFM2(nn.Module):
     def __init__(self, GNN=False):
@@ -120,7 +120,7 @@ class GFM2(nn.Module):
                                     nn.ReLU(inplace=True))
         self.gcn_fuse = SEQuart(64, 64, 64, 64)
         self.GNN = GNN
-    def forward(self, low, high, flow, feedback):
+    def forward(self, low, high, flow, feedback=None):
         if high.size()[2:] != low.size()[2:]:
             high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
         if flow.size()[2:] != low.size()[2:]:
@@ -553,9 +553,9 @@ class Decoder_flow(nn.Module):
 class Decoder_flow2(nn.Module):
     def __init__(self, GNN=False):
         super(Decoder_flow2, self).__init__()
-        self.cfm45  = GFM(GNN=GNN)
-        self.cfm34  = GFM(GNN=GNN)
-        self.cfm23  = SFM()
+        self.cfm45  = GFM2(GNN=GNN)
+        self.cfm34  = GFM2(GNN=GNN)
+        self.cfm23  = GFM2(GNN=GNN)
 
     def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
         if fback is not None:
@@ -565,11 +565,11 @@ class Decoder_flow2(nn.Module):
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
 
-            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4, refine4)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3, refine3)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2)
+            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2, refine2)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
@@ -654,9 +654,9 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow()
-        self.decoder2 = Decoder_flow()
-        self.decoder3 = Decoder_flow()
+        self.decoder1 = Decoder_flow2()
+        self.decoder2 = Decoder_flow2(GNN=GNN)
+        self.decoder3 = Decoder_flow2(GNN=GNN)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -798,6 +798,6 @@ class SNet2(nn.Module):
         weight_init(self)
 
 if __name__ == '__main__':
-        net = SNet(cfg=None)
+        net = SNet(cfg=None, GNN=True)
         input = torch.zeros([2, 3, 380, 380])
         output = net(input, input)
