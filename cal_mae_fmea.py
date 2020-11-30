@@ -22,7 +22,7 @@ gt_root = '/home/ty/data/davis/GT'
 # gt_root = '/home/ty/data/DAVSOD/GT'
 # gt_root = '/home/ty/data/SegTrack-V2/GT'
 args = {
-    'snapshot': '12000',  # your snapshot filename (exclude extension name)
+    'snapshot': '16000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True  # whether to save the resulting masks
 }
