@@ -83,6 +83,7 @@ class CriterionKL2(nn.Module):
 class CriterionStructure(nn.Module):
     def __init__(self):
         super(CriterionStructure, self).__init__()
+        self.gamma = 2
 
     def forward(self, pred, target):
         assert pred.size() == target.size()
@@ -91,11 +92,15 @@ class CriterionStructure(nn.Module):
         wbce = F.binary_cross_entropy_with_logits(pred, target, reduce='none')
         wbce = (weit * wbce).sum(dim=(2, 3)) / weit.sum(dim=(2, 3))
 
+        ##### focal loss #####
+        p_t = torch.exp(-wbce)
+        f_loss = (1 - p_t) ** self.gamma * wbce
+
         pred = torch.sigmoid(pred)
         inter = ((pred * target) * weit).sum(dim=(2, 3))
         union = ((pred + target) * weit).sum(dim=(2, 3))
         wiou = 1 - (inter + 1) / (union - inter + 1)
-        return (wbce + wiou).mean()
+        return (wbce + wiou + f_loss).mean()
 
 def _pointwise_loss(lambd, input, target, size_average=True, reduce=True):
     d = lambd(input, target)
@@ -255,11 +260,12 @@ def cal_fmeasure(precision, recall):
 if __name__ == '__main__':
     pixel_wise_loss = CriterionKL3()
     pair_wise_loss = CriterionPairWise(scale=0.5)
-    preds = torch.rand([2, 1, 10, 10])
+    ppa_wise_loss = CriterionStructure()
+    preds = torch.rand([2, 1, 380, 380])
     # print(torch.sum(F.softmax(preds, dim=1)))
-    targets = torch.rand([2, 1, 10, 10])
+    targets = torch.ones([2, 1, 380, 380])
     # loss = pixel_wise_loss(F.sigmoid(preds), F.sigmoid(preds))
     loss = F.kl_div(preds, preds)
     # loss2 = pair_wise_loss(preds, targets)
-    print(pixel_wise_loss(preds, targets))
+    print(ppa_wise_loss(preds, targets))
     # print(loss2)
