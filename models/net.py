@@ -654,8 +654,8 @@ class SNet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow2()
-        self.decoder2 = Decoder_flow2()
+        self.decoder1 = Decoder_flow()
+        self.decoder2 = Decoder_flow()
         self.decoder3 = Decoder_flow2(GNN=GNN)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
