@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from PIL import Image
-from misc import check_mkdir, crf_refine, AvgMeter, cal_precision_recall_mae, cal_fmeasure
+from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 
 ckpt_path = './ckpt'
 exp_name = 'VideoSaliency_2020-11-28 11:12:53'
@@ -46,8 +46,8 @@ for folder in folders:
             image = Image.open(os.path.join(root, folder, img[:-4] + '.jpg')).convert('RGB')
         gt = np.array(Image.open(os.path.join(gt_root, folder, img)).convert('L'))
         pred = np.array(Image.open(os.path.join(save_path, folder, img)).convert('L'))
-        if args['crf_refine']:
-            pred = crf_refine(np.array(image), pred)
+        # if args['crf_refine']:
+        #     pred = crf_refine(np.array(image), pred)
         precision, recall, mae = cal_precision_recall_mae(pred, gt)
 
         for pidx, pdata in enumerate(zip(precision, recall)):
