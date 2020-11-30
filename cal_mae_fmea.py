@@ -5,24 +5,24 @@ from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 
 ckpt_path = './ckpt'
 exp_name = 'VideoSaliency_2020-11-28 11:12:53'
-name = 'davis'
+name = 'DAVSOD'
 # root = '/home/qub/data/saliency/FBMS/FBMS_Testset2'
-root = '/home/ty/data/davis/davis_test2'
+# root = '/home/ty/data/davis/davis_test2'
 # root = '/home/ty/data/VOS/VOS_test'
 # root = '/home/ty/data/SegTrack-V2/SegTrackV2_test'
 # root = '/home/ty/data/ViSal/ViSal_test'
 # root = '/home/ty/data/MCL/MCL_test'
-# root = '/home/ty/data/DAVSOD/DAVSOD_test'
+root = '/home/ty/data/DAVSOD/DAVSOD_test'
 
-gt_root = '/home/ty/data/davis/GT'
+# gt_root = '/home/ty/data/davis/GT'
 # gt_root = '/home/ty/data/VOS/GT'
 # gt_root = '/home/qub/data/saliency/FBMS/GT'
 # gt_root = '/home/ty/data/MCL/GT'
 # gt_root = '/home/ty/data/ViSal/GT'
-# gt_root = '/home/ty/data/DAVSOD/GT'
+gt_root = '/home/ty/data/DAVSOD/GT'
 # gt_root = '/home/ty/data/SegTrack-V2/GT'
 args = {
-    'snapshot': '52000',  # your snapshot filename (exclude extension name)
+    'snapshot': '20000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True  # whether to save the resulting masks
 }
@@ -69,3 +69,7 @@ print (results)
 
 # VideoSaliency_2020-11-21 14:21:23 24000
 # {'davis': {'fmeasure': 0.9031097105476225, 'mae': 0.018686559761604743}}
+
+# VideoSaliency_2020-11-28 11:12:53 52000
+# {'davis': {'fmeasure': 0.9050141312527005, 'mae': 0.01820731872467543}}
+
