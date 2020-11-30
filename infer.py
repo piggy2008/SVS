@@ -18,19 +18,19 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 0
+device_id = 1
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-11-28 11:12:53'
+exp_name = 'VideoSaliency_2020-11-30 16:32:23'
 
 
 args = {
     'gnn': True,
-    'snapshot': '16000',  # your snapshot filename (exclude extension name)
+    'snapshot': '8000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -44,10 +44,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-# gt_root = os.path.join(davis_path, 'GT')
-# flow_root = os.path.join(davis_path, 'flow')
-# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+gt_root = os.path.join(davis_path, 'GT')
+flow_root = os.path.join(davis_path, 'flow')
+imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
@@ -61,10 +61,10 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(visal_path, 'GT')
 # imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
-to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
-gt_root = os.path.join(vos_path, 'GT')
-flow_root = os.path.join(vos_path, 'flow')
-imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
+# to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
+# gt_root = os.path.join(vos_path, 'GT')
+# flow_root = os.path.join(vos_path, 'flow')
+# imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
 # to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
 # gt_root = os.path.join(davsod_path, 'GT')
