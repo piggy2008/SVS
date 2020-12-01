@@ -254,9 +254,9 @@ class SEQuart(nn.Module):
         batch, channel, _, _ = low.size()
         combined = torch.cat([low, high, flow, feedback], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 4, channel)
-        batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda()
-        feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
+        # batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda()
+        feat_mean, feat_cat = self.gcn(combined_fc)
 
         excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
         excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
