@@ -565,11 +565,11 @@ class Decoder_flow2(nn.Module):
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
 
-            out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f, refine4)
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4, refine4)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
-            out3h, out3v, out3b = self.cfm34(out3h, out4f, out3f + out4b, refine3)
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3, refine3)
             out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
-            out2h, pred, out2b = self.cfm23(out2h, out3v, out2f + out3b, refine2)
+            out2h, pred, out2b = self.cfm23(out2h + refine2, out3v, out2f + out3b + refine2, refine2)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
             out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
