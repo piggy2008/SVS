@@ -14,9 +14,9 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 
 if __name__ == "__main__":
     dataset_names = ['DAVSOD']
-    snapshot = '20000'
+    snapshot = '12000'
     ckpt_path = './ckpt'
-    exp_name = 'VideoSaliency_2020-10-31 17:25:22'
+    exp_name = 'VideoSaliency_2020-11-30 16:32:23'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT')}
