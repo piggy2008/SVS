@@ -41,9 +41,9 @@ class GraphConvolution(nn.Module):
             self.bias.data.uniform_(-stdv, stdv)
         self.adj.data.fill_(1)
 
-    def forward(self, input):
+    def forward(self, input, adj):
         support = torch.matmul(input, self.weight)
-        adj = torch.softmax(self.adj, dim=1)
+        adj = torch.sigmoid(self.adj)
         adj = adj.repeat(input.size(0), 1, 1)
         output_ = torch.bmm(adj, support)
         if self.bias is not None:
@@ -70,11 +70,11 @@ class GCN(nn.Module):
         self.gc1 = GraphConvolution(nfeat, nhid, adj_size)
         self.gc2 = GraphConvolution(nhid, nhid, adj_size)
 
-    def forward(self, x):
+    def forward(self, x, adj):
         x_ = F.dropout(x, 0.5, training=self.training)
-        x_ = F.relu(self.gc1(x_))
+        x_ = F.relu(self.gc1(x_, adj))
         x_ = F.dropout(x_, 0.5, training=self.training)
-        x_ = F.relu(self.gc2(x_))
+        x_ = F.relu(self.gc2(x_, adj))
 
         x_mean = torch.mean(x_, 1)  # aggregate features of nodes by mean pooling
         x_cat = x_.view(x.size()[0], -1)  # aggregate features of nodes by concatenation
