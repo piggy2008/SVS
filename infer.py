@@ -25,11 +25,11 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-12-02 15:06:16'
+exp_name = 'VideoSaliency_2020-12-03 15:35:38'
 
 args = {
     'gnn': True,
-    'snapshot': '48000',  # your snapshot filename (exclude extension name)
+    'snapshot': '12000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -44,10 +44,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-# gt_root = os.path.join(davis_path, 'GT')
-# flow_root = os.path.join(davis_path, 'flow')
-# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+gt_root = os.path.join(davis_path, 'GT')
+flow_root = os.path.join(davis_path, 'flow')
+imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
@@ -61,10 +61,10 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(visal_path, 'GT')
 # imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
-to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
-gt_root = os.path.join(vos_path, 'GT')
-flow_root = os.path.join(vos_path, 'flow')
-imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
+# to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
+# gt_root = os.path.join(vos_path, 'GT')
+# flow_root = os.path.join(vos_path, 'flow')
+# imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
 # to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
 # gt_root = os.path.join(davsod_path, 'GT')
