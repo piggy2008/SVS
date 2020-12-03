@@ -4,28 +4,30 @@ from PIL import Image
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 
 ckpt_path = './ckpt'
-exp_name = 'VideoSaliency_2020-12-01 10:59:29'
-name = 'DAVSOD'
+exp_name = 'VideoSaliency_2020-12-02 15:06:16'
+name = 'davis'
 # root = '/home/qub/data/saliency/FBMS/FBMS_Testset2'
-# root = '/data/ty/davis/davis_test2'
+root = '/data/ty/davis/davis_test2'
 # root = '/home/ty/data/VOS/VOS_test'
 # root = '/home/ty/data/SegTrack-V2/SegTrackV2_test'
 # root = '/home/ty/data/ViSal/ViSal_test'
 # root = '/home/ty/data/MCL/MCL_test'
-root = '/home/ty/data/DAVSOD/DAVSOD_test'
+# root = '/home/ty/data/DAVSOD/DAVSOD_test'
 
-# gt_root = '/data/ty/davis/GT'
+gt_root = '/data/ty/davis/GT'
 # gt_root = '/home/ty/data/VOS/GT'
 # gt_root = '/home/qub/data/saliency/FBMS/GT'
 # gt_root = '/home/ty/data/MCL/GT'
 # gt_root = '/home/ty/data/ViSal/GT'
-gt_root = '/home/ty/data/DAVSOD/GT'
+# gt_root = '/home/ty/data/DAVSOD/GT'
 # gt_root = '/home/ty/data/SegTrack-V2/GT'
 args = {
-    'snapshot': '24000',  # your snapshot filename (exclude extension name)
+    'snapshot': '48000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True  # whether to save the resulting masks
 }
+log_path = os.path.join('result_all.txt')
+open(log_path, 'a').write(exp_name + ' ' + args['snapshot'] + '\n')
 
 precision_record, recall_record, = [AvgMeter() for _ in range(256)], [AvgMeter() for _ in range(256)]
 mae_record = AvgMeter()
@@ -64,7 +66,7 @@ results[name] = {'fmeasure': fmeasure, 'mae': mae_record.avg}
 
 print ('test results:')
 print (results)
-
+open(log_path, 'a').write(str(results) + '\n\n')
 # VideoSaliency_2020-11-02 03:43:38 20000
 # {'davis': {'fmeasure': 0.8996040940700104, 'mae': 0.01981267903497454}}
 
