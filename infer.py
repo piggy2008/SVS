@@ -200,7 +200,7 @@ def main():
 
     print ('test results:')
     print (results)
-    open(log_path, 'a').write(str(results) + '\n')
+    open(log_path, 'a').write(str(results) + '\n\n')
 
 
 
