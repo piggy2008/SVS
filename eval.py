@@ -14,15 +14,16 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 
 if __name__ == "__main__":
     dataset_names = ['DAVSOD']
-    snapshot = '12000'
+    snapshot = '48000'
     ckpt_path = './ckpt'
-    exp_name = 'VideoSaliency_2020-11-30 16:32:23'
-    gt_root = {'davis': os.path.join(davis_path, 'GT'),
+    exp_name = 'VideoSaliency_2020-12-02 15:06:16'
+    gt_root = {'DAVIS': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT')}
     threads = []
     for dataset in dataset_names:
         save_path = os.path.join(ckpt_path, exp_name, '(%s) %s_%s' % (exp_name, dataset, snapshot))
+        # save_path = 'TENet/DAVIS'
         loader = EvalDataset(osp.join(save_path), osp.join(gt_root[dataset]))
         thread = Eval_thread(loader, 'ours', dataset, './', True)
         threads.append(thread)
