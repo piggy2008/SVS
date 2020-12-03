@@ -29,7 +29,7 @@ exp_name = 'VideoSaliency_2020-12-02 15:06:16'
 
 args = {
     'gnn': True,
-    'snapshot': '60000',  # your snapshot filename (exclude extension name)
+    'snapshot': '64000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -200,7 +200,7 @@ def main():
 
     print ('test results:')
     print (results)
-    open(log_path, 'a').write(results + '\n')
+    open(log_path, 'a').write(str(results) + '\n')
 
 
 
