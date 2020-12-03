@@ -22,12 +22,10 @@ gt_root = '/home/ty/data/davis/GT'
 # gt_root = '/home/ty/data/DAVSOD/GT'
 # gt_root = '/home/ty/data/SegTrack-V2/GT'
 args = {
-    'snapshot': '48000',  # your snapshot filename (exclude extension name)
+    'snapshot': '44000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True  # whether to save the resulting masks
 }
-log_path = os.path.join('result_all.txt')
-open(log_path, 'a').write(exp_name + ' ' + args['snapshot'] + '\n')
 
 precision_record, recall_record, = [AvgMeter() for _ in range(256)], [AvgMeter() for _ in range(256)]
 mae_record = AvgMeter()
@@ -66,6 +64,8 @@ results[name] = {'fmeasure': fmeasure, 'mae': mae_record.avg}
 
 print ('test results:')
 print (results)
+log_path = os.path.join('result_all.txt')
+open(log_path, 'a').write(exp_name + ' ' + args['snapshot'] + '\n')
 open(log_path, 'a').write(str(results) + '\n\n')
 # VideoSaliency_2020-11-02 03:43:38 20000
 # {'davis': {'fmeasure': 0.8996040940700104, 'mae': 0.01981267903497454}}
