@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 2
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
@@ -29,7 +29,7 @@ exp_name = 'VideoSaliency_2020-12-03 15:35:38'
 
 args = {
     'gnn': True,
-    'snapshot': '36000',  # your snapshot filename (exclude extension name)
+    'snapshot': '48000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
