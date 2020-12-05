@@ -10,6 +10,7 @@ from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path
     davis_path, fbms_path, mcl_path, uvsd_path, visal_path, vos_path, segtrack_path, davsod_path
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 from models.net import SNet
+from models.net_i import INet
 from utils.utils_mine import load_part_of_model2, MaxMinNormalization
 import time
 from matplotlib import pyplot as plt
@@ -25,11 +26,11 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-12-04 11:14:16'
+exp_name = 'VideoSaliency_2020-12-05 12:51:42'
 
 args = {
     'gnn': True,
-    'snapshot': '48000',  # your snapshot filename (exclude extension name)
+    'snapshot': '8000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
