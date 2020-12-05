@@ -15,6 +15,7 @@ from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_p
 from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder, ImageFlow3Folder
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
+from models.net_i import INet
 from MGA.mga_model import MGA_Network
 from torch.backends import cudnn
 import time
@@ -154,7 +155,7 @@ def main():
         teacher.eval()
         teacher.cuda(device_id)
 
-    net = SNet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
