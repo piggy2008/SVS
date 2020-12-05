@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 import joint_transforms
 from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path
-from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder
+from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder, ImageFlow3Folder
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
 from MGA.mga_model import MGA_Network
@@ -62,9 +62,10 @@ args = {
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
+    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_DAFB2.txt',
     # 'imgs_file': 'video_saliency/train_all_DAFB2_DAVSOD_5f.txt',
     # 'train_loader': 'video_image'
-    'train_loader': 'flow_image',
+    'train_loader': 'flow_image3',
     # 'train_loader': 'video_sequence'
     'image_size': 430,
     'crop_size': 380
@@ -111,6 +112,9 @@ elif args['train_loader'] == 'flow_image':
 elif args['train_loader'] == 'flow_image2':
     train_set = ImageFlow2Folder(video_train_path, imgs_file, video_seq_path + '/DAFB2', video_seq_gt_path + '/DAFB2',
                                  joint_transform, (args['crop_size'], args['crop_size']), img_transform, target_transform)
+elif args['train_loader'] == 'flow_image3':
+    imgs_file2 = os.path.join(datasets_root, args['imgs_file2'])
+    train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2, joint_transform, img_transform, target_transform)
 else:
     train_set = VideoImage2Folder(video_train_path, imgs_file, video_seq_path + '/DAFB2', video_seq_gt_path + '/DAFB2',
                                   joint_transform, None, input_size, img_transform, target_transform)
@@ -215,8 +219,11 @@ def train(net, optimizer, teacher=None):
             #                                                 ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
-            inputs, flows, labels = data
-            train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
+            inputs, flows, labels, inputs2, labels2 = data
+            if curr_iter % 2 == 0:
+                train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
+            else:
+                train_single2(net, inputs2, labels2, optimizer, curr_iter)
             curr_iter += 1
 
             if curr_iter % args['iter_save'] == 0:
@@ -305,6 +312,33 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
         total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
     else:
         total_loss = total_loss + 0.1 * distill_loss
+    total_loss.backward()
+    optimizer.step()
+
+    print_log(total_loss, loss0, loss1, loss2, args['train_batch_size'], curr_iter, optimizer)
+
+    return
+
+def train_single2(net, inputs, labels, optimizer, curr_iter):
+    inputs = Variable(inputs).cuda(device_id)
+    labels = Variable(labels).cuda(device_id)
+
+    optimizer.zero_grad()
+
+    out1u, out2u, out2r, out3r, out4r, out5r = net(inputs)
+
+    loss0 = criterion_str(out1u, labels)
+    loss1 = criterion_str(out2u, labels)
+    loss2 = criterion_str(out2r, labels)
+    loss3 = criterion_str(out3r, labels)
+    loss4 = criterion_str(out4r, labels)
+    loss5 = criterion_str(out5r, labels)
+
+
+    total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16
+    # distill_loss = loss6_k + loss7_k + loss8_k
+
+    # total_loss = total_loss + 0.1 * distill_loss
     total_loss.backward()
     optimizer.step()
 
