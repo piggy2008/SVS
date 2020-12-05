@@ -63,7 +63,7 @@ args = {
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
-    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_DAFB2.txt',
+    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_TR_DAFB2.txt',
     # 'imgs_file': 'video_saliency/train_all_DAFB2_DAVSOD_5f.txt',
     # 'train_loader': 'video_image'
     'train_loader': 'flow_image3',
@@ -221,7 +221,7 @@ def train(net, optimizer, teacher=None):
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
             inputs, flows, labels, inputs2, labels2 = data
-            if curr_iter % 2 == 0:
+            if curr_iter % 3 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             else:
                 train_single2(net, inputs2, labels2, optimizer, curr_iter)
