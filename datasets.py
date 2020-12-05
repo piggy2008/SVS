@@ -363,6 +363,50 @@ class ImageFlowFolder(data.Dataset):
     def __len__(self):
         return len(self.imgs)
 
+class ImageFlow3Folder(data.Dataset):
+    # image and gt should be in the same folder and have same filename except extended name (jpg and png respectively)
+    def __init__(self, root, imgs_file, imgs_file2, joint_transform=None, transform=None, target_transform=None):
+        self.root = root
+        self.imgs = [i_id.strip() for i_id in open(imgs_file)]
+        self.imgs2 = [i_id.strip() for i_id in open(imgs_file2)]
+        self.joint_transform = joint_transform
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __getitem__(self, index):
+        img_paths = self.imgs[index].split(' ')
+        index2 = random.randint(0, len(self.imgs2) - 1)
+        img_paths2 = self.imgs2[index2].split(' ')
+        img_list = []
+        gt_list = []
+
+        img = Image.open(os.path.join(self.root, img_paths[0])).convert('RGB')
+        flow = Image.open(os.path.join(self.root, img_paths[1])).convert('RGB')
+        target = Image.open(os.path.join(self.root, img_paths[2])).convert('L')
+        img_list.append(img)
+        img_list.append(flow)
+        gt_list.append(target)
+        gt_list.append(target)
+
+        img2 = Image.open(os.path.join(self.root, img_paths2[0])).convert('RGB')
+        target2 = Image.open(os.path.join(self.root, img_paths2[1])).convert('L')
+        img_list.append(img2)
+        gt_list.append(target2)
+
+        if self.joint_transform is not None:
+            img_list, gt_list = self.joint_transform(img_list, gt_list)
+        if self.transform is not None:
+            img = self.transform(img_list[0])
+            flow = self.transform(img_list[1])
+            img2 = self.transform(img_list[2])
+        if self.target_transform is not None:
+            target = self.target_transform(gt_list[0])
+            target2 = self.target_transform(gt_list[2])
+        return img, flow, target, img2, target2
+
+    def __len__(self):
+        return len(self.imgs)
+
 class ImageFlow2Folder(data.Dataset):
     # image and gt should be in the same folder and have same filename except extended name (jpg and png respectively)
     def __init__(self, root, imgs_file, video_root, video_gt_root, joint_transform=None,
@@ -513,7 +557,7 @@ if __name__ == '__main__':
     joint_transform = joint_transforms.Compose([
         joint_transforms.ImageResize(550),
         joint_transforms.RandomCrop(473),
-        joint_transforms.ColorJitter(hue=[-0.1, 0.1], saturation=0.05),
+        # joint_transforms.ColorJitter(hue=[-0.1, 0.1], saturation=0.05),
         joint_transforms.RandomHorizontallyFlip(),
         joint_transforms.RandomRotate(10)
     ])
@@ -533,11 +577,12 @@ if __name__ == '__main__':
     # imgs_file = '/home/ty/data/video_saliency/train_all_DAFB2_DAVSOD_5f.txt'
     # train_set = VideoSequenceFolder(video_seq_path, video_seq_gt_path, imgs_file, joint_transform, img_transform, target_transform)
     imgs_file = '/data/ty/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
+    imgs_file2 = '/data/ty/Pre-train/pretrain_all_seq_DUT_DAFB2.txt'
     # train_set = VideoImageFolder(video_train_path, imgs_file, joint_transform, img_transform, target_transform)
     video_root = '/home/ty/data/video_saliency/train_all/DAFB2_DAVSOD'
     video_gt_root = '/home/ty/data/video_saliency/train_all_gt2_revised/DAFB2_DAVSOD'
 
-    train_set = ImageFlowFolder(video_train_path, imgs_file,
+    train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2,
                                  joint_transform, img_transform, target_transform)
     # train_loader = DataLoader(train_set, batch_size=6, num_workers=12, shuffle=False)
 
@@ -546,7 +591,7 @@ if __name__ == '__main__':
     train_loader = DataLoader(train_set, batch_size=4, num_workers=1, shuffle=False)
 
     for i, data in enumerate(train_loader):
-        input, flow, target = data
+        input, flow, target, input2, target2 = data
         # first, second = data
         # input = pre_img.data.cpu().numpy()
         # flow = cur_img.data.cpu().numpy()
@@ -567,4 +612,4 @@ if __name__ == '__main__':
         # # plt.imshow(target[1, :, :, 0])
         #
         # plt.show()
-        print(input.size())
+        print(input2.size())
