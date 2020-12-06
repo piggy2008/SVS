@@ -50,10 +50,10 @@ to_pil = transforms.ToPILImage()
 # flow_root = os.path.join(davis_path, 'flow')
 # imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
-to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
-gt_root = os.path.join(fbms_path, 'GT')
-flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
-imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
+# to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
+# gt_root = os.path.join(fbms_path, 'GT')
+# flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
+# imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
 
 # to_test = {'SegTrackV2': os.path.join(segtrack_path, 'SegTrackV2_test')}
 # gt_root = os.path.join(segtrack_path, 'GT')
@@ -69,10 +69,10 @@ imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-# gt_root = os.path.join(davsod_path, 'GT')
-# flow_root = os.path.join(davsod_path, 'flow')
-# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+gt_root = os.path.join(davsod_path, 'GT')
+flow_root = os.path.join(davsod_path, 'flow')
+imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
