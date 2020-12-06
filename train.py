@@ -56,7 +56,7 @@ args = {
     'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
-    'momentum': 0.925,
+    'momentum': 0.95,
     'snapshot': '',
     # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-11-02 03:43:38', '20000.pth'),
     'pretrain': '',
@@ -221,7 +221,7 @@ def train(net, optimizer, teacher=None):
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
             inputs, flows, labels, inputs2, labels2 = data
-            if curr_iter % 3 == 0:
+            if curr_iter % 2 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             else:
                 train_single2(net, inputs2, labels2, optimizer, curr_iter)
