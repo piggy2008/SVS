@@ -455,8 +455,8 @@ class INet(nn.Module):
             return pred1a, pred2a, out2h_p, out3h_p, out4h_p, out5h_p, out2h, out3h, out4h, out5v,\
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3, pred3a
         else:
-            out2h, out3h, out4h, out5v, pred1 = self.decoder1(out2h, out3h, out4h, out5v)
-            out2h, out3h, out4h, out5v, pred2 = self.decoder2(out2h, out3h, out4h, out5v, pred1)
+            out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
+            out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             shape = x.size()[2:] if shape is None else shape
 
             pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
@@ -478,4 +478,4 @@ class INet(nn.Module):
 if __name__ == '__main__':
         net = INet(cfg=None, GNN=True)
         input = torch.zeros([2, 3, 380, 380])
-        output = net(input)
+        output = net(input, input)
