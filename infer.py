@@ -30,7 +30,7 @@ exp_name = 'VideoSaliency_2020-12-05 21:28:58'
 
 args = {
     'gnn': True,
-    'snapshot': '72000',  # your snapshot filename (exclude extension name)
+    'snapshot': '32000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -50,19 +50,19 @@ to_pil = transforms.ToPILImage()
 # flow_root = os.path.join(davis_path, 'flow')
 # imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
-# to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
-# gt_root = os.path.join(fbms_path, 'GT')
-# flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
-# imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
+to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
+gt_root = os.path.join(fbms_path, 'GT')
+flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
+imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
 
 # to_test = {'SegTrackV2': os.path.join(segtrack_path, 'SegTrackV2_test')}
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-gt_root = os.path.join(visal_path, 'GT')
-flow_root = os.path.join(visal_path, 'flow')
-imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+# gt_root = os.path.join(visal_path, 'GT')
+# flow_root = os.path.join(visal_path, 'flow')
+# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
