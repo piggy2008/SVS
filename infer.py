@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 0
+device_id = 1
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
@@ -45,15 +45,15 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-gt_root = os.path.join(davis_path, 'GT')
-flow_root = os.path.join(davis_path, 'flow')
-imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+# gt_root = os.path.join(davis_path, 'GT')
+# flow_root = os.path.join(davis_path, 'flow')
+# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
-# to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
-# gt_root = os.path.join(fbms_path, 'GT')
-# flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
-# imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
+to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
+gt_root = os.path.join(fbms_path, 'GT')
+flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
+imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
 
 # to_test = {'SegTrackV2': os.path.join(segtrack_path, 'SegTrackV2_test')}
 # gt_root = os.path.join(segtrack_path, 'GT')
