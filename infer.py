@@ -64,15 +64,15 @@ to_pil = transforms.ToPILImage()
 # flow_root = os.path.join(visal_path, 'flow')
 # imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
-# to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
-# gt_root = os.path.join(vos_path, 'GT')
-# flow_root = os.path.join(vos_path, 'flow')
-# imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
+to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
+gt_root = os.path.join(vos_path, 'GT')
+flow_root = os.path.join(vos_path, 'flow')
+imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
