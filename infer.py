@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 1
+device_id = 2
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
