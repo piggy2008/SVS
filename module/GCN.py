@@ -39,11 +39,11 @@ class GraphConvolution(nn.Module):
         self.weight.data.uniform_(-stdv, stdv)
         if self.bias is not None:
             self.bias.data.uniform_(-stdv, stdv)
-        # self.adj.data.fill_(1)
+        self.adj.data.fill_(1)
 
     def forward(self, input, adj):
         support = torch.matmul(input, self.weight)
-        adj = torch.softmax(self.adj)
+        adj = torch.sigmoid(self.adj)
         adj = adj.repeat(input.size(0), 1, 1)
         output_ = torch.bmm(adj, support)
         if self.bias is not None:
