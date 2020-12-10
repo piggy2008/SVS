@@ -53,7 +53,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 6,
     'last_iter': 0,
-    'lr': 1e-3,
+    'lr': 2.5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -68,8 +68,8 @@ args = {
     # 'train_loader': 'video_image'
     'train_loader': 'flow_image3',
     # 'train_loader': 'video_sequence'
-    'image_size': 450,
-    'crop_size': 400
+    'image_size': 430,
+    'crop_size': 380
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
@@ -326,19 +326,19 @@ def train_single2(net, inputs, labels, optimizer, curr_iter):
 
     optimizer.zero_grad()
 
-    out1u, out2u, out2r, out3r, out4r, out5r, out3f_flow = net(inputs)
+    out1u, out2u, out2r, out3r, out4r, out5r = net(inputs)
 
-    loss0 = criterion_str(out1u, labels)
-    loss1 = criterion_str(out2u, labels)
-    loss2 = criterion_str(out2r, labels)
-    loss3 = criterion_str(out3r, labels)
-    loss4 = criterion_str(out4r, labels)
-    loss5 = criterion_str(out5r, labels)
+    loss0 = criterion(out1u, labels)
+    loss1 = criterion(out2u, labels)
+    loss2 = criterion(out2r, labels)
+    loss3 = criterion(out3r, labels)
+    loss4 = criterion(out4r, labels)
+    loss5 = criterion(out5r, labels)
 
-    loss6 = criterion_str(out3f_flow, labels)
+    # loss6 = criterion_str(out3f_flow, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss6 / 2
+                 # + loss6 / 2
     # distill_loss = loss6_k + loss7_k + loss8_k
 
     # total_loss = total_loss + 0.1 * distill_loss
