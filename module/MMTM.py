@@ -242,11 +242,11 @@ class SEQuart(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.softmax = nn.Softmax(dim=1)
 
-        # self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        # self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        # self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        # self.gate_d = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        self.gate = nn.Conv2d(dim, 4, kernel_size=1, bias=True)
+        self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate_d = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate = nn.Conv2d(dim, 4, kernel_size=1, bias=True)
 
     def initialize(self):
         weight_init(self)
@@ -270,12 +270,12 @@ class SEQuart(nn.Module):
         weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
 
         feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
-        # atten_a = self.gate_a(feat_cat)
-        # atten_b = self.gate_b(feat_cat)
-        # atten_c = self.gate_c(feat_cat)
-        # atten_d = self.gate_d(feat_cat)
-        # attention_vector = torch.cat([atten_a, atten_b, atten_c, atten_d], dim=1)
-        attention_vector = self.gate(feat_cat)
+        atten_a = self.gate_a(feat_cat)
+        atten_b = self.gate_b(feat_cat)
+        atten_c = self.gate_c(feat_cat)
+        atten_d = self.gate_d(feat_cat)
+        attention_vector = torch.cat([atten_a, atten_b, atten_c, atten_d], dim=1)
+        # attention_vector = self.gate(feat_cat)
         attention_vector = self.softmax(attention_vector)
 
         attention_vector_a, attention_vector_b = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :]

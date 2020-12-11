@@ -43,7 +43,7 @@ class GraphConvolution(nn.Module):
 
     def forward(self, input, adj):
         support = torch.matmul(input, self.weight)
-        adj = torch.sigmoid(self.adj)
+        adj = torch.softmax(self.adj, dim=1)
         adj = adj.repeat(input.size(0), 1, 1)
         output_ = torch.bmm(adj, support)
         if self.bias is not None:
