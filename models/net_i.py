@@ -403,7 +403,7 @@ class INet(nn.Module):
         self.decoder1 = Decoder_flow2()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
-        self.se_many = SEMany2Many(5, 64)
+        # self.se_many = SEMany2Many(5, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -431,7 +431,7 @@ class INet(nn.Module):
             out3f, out4f = self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
             out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
+            # out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
 
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
@@ -458,7 +458,7 @@ class INet(nn.Module):
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3, pred3a
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
+            # out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             shape = x.size()[2:] if shape is None else shape
