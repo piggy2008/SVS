@@ -9,7 +9,7 @@ from torchvision import transforms
 from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path, \
     davis_path, fbms_path, mcl_path, uvsd_path, visal_path, vos_path, segtrack_path, davsod_path
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
-from models.net import SNet
+# from models.net import SNet
 from models.net_i import INet
 from utils.utils_mine import load_part_of_model2, MaxMinNormalization
 import time
@@ -81,7 +81,7 @@ imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 def main():
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = SNet(cfg=None, GNN=args['gnn'])
+    net = INet(cfg=None, GNN=args['gnn'])
 
     print ('load snapshot \'%s\' for testing' % args['snapshot'])
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
