@@ -462,7 +462,8 @@ class INet(nn.Module):
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3, pred3a
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
+            feat_list = [out2h, out3h, out4h, out5v]
+            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             shape = x.size()[2:] if shape is None else shape
