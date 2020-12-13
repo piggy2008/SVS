@@ -87,7 +87,7 @@ class ResNet(nn.Module):
         return out2, out3, out4, out5
 
     def initialize(self):
-        self.load_state_dict(torch.load('pre-trained/resnet50-19c8e357.pth'), strict=False)
+        self.load_state_dict(torch.load('../pre-trained/resnet50-19c8e357.pth'), strict=False)
 
 class GFM2(nn.Module):
     def __init__(self, GNN=False):
@@ -404,6 +404,7 @@ class INet(nn.Module):
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
         self.se_many = SEMany2Many(5, 64)
+        self.se_many_flow = SEMany2Many(4, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -431,7 +432,10 @@ class INet(nn.Module):
             out3f, out4f = self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
             out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
+            feat_list = [out2h, out3h, out4h, out5v]
+            feat_flow_list = [out2f, out3f, out4f]
+            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
+            out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
 
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
