@@ -315,15 +315,19 @@ class SEMany2Many(nn.Module):
     def initialize(self):
         weight_init(self)
 
-    def forward(self, feat1, feat2, feat3, feat4, feedback):
+    def forward(self, feat_list, feedback):
         batch, channel, _, _ = feedback.size()
         # combined = torch.cat([low, high, flow, feedback], dim=1)
-        feat1_avg = self.avg_pool(feat1).view(batch, 1, channel)
-        feat2_avg = self.avg_pool(feat2).view(batch, 1, channel)
-        feat3_avg = self.avg_pool(feat3).view(batch, 1, channel)
-        feat4_avg = self.avg_pool(feat4).view(batch, 1, channel)
+        # feat1_avg = self.avg_pool(feat1).view(batch, 1, channel)
+        # feat2_avg = self.avg_pool(feat2).view(batch, 1, channel)
+        # feat3_avg = self.avg_pool(feat3).view(batch, 1, channel)
+        # feat4_avg = self.avg_pool(feat4).view(batch, 1, channel)
+        feat_avg = []
+        for feat in feat_list:
+            feat_avg.append(self.avg_pool(feat).view(batch, 1, channel))
         feedback_avg = self.avg_pool(feedback).view(batch, 1, channel)
-        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
+        feat_avg.append(feedback_avg)
+        combined_fc = torch.cat(feat_avg, dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
         batch_adj = batch_adj.cuda()
@@ -331,19 +335,12 @@ class SEMany2Many(nn.Module):
 
         excitation = self.fc_one(feat_cat).view(batch, channel, 1, 1)
         gate = torch.sigmoid(self.gate(feedback * excitation))
-        gate1 = F.interpolate(gate, size=feat1.size()[2:], mode='bilinear')
-        feat1 = feat1 * gate1
+        feat_output = []
+        for feat in feat_list:
+            gate = F.interpolate(gate, size=feat.size()[2:], mode='bilinear')
+            feat_output.append(feat * gate)
 
-        gate2 = F.interpolate(gate, size=feat2.size()[2:], mode='bilinear')
-        feat2 = feat2 * gate2
-
-        gate3 = F.interpolate(gate, size=feat3.size()[2:], mode='bilinear')
-        feat3 = feat3 * gate3
-
-        gate4 = F.interpolate(gate, size=feat4.size()[2:], mode='bilinear')
-        feat4 = feat4 * gate4
-
-        return feat1, feat2, feat3, feat4
+        return feat_output
 
 if __name__ == '__main__':
         input = torch.zeros([2, 64, 24, 24])
