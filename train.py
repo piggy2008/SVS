@@ -221,10 +221,10 @@ def train(net, optimizer, teacher=None):
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
             inputs, flows, labels, inputs2, labels2 = data
-            if curr_iter % 3 == 0:
-                train_single2(net, inputs2, labels2, optimizer, curr_iter)
-            else:
+            if curr_iter % 2 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
+            else:
+                train_single2(net, inputs2, labels2, optimizer, curr_iter)
             curr_iter += 1
 
             if curr_iter % args['iter_save'] == 0:
