@@ -576,8 +576,8 @@ if __name__ == '__main__':
     input_size = (473, 473)
     # imgs_file = '/home/ty/data/video_saliency/train_all_DAFB2_DAVSOD_5f.txt'
     # train_set = VideoSequenceFolder(video_seq_path, video_seq_gt_path, imgs_file, joint_transform, img_transform, target_transform)
-    imgs_file = '/data/ty/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
-    imgs_file2 = '/data/ty/Pre-train/pretrain_all_seq_DUT_DAFB2.txt'
+    imgs_file = '/home/ty/data/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
+    imgs_file2 = '/home/ty/data/Pre-train/pretrain_all_seq_DUT_TR_DUTS_DAFB2.txt'
     # train_set = VideoImageFolder(video_train_path, imgs_file, joint_transform, img_transform, target_transform)
     video_root = '/home/ty/data/video_saliency/train_all/DAFB2_DAVSOD'
     video_gt_root = '/home/ty/data/video_saliency/train_all_gt2_revised/DAFB2_DAVSOD'
@@ -593,23 +593,23 @@ if __name__ == '__main__':
     for i, data in enumerate(train_loader):
         input, flow, target, input2, target2 = data
         # first, second = data
-        # input = pre_img.data.cpu().numpy()
+        # input = input2.data.cpu().numpy()
         # flow = cur_img.data.cpu().numpy()
-        # # target = target.data.cpu().numpy()
+        # target = target2.data.cpu().numpy()
         # # np.savetxt('image.txt', input[0, 0, :, :])
         # input = input.transpose(0, 2, 3, 1)
         # flow = flow.transpose(0, 2, 3, 1)
-        # # target = target.transpose(0, 2, 3, 1)
+        # target = target.transpose(0, 2, 3, 1)
         # # # for i in range(0, input.shape[0]):
         # plt.subplot(2, 1, 1)
         # plt.imshow(input[0, :, :, :])
         # plt.subplot(2, 1, 2)
-        # # plt.imshow(target[0, :, :, 0])
-        #
-        # # plt.subplot(2, 2, 3)
+        # plt.imshow(target[0, :, :, 0])
+
+        # plt.subplot(2, 2, 3)
         # plt.imshow(flow[0, :, :, :])
-        # # plt.subplot(2, 2, 4)
-        # # plt.imshow(target[1, :, :, 0])
-        #
+        # plt.subplot(2, 2, 4)
+        # plt.imshow(target[1, :, :, 0])
+
         # plt.show()
         print(input2.size())
