@@ -474,7 +474,6 @@ class INet(nn.Module):
 
             pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
             pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
-            # pred3a = F.interpolate(self.linearp_flow(pred3), size=shape, mode='bilinear')
 
             out2h_p = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
             out3h_p = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
