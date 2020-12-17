@@ -26,7 +26,7 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 1
 
 torch.manual_seed(2020)
 torch.cuda.manual_seed(2020)
