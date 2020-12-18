@@ -555,16 +555,16 @@ if __name__ == '__main__':
     from config import msra10k_path, video_seq_path, video_seq_gt_path, video_train_path
     import numpy as np
     joint_transform = joint_transforms.Compose([
-        joint_transforms.ImageResize(550),
-        joint_transforms.RandomCrop(473),
+        joint_transforms.ImageResize(250),
+        joint_transforms.RandomCrop(200),
         # joint_transforms.ColorJitter(hue=[-0.1, 0.1], saturation=0.05),
         joint_transforms.RandomHorizontallyFlip(),
         joint_transforms.RandomRotate(10)
     ])
 
     joint_seq_transform = joint_transforms.Compose([
-        joint_transforms.ImageResize(520),
-        joint_transforms.RandomCrop(473)
+        joint_transforms.ImageResize(250),
+        joint_transforms.RandomCrop(200)
     ])
 
     img_transform = transforms.Compose([
@@ -573,7 +573,7 @@ if __name__ == '__main__':
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
     target_transform = transforms.ToTensor()
-    input_size = (473, 473)
+    input_size = (200, 200)
     # imgs_file = '/home/ty/data/video_saliency/train_all_DAFB2_DAVSOD_5f.txt'
     # train_set = VideoSequenceFolder(video_seq_path, video_seq_gt_path, imgs_file, joint_transform, img_transform, target_transform)
     imgs_file = '/home/ty/data/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
@@ -595,10 +595,12 @@ if __name__ == '__main__':
     from itertools import cycle
 
     torch.multiprocessing.set_sharing_strategy('file_system')
-    for i, data in enumerate(zip(train_loader, cycle(train_loader2))):
+    dataloader_iterator = iter(train_loader2)
+    for i, data1 in enumerate(train_loader):
         print('i=', i)
-        data1, data2 = data
+        # data1, data2 = data
         input, flow, target = data1
+        data2 = next(dataloader_iterator)
         input2, target2 = data2
         # first, second = data
         # input = input2.data.cpu().numpy()
