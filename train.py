@@ -214,7 +214,8 @@ def train(net, optimizer, teacher=None):
 
         # loss3_record = AvgMeter()
         torch.multiprocessing.set_sharing_strategy('file_system')
-        for i, data in enumerate(zip(train_loader, cycle(train_loader2))):
+        dataloader_iterator = iter(train_loader2)
+        for i, data1 in enumerate(train_loader):
 
             optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
@@ -227,8 +228,8 @@ def train(net, optimizer, teacher=None):
             #                                                 ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
-            data1, data2 = data
             inputs, flows, labels = data1
+            data2 = next(dataloader_iterator)
             inputs2, labels2 = data2
             if curr_iter % 2 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
