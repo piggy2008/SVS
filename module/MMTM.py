@@ -21,6 +21,8 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
+device_id = 1
+
 def L_Matrix(adj_npy, adj_size):
 
     D =np.zeros((adj_size, adj_size))
@@ -204,7 +206,7 @@ class SETriplet2(nn.Module):
         combined = torch.cat([a, b, c], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 3, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda()
+        batch_adj = batch_adj.cuda(device_id)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
         excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
@@ -272,7 +274,7 @@ class SEQuart(nn.Module):
         combined = torch.cat([low, high, flow, feedback], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda()
+        batch_adj = batch_adj.cuda(device_id)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
         excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
@@ -345,7 +347,7 @@ class SEMany2Many(nn.Module):
         combined_fc = torch.cat(feat_avg, dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda()
+        batch_adj = batch_adj.cuda(device_id)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
         excitation = self.fc_one(feat_cat).view(batch, channel, 1, 1)
