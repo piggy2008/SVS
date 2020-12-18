@@ -590,8 +590,8 @@ if __name__ == '__main__':
 
     # train_set = VideoFSImageFolder('/home/ty/data/davis/davis_test2', 'blackswan', use_first=True,
     #                                joint_transform=joint_transform, transform=img_transform)
-    train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
-    train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
+    train_loader = DataLoader(train_set, batch_size=6, num_workers=0, shuffle=True)
+    train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=0, shuffle=True)
     from itertools import cycle
 
     torch.multiprocessing.set_sharing_strategy('file_system')
