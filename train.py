@@ -213,7 +213,7 @@ def train(net, optimizer, teacher=None):
     while True:
 
         # loss3_record = AvgMeter()
-
+        torch.multiprocessing.set_sharing_strategy('file_system')
         for i, data in enumerate(zip(train_loader, cycle(train_loader2))):
 
             optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
