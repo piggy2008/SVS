@@ -590,8 +590,8 @@ if __name__ == '__main__':
 
     # train_set = VideoFSImageFolder('/home/ty/data/davis/davis_test2', 'blackswan', use_first=True,
     #                                joint_transform=joint_transform, transform=img_transform)
-    train_loader = DataLoader(train_set, batch_size=4, num_workers=1, shuffle=False)
-    train_loader2 = DataLoader(train_set2, batch_size=4, num_workers=1, shuffle=False)
+    train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
+    train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
     from itertools import cycle
     for i, data in enumerate(zip(train_loader, cycle(train_loader2))):
         print('i=', i)
