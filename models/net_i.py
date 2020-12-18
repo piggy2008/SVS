@@ -468,8 +468,8 @@ class INet(nn.Module):
             out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
-            feat_list2 = [out2h, out3h, out4h, out5v]
-            out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)
+            # feat_list2 = [out2h, out3h, out4h, out5v]
+            # out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)
             shape = x.size()[2:] if shape is None else shape
 
             pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
