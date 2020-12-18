@@ -21,6 +21,20 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
+def L_Matrix(adj_npy, adj_size):
+
+    D =np.zeros((adj_size, adj_size))
+    for i in range(adj_size):
+        tmp = adj_npy[i,:]
+        count = np.sum(tmp==1)
+        if count>0:
+            number = count ** (-1/2)
+            D[i,i] = number
+
+    x = np.matmul(D,adj_npy)
+    L = np.matmul(x,D)
+    return L
+
 def weight_init(module):
     for n, m in module.named_children():
         print('initialize: '+n)
@@ -222,7 +236,8 @@ class SEQuart(nn.Module):
         dim = dim_a + dim_b + dim_c + dim_d
 
         self.gcn = GCN(4, 64, 64)
-        self.adj = torch.from_numpy(np.array(coarse_adj_list2)).float()
+        coarse_adj = np.ones([4, 4])
+        self.adj = torch.from_numpy(L_Matrix(coarse_adj, 4)).float()
 
         self.fc_one = nn.Sequential(
             nn.Linear(dim, dim_a),
@@ -295,8 +310,8 @@ class SEMany2Many(nn.Module):
 
 
         self.gcn = GCN(many, dim_one, dim_one)
-        self.adj = torch.from_numpy(np.array(coarse_adj_list2)).float()
-
+        coarse_adj = np.ones([many, many])
+        self.adj = torch.from_numpy(L_Matrix(coarse_adj, many)).float()
         self.fc_one = nn.Sequential(
             nn.Linear(many * dim_one, dim_one),
             nn.Sigmoid()
