@@ -593,6 +593,8 @@ if __name__ == '__main__':
     train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
     train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
     from itertools import cycle
+
+    torch.multiprocessing.set_sharing_strategy('file_system')
     for i, data in enumerate(zip(train_loader, cycle(train_loader2))):
         print('i=', i)
         data1, data2 = data
