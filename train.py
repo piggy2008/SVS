@@ -232,7 +232,7 @@ def train(net, optimizer, teacher=None):
             inputs, flows, labels = data1
             data2 = next(dataloader_iterator)
             inputs2, labels2 = data2
-            if curr_iter % 2 == 0:
+            if curr_iter % 3 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             else:
                 train_single2(net, inputs2, labels2, optimizer, curr_iter)
