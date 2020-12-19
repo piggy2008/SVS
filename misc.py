@@ -100,7 +100,7 @@ class CriterionStructure(nn.Module):
         # f_loss = (1 - p_t) ** self.gamma * wbce
 
         ##### ssim loss #####
-        ssim = 1 - self.ssim(preds, targets)
+        ssim = 1 - self.ssim(pred, targets)
 
         pred = torch.sigmoid(pred)
         inter = ((pred * target) * weit).sum(dim=(2, 3))
