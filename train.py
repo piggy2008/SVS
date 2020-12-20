@@ -49,18 +49,18 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 10000,
-    'iter_save': 1000,
+    'iter_num': 100000,
+    'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 4,
+    'train_batch_size': 6,
     'last_iter': 0,
-    'lr': 1e-4,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
-    'momentum': 0.975,
+    'momentum': 0.925,
     'snapshot': '',
-    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-18 15:35:32', '70000.pth'),
-    # 'pretrain': '',
+    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-18 15:35:32', '70000.pth'),
+    'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
@@ -232,7 +232,7 @@ def train(net, optimizer, teacher=None):
             inputs, flows, labels = data1
             data2 = next(dataloader_iterator)
             inputs2, labels2 = data2
-            if curr_iter % 3 == 0:
+            if curr_iter % 2 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             else:
                 train_single2(net, inputs2, labels2, optimizer, curr_iter)
