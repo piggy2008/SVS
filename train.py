@@ -52,7 +52,7 @@ args = {
     'iter_num': 10000,
     'iter_save': 1000,
     'iter_start_seq': 0,
-    'train_batch_size': 4,
+    'train_batch_size': 6,
     'last_iter': 0,
     'lr': 5 * 1e-4,
     'lr_decay': 0.9,
@@ -166,7 +166,7 @@ def main():
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
-            param.requires_grad = False
+            # param.requires_grad = False
             bkbone.append(param)
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
@@ -222,7 +222,7 @@ def train(net, optimizer, teacher=None):
                                                                   ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
             #
             # optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
