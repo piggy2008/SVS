@@ -282,14 +282,14 @@ class SEQuart(nn.Module):
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel, 1, 1)
 
-        weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
-        weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
-        # weighted_feat_a = excitation1 * low + excitation4 * feedback
-        # weighted_feat_b = excitation2 * high + excitation4 * feedback
-        # weighted_feat_c = excitation3 * flow + excitation4 * feedback
-        # weighted_feat_d = excitation4 * feedback
+        # weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
+        # weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
+        weighted_feat_a = excitation1 * low + excitation4 * feedback
+        weighted_feat_b = excitation2 * high + excitation4 * feedback
+        weighted_feat_c = excitation3 * flow + excitation4 * feedback
+        weighted_feat_d = excitation4 * feedback
 
         feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
         atten_a = self.gate_a(feat_cat)
@@ -359,7 +359,7 @@ class SEMany2Many(nn.Module):
         feat_output = []
         for feat in feat_list:
             gate = F.interpolate(gate, size=feat.size()[2:], mode='bilinear')
-            feat_output.append(feat * gate)
+            feat_output.append(feat * gate + feat)
 
         return feat_output
 
