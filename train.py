@@ -27,7 +27,7 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 1
+device_id = 0
 
 torch.manual_seed(2020)
 torch.cuda.manual_seed(2020)
@@ -49,18 +49,18 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 100000,
-    'iter_save': 4000,
+    'iter_num': 10000,
+    'iter_save': 1000,
     'iter_start_seq': 0,
-    'train_batch_size': 8,
+    'train_batch_size': 4,
     'last_iter': 0,
-    'lr': 5 * 1e-3,
+    'lr': 5 * 1e-4,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
     'snapshot': '',
-    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-18 15:35:32', '70000.pth'),
-    'pretrain': '',
+    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-06 19:46:37', '72000.pth'),
+    # 'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
@@ -69,8 +69,8 @@ args = {
     # 'train_loader': 'video_image'
     'train_loader': 'flow_image3',
     # 'train_loader': 'video_sequence'
-    'image_size': 400,
-    'crop_size': 350
+    'image_size': 430,
+    'crop_size': 380
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
@@ -166,7 +166,7 @@ def main():
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
-            # param.requires_grad = False
+            param.requires_grad = False
             bkbone.append(param)
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
