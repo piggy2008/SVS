@@ -166,7 +166,7 @@ def main():
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
-            param.requires_grad = False
+            # param.requires_grad = False
             bkbone.append(param)
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)
