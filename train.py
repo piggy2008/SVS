@@ -49,18 +49,18 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 10000,
-    'iter_save': 1000,
+    'iter_num': 100000,
+    'iter_save': 4000,
     'iter_start_seq': 0,
     'train_batch_size': 6,
     'last_iter': 0,
-    'lr': 1e-4,
+    'lr': 8 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
     'snapshot': '',
-    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-06 19:46:37', '72000.pth'),
-    # 'pretrain': '',
+    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2020-12-06 19:46:37', '72000.pth'),
+    'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
@@ -166,7 +166,7 @@ def main():
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
-            param.requires_grad = False
+            # param.requires_grad = False
             bkbone.append(param)
         # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
         #     print('flow related:', name)

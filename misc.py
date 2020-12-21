@@ -100,13 +100,13 @@ class CriterionStructure(nn.Module):
         f_loss = (1 - p_t) ** self.gamma * wbce
 
         ##### ssim loss #####
-        ssim = 1 - self.ssim(pred, target)
+        # ssim = 1 - self.ssim(pred, target)
 
         pred = torch.sigmoid(pred)
         inter = ((pred * target) * weit).sum(dim=(2, 3))
         union = ((pred + target) * weit).sum(dim=(2, 3))
         wiou = 1 - (inter + 1) / (union - inter + 1)
-        return (wbce + wiou + f_loss).mean() + ssim
+        return (wbce + wiou + f_loss).mean()
 
 def _pointwise_loss(lambd, input, target, size_average=True, reduce=True):
     d = lambd(input, target)
