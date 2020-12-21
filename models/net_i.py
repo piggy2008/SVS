@@ -435,7 +435,7 @@ class INet(nn.Module):
             out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
             feat_list = [out2h, out3h, out4h, out5v, out3f, out4f]
             # feat_flow_list = [out2f, out3f, out4f]
-            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
+            out2h, out3h, out4h, out5v, out3f, out4f = self.se_many(feat_list, pred1)
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
