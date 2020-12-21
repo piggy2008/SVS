@@ -399,7 +399,7 @@ class SEMany2Many2(nn.Module):
         combined_fc = torch.cat(feat_avg, dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        # batch_adj = batch_adj.cuda(device_id)
+        batch_adj = batch_adj.cuda(device_id)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
         excitation = self.fc_one(feat_cat).view(batch, channel * (len(feat_list) + 1), 1, 1)
