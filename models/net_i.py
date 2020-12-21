@@ -465,7 +465,7 @@ class INet(nn.Module):
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
             feat_list = [out2h, out3h, out4h, out5v, out3f, out4f]
-            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
+            out2h, out3h, out4h, out5v, _, _ = self.se_many(feat_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
