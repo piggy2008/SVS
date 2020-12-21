@@ -363,8 +363,59 @@ class SEMany2Many(nn.Module):
 
         return feat_output
 
+class SEMany2Many2(nn.Module):
+    def __init__(self, many, dim_one):
+        super(SEMany2Many2, self).__init__()
+
+        self.gcn = GCN(many, dim_one, dim_one)
+        coarse_adj = np.ones([many, many])
+        self.adj = torch.from_numpy(L_Matrix(coarse_adj, many)).float()
+        self.fc_one = nn.Sequential(
+            nn.Linear(many * dim_one, many * dim_one),
+            nn.Sigmoid()
+        )
+
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.softmax = nn.Softmax(dim=1)
+        self.gate = nn.Conv2d(many * dim_one, many - 1, kernel_size=1, bias=True)
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, feat_list, feedback):
+        batch, channel, _, _ = feedback.size()
+
+        feat_align = []
+        feat_align.append(F.interpolate(feedback, size=(48, 48), mode='bilinear'))
+        for feat in feat_list:
+            feat_resized = F.interpolate(feat, size=(48, 48), mode='bilinear')
+            feat_align.append(feat_resized)
+
+        feat_avg = []
+        for feat in feat_list:
+            feat_avg.append(self.avg_pool(feat).view(batch, 1, channel))
+        feedback_avg = self.avg_pool(feedback).view(batch, 1, channel)
+        feat_avg.append(feedback_avg)
+        combined_fc = torch.cat(feat_avg, dim=1)
+        # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
+        batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda(device_id)
+        feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
+
+        excitation = self.fc_one(feat_cat).view(batch, channel * (len(feat_list) + 1), 1, 1)
+        feat_align = torch.cat(feat_align, dim=1)
+        gate = self.softmax(self.gate(feat_align * excitation))
+        feat_output = []
+        for i, feat in enumerate(feat_list):
+            gate_ = F.interpolate(gate[:, i:i+1, :, :], size=feat.size()[2:], mode='bilinear')
+            feat_output.append(feat * gate_ + feat)
+
+        return feat_output
+
 if __name__ == '__main__':
-        input = torch.zeros([2, 64, 24, 24])
-        net = SEQuart(64, 64, 64, 64)
-        output = net(input, input, input, input)
+        input = torch.rand([2, 64, 24, 24])
+        # net = SEQuart(64, 64, 64, 64)
+        feat_list = [input, input, input]
+        net = SEMany2Many2(4, 64)
+        output = net(feat_list, input)
 

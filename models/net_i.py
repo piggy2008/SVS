@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many
+from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many, SEMany2Many2
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 
@@ -403,8 +403,8 @@ class INet(nn.Module):
         self.decoder1 = Decoder_flow2()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
-        self.se_many = SEMany2Many(5, 64)
-        self.se_many_flow = SEMany2Many(4, 64)
+        self.se_many = SEMany2Many2(5, 64)
+        # self.se_many_flow = SEMany2Many(4, 64)
         # self.se_many2 = SEMany2Many(6, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
