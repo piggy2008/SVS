@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many, SEMany2Many2
+from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many, SEMany2Many2, SEMany2Many3, SEMany2Many4
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 
@@ -403,7 +403,7 @@ class INet(nn.Module):
         self.decoder1 = Decoder_flow2()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
-        self.se_many = SEMany2Many2(5, 64)
+        self.se_many = SEMany2Many4(5, 64)
         # self.se_many_flow = SEMany2Many(4, 64)
         # self.se_many2 = SEMany2Many(6, 64)
         # self.gnn_embedding = GNN_Embedding()
@@ -433,12 +433,11 @@ class INet(nn.Module):
             out3f, out4f = self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
             out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
-
+            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
-            feat_list = [out2h, out3h, out4h, out5v]
-            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred2)
+
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
             out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
@@ -464,8 +463,7 @@ class INet(nn.Module):
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3, pred3a
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
-            feat_list = [out2h, out3h, out4h, out5v]
-            out2h, out3h, out4h, out5v = self.se_many(feat_list, pred1)
+            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]

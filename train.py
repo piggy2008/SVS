@@ -214,7 +214,6 @@ def train(net, optimizer, teacher=None):
     while True:
 
         # loss3_record = AvgMeter()
-        torch.multiprocessing.set_sharing_strategy('file_system')
         # dataloader_iterator = iter(train_loader2)
         for i, data in enumerate(train_loader):
 
