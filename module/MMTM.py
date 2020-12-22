@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 1
+device_id = 0
 
 def L_Matrix(adj_npy, adj_size):
 
@@ -411,6 +411,132 @@ class SEMany2Many2(nn.Module):
             feat_output.append(feat * gate_ + feat)
 
         return feat_output
+
+class SEMany2Many3(nn.Module):
+    def __init__(self, many, dim_one):
+        super(SEMany2Many3, self).__init__()
+
+        self.gcn = GCN(many, dim_one, dim_one)
+        coarse_adj = np.ones([many, many])
+        self.adj = torch.from_numpy(L_Matrix(coarse_adj, many)).float()
+        self.fc_one = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_two = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_three = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_four = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+
+        self.conv1_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv2_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv3_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv4_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+
+        self.conv1_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv2_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv3_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv4_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.softmax = nn.Softmax(dim=1)
+        self.gate = nn.Conv2d(many * dim_one, many - 1, kernel_size=1, bias=True)
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, feat1, feat2, feat3, feat4, feedback):
+        batch, channel, _, _ = feedback.size()
+
+        feat1_ = self.conv1_in(feat1)
+        feat2_ = self.conv2_in(feat2)
+        feat3_ = self.conv3_in(feat3)
+        feat4_ = self.conv4_in(feat4)
+
+        feat1_avg = self.avg_pool(feat1_).view(batch, 1, channel)
+        feat2_avg = self.avg_pool(feat2_).view(batch, 1, channel)
+        feat3_avg = self.avg_pool(feat3_).view(batch, 1, channel)
+        feat4_avg = self.avg_pool(feat4_).view(batch, 1, channel)
+        feedback_avg = self.avg_pool(feedback).view(batch, 1, channel)
+
+        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
+        # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
+        batch_adj = self.adj.repeat(batch, 1, 1)
+        batch_adj = batch_adj.cuda(device_id)
+        feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
+
+        excitation1 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation2 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation3 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation4 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
+
+        feedback1 = F.interpolate(feedback, size=feat1_.size()[2:], mode='bilinear')
+        feat1_re = torch.cat([feat1_, feedback1], dim=1) * excitation1
+        feedback2 = F.interpolate(feedback, size=feat2_.size()[2:], mode='bilinear')
+        feat2_re = torch.cat([feat2_, feedback2], dim=1) * excitation2
+        feedback3 = F.interpolate(feedback, size=feat3_.size()[2:], mode='bilinear')
+        feat3_re = torch.cat([feat3_, feedback3], dim=1) * excitation3
+        feedback4 = F.interpolate(feedback, size=feat4_.size()[2:], mode='bilinear')
+        feat4_re = torch.cat([feat4_, feedback4], dim=1) * excitation4
+
+        feat1_re = self.conv1_out(feat1_re) + feat1
+        feat2_re = self.conv2_out(feat2_re) + feat2
+        feat3_re = self.conv3_out(feat3_re) + feat3
+        feat4_re = self.conv4_out(feat4_re) + feat4
+
+        return feat1_re, feat2_re, feat3_re, feat4_re
+
+class SEMany2Many4(nn.Module):
+    def __init__(self, many, dim_one):
+        super(SEMany2Many4, self).__init__()
+
+        self.conv1_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv2_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv3_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+        self.conv4_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
+
+        self.conv1_out = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv2_out = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv3_out = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv4_out = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, feat1, feat2, feat3, feat4, feedback):
+
+        feat1_ = self.conv1_in(feat1)
+        feat2_ = self.conv2_in(feat2)
+        feat3_ = self.conv3_in(feat3)
+        feat4_ = self.conv4_in(feat4)
+
+        feedback1 = F.interpolate(feedback, size=feat1_.size()[2:], mode='bilinear')
+        feedback2 = F.interpolate(feedback, size=feat2_.size()[2:], mode='bilinear')
+        feedback3 = F.interpolate(feedback, size=feat3_.size()[2:], mode='bilinear')
+        feedback4 = F.interpolate(feedback, size=feat4_.size()[2:], mode='bilinear')
+
+        feat1_re = self.conv1_out(feat1_ + feedback1) + feat1
+        feat2_re = self.conv2_out(feat2_ + feedback2) + feat2
+        feat3_re = self.conv3_out(feat3_ + feedback3) + feat3
+        feat4_re = self.conv4_out(feat4_ + feedback4) + feat4
+
+        return feat1_re, feat2_re, feat3_re, feat4_re
 
 if __name__ == '__main__':
         input = torch.rand([2, 64, 24, 24])
