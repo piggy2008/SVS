@@ -49,12 +49,12 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 100000,
+    'iter_num': 80000,
     'iter_save': 4000,
     'iter_start_seq': 0,
     'train_batch_size': 6,
     'last_iter': 0,
-    'lr': 8 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -116,18 +116,18 @@ elif args['train_loader'] == 'flow_image2':
                                  joint_transform, (args['crop_size'], args['crop_size']), img_transform, target_transform)
 elif args['train_loader'] == 'flow_image3':
     imgs_file2 = os.path.join(datasets_root, args['imgs_file2'])
-    # train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2, joint_transform, img_transform, target_transform)
-    train_set = ImageFlowFolder(video_train_path, imgs_file,
-                                joint_transform, img_transform, target_transform)
-    train_set2 = VideoImageFolder(video_train_path, imgs_file2,
-                                  joint_transform, img_transform, target_transform)
+    train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2, joint_transform, img_transform, target_transform)
+    # train_set = ImageFlowFolder(video_train_path, imgs_file,
+    #                             joint_transform, img_transform, target_transform)
+    # train_set2 = VideoImageFolder(video_train_path, imgs_file2,
+    #                               joint_transform, img_transform, target_transform)
 else:
     train_set = VideoImage2Folder(video_train_path, imgs_file, video_seq_path + '/DAFB2', video_seq_gt_path + '/DAFB2',
                                   joint_transform, None, input_size, img_transform, target_transform)
 
 train_loader = DataLoader(train_set, batch_size=args['train_batch_size'], num_workers=4, shuffle=True)
-if train_set2 is not None:
-    train_loader2 = DataLoader(train_set2, batch_size=args['train_batch_size'], num_workers=4, shuffle=True)
+# if train_set2 is not None:
+#     train_loader2 = DataLoader(train_set2, batch_size=args['train_batch_size'], num_workers=4, shuffle=True)
 
 criterion = nn.BCEWithLogitsLoss()
 # erosion = Erosion2d(1, 1, 5, soft_max=False).cuda()
@@ -215,8 +215,8 @@ def train(net, optimizer, teacher=None):
 
         # loss3_record = AvgMeter()
         torch.multiprocessing.set_sharing_strategy('file_system')
-        dataloader_iterator = iter(train_loader2)
-        for i, data1 in enumerate(train_loader):
+        # dataloader_iterator = iter(train_loader2)
+        for i, data in enumerate(train_loader):
 
             optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
@@ -229,9 +229,9 @@ def train(net, optimizer, teacher=None):
             #                                                 ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
-            inputs, flows, labels = data1
-            data2 = next(dataloader_iterator)
-            inputs2, labels2 = data2
+            inputs, flows, labels, inputs2, labels2 = data
+            # data2 = next(dataloader_iterator)
+            # inputs2, labels2 = data2
             if curr_iter % 2 == 0:
                 train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher)
             else:
