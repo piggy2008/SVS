@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 0
+device_id = 1
 
 def L_Matrix(adj_npy, adj_size):
 
@@ -478,9 +478,9 @@ class SEMany2Many3(nn.Module):
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
         excitation1 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
-        excitation2 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
-        excitation3 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
-        excitation4 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation2 = self.fc_two(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation3 = self.fc_three(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation4 = self.fc_four(feat_cat).view(batch, channel * 2, 1, 1)
 
         feedback1 = F.interpolate(feedback, size=feat1_.size()[2:], mode='bilinear')
         feat1_re = torch.cat([feat1_, feedback1], dim=1) * excitation1
@@ -491,10 +491,10 @@ class SEMany2Many3(nn.Module):
         feedback4 = F.interpolate(feedback, size=feat4_.size()[2:], mode='bilinear')
         feat4_re = torch.cat([feat4_, feedback4], dim=1) * excitation4
 
-        feat1_re = self.conv1_out(feat1_re) + feat1
-        feat2_re = self.conv2_out(feat2_re) + feat2
-        feat3_re = self.conv3_out(feat3_re) + feat3
-        feat4_re = self.conv4_out(feat4_re) + feat4
+        feat1_re = self.conv1_out(feat1_re) + feat1_
+        feat2_re = self.conv2_out(feat2_re) + feat2_
+        feat3_re = self.conv3_out(feat3_re) + feat3_
+        feat4_re = self.conv4_out(feat4_re) + feat4_
 
         return feat1_re, feat2_re, feat3_re, feat4_re
 
