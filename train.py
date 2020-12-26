@@ -31,8 +31,8 @@ device_id = 1
 
 torch.manual_seed(2020)
 torch.cuda.manual_seed(2020)
-# torch.backends.cudnn.deterministic = True
-# torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 random.seed(2020)
 np.random.seed(2020)
@@ -338,12 +338,12 @@ def train_single2(net, inputs, labels, optimizer, curr_iter):
 
     out1u, out2u, out2r, out3r, out4r, out5r = net(inputs)
 
-    loss0 = criterion(out1u, labels)
-    loss1 = criterion(out2u, labels)
-    loss2 = criterion(out2r, labels)
-    loss3 = criterion(out3r, labels)
-    loss4 = criterion(out4r, labels)
-    loss5 = criterion(out5r, labels)
+    loss0 = criterion_str(out1u, labels)
+    loss1 = criterion_str(out2u, labels)
+    loss2 = criterion_str(out2r, labels)
+    loss3 = criterion_str(out3r, labels)
+    loss4 = criterion_str(out4r, labels)
+    loss5 = criterion_str(out5r, labels)
 
     # loss6 = criterion_str(out3f_flow, labels)
 
