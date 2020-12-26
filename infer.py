@@ -124,7 +124,7 @@ def main():
                     start = time.time()
 
                     prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
-                    prediction = torch.sigmoid(prediction3)
+                    prediction = (torch.sigmoid(prediction3) + torch.sigmoid(prediction)) / 2
 
                     end = time.time()
                     pre_predict = prediction
