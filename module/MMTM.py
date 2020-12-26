@@ -481,7 +481,7 @@ class SEMany2Many3(nn.Module):
     def initialize(self):
         weight_init(self)
 
-    def forward(self, feat1, feat2, feat3, feat4, feat5, feat6, feat7, feedback):
+    def forward(self, feat1, feat2, feat3, feat4, feedback):
         batch, channel, _, _ = feedback.size()
 
         feat1_ = self.conv1_in(feat1)
