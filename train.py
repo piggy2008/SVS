@@ -52,7 +52,7 @@ args = {
     'iter_num': 100000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 8,
+    'train_batch_size': 7,
     'last_iter': 0,
     'lr': 5 * 1e-3,
     'lr_decay': 0.9,
@@ -158,7 +158,7 @@ def main():
     if args['distillation']:
         teacher = MGA_Network(nInputChannels=3, n_classes=1, os=16,
                               img_backbone_type='resnet101', flow_backbone_type='resnet34')
-        teacher = load_MGA(teacher, args['mga_model_path'], device_id=0)
+        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id)
         teacher.eval()
         teacher.cuda(device_id)
 
@@ -197,7 +197,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=0)
+    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
