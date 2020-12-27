@@ -64,7 +64,7 @@ args = {
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
-    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_TR_DAFB2.txt',
+    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_TR_DAFB2_DAVSOD2.txt',
     # 'imgs_file': 'video_saliency/train_all_DAFB2_DAVSOD_5f.txt',
     # 'train_loader': 'video_image'
     'train_loader': 'flow_image3',
@@ -264,7 +264,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     optimizer.zero_grad()
 
     out1u, out2u, out2r, out3r, out4r, out5r, out2r_k, out3r_k, out4r_k, out5r_k, out2f, out3f, out4f, \
-    out2f_k, out3f_k, out4f_k, pred3_k, out3f_flow = net(inputs, flows)
+    out2f_k, out3f_k, out4f_k = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -282,11 +282,11 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     loss7 = criterion_str(out3f, labels)
     loss8 = criterion_str(out4f, labels)
 
-    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
+    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
+    # loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
     # print(loss6_k, '---', loss7_k)
-    loss9 = criterion_str(out3f_flow, labels)
+    # loss9 = criterion_str(out3f_flow, labels)
 
     if args['distillation']:
         prediction, _, _, _, _ = teacher(inputs, flows)
@@ -300,9 +300,9 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
         # loss6_t = criterion_str(out2f, F.sigmoid(prediction))
         # loss7_t = criterion_str(out3f, F.sigmoid(prediction))
         # loss8_t = criterion_str(out4f, F.sigmoid(prediction))
-        loss9_t = criterion_str(out3f_flow, F.sigmoid(prediction))
+        # loss9_t = criterion_str(out3f_flow, F.sigmoid(prediction))
 
-        distill_loss_t = (loss0_t + loss1_t) / 2 + loss9_t / 2
+        distill_loss_t = (loss0_t + loss1_t) / 2
 
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
@@ -317,8 +317,8 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     # loss11 = criterion_str(out2a, labels)
 
     total_loss = (loss0 + loss1) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
-                 + loss6 / 4 + loss7 / 8 + loss8 / 16 + loss9 / 2
-    distill_loss = loss6_k + loss7_k + loss8_k
+                 + loss6 / 4 + loss7 / 8 + loss8 / 16
+    distill_loss = loss6_k + loss7_k
     if args['distillation']:
         total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
     else:
