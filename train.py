@@ -158,7 +158,7 @@ def main():
     if args['distillation']:
         teacher = MGA_Network(nInputChannels=3, n_classes=1, os=16,
                               img_backbone_type='resnet101', flow_backbone_type='resnet34')
-        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id)
+        teacher = load_MGA(teacher, args['mga_model_path'], device_id=0)
         teacher.eval()
         teacher.cuda(device_id)
 
@@ -197,7 +197,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=0)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
