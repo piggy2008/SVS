@@ -402,7 +402,7 @@ class INet(nn.Module):
 
         self.decoder1 = Decoder_flow2()
         self.decoder2 = Decoder_flow2(GNN=GNN)
-        self.decoder3 = Decoder_flow2(GNN=GNN)
+        # self.decoder3 = Decoder_flow2(GNN=GNN)
         self.se_many = SEMany2Many3(6, 64)
         # self.se_many_flow = SEMany2Many(4, 64)
         # self.se_many2 = SEMany2Many(6, 64)
