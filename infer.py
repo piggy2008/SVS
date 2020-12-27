@@ -59,20 +59,20 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
@@ -148,7 +148,7 @@ def main():
                     start = time.time()
 
                     prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
-                    prediction =  torch.sigmoid(prediction)
+                    prediction =  torch.sigmoid(prediction3)
 
                     end = time.time()
                     print('running time:', (end - start))
