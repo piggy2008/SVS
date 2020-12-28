@@ -409,7 +409,7 @@ class INet(nn.Module):
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
-        self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+        # self.linearp_flow = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
         self.linearr2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearr3 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -463,7 +463,7 @@ class INet(nn.Module):
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
-            out2h, out3h, out4h, out5v, out4f = self.se_many(out2h, out3h, out4h, out5v, out4f, pred1)
+            out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
