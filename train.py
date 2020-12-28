@@ -52,7 +52,7 @@ args = {
     'iter_num': 100000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 7,
+    'train_batch_size': 6,
     'last_iter': 0,
     'lr': 5 * 1e-3,
     'lr_decay': 0.9,
@@ -64,7 +64,7 @@ args = {
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
-    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_TR_DAFB2_DAVSOD2.txt',
+    'imgs_file2': 'Pre-train/pretrain_all_seq_DUT_TR_DAFB2.txt',
     # 'imgs_file': 'video_saliency/train_all_DAFB2_DAVSOD_5f.txt',
     # 'train_loader': 'video_image'
     'train_loader': 'flow_image3',

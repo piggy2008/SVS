@@ -413,12 +413,17 @@ class SEMany2Many2(nn.Module):
         return feat_output
 
 class SEMany2Many3(nn.Module):
-    def __init__(self, many, dim_one):
+    def __init__(self, many, many2, dim_one):
         super(SEMany2Many3, self).__init__()
 
         self.gcn = GCN(many, dim_one, dim_one)
         coarse_adj = np.ones([many, many])
         self.adj = torch.from_numpy(L_Matrix(coarse_adj, many)).float()
+
+        self.gcn2 = GCN(many2, dim_one, dim_one)
+        coarse_adj2 = np.ones([many2, many2])
+        self.adj2 = torch.from_numpy(L_Matrix(coarse_adj2, many2)).float()
+
         self.fc_one = nn.Sequential(
             nn.Linear(many * dim_one, 2 * dim_one),
             nn.Sigmoid()
@@ -436,17 +441,17 @@ class SEMany2Many3(nn.Module):
             nn.Sigmoid()
         )
         self.fc_five = nn.Sequential(
-            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Linear(many2 * dim_one, 2 * dim_one),
             nn.Sigmoid()
         )
-        # self.fc_six = nn.Sequential(
-        #     nn.Linear(many * dim_one, 2 * dim_one),
-        #     nn.Sigmoid()
-        # )
-        # self.fc_seven = nn.Sequential(
-        #     nn.Linear(many * dim_one, 2 * dim_one),
-        #     nn.Sigmoid()
-        # )
+        self.fc_six = nn.Sequential(
+            nn.Linear(many2 * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_seven = nn.Sequential(
+            nn.Linear(many2 * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
 
         self.conv1_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.conv2_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
@@ -454,10 +459,10 @@ class SEMany2Many3(nn.Module):
         self.conv4_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.conv5_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                       nn.ReLU(inplace=True))
-        # self.conv6_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                               nn.ReLU(inplace=True))
-        # self.conv7_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                               nn.ReLU(inplace=True))
+        self.conv6_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv7_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
 
         self.conv1_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                       nn.ReLU(inplace=True))
@@ -469,19 +474,20 @@ class SEMany2Many3(nn.Module):
                                       nn.ReLU(inplace=True))
         self.conv5_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                        nn.ReLU(inplace=True))
-        # self.conv6_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                                nn.ReLU(inplace=True))
-        # self.conv7_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                                nn.ReLU(inplace=True))
+        self.conv6_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                       nn.ReLU(inplace=True))
+        self.conv7_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                       nn.ReLU(inplace=True))
 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.softmax = nn.Softmax(dim=1)
         self.gate = nn.Conv2d(many * dim_one, many - 1, kernel_size=1, bias=True)
+        self.gate2 = nn.Conv2d(many2 * dim_one, many2 - 1, kernel_size=1, bias=True)
 
     def initialize(self):
         weight_init(self)
 
-    def forward(self, feat1, feat2, feat3, feat4, feat5, feedback):
+    def forward(self, feat1, feat2, feat3, feat4, feat5, feat6, feat7, feedback):
         batch, channel, _, _ = feedback.size()
 
         feat1_ = self.conv1_in(feat1)
@@ -489,31 +495,36 @@ class SEMany2Many3(nn.Module):
         feat3_ = self.conv3_in(feat3)
         feat4_ = self.conv4_in(feat4)
         feat5_ = self.conv5_in(feat5)
-        # feat6_ = self.conv6_in(feat6)
-        # feat7_ = self.conv7_in(feat7)
+        feat6_ = self.conv6_in(feat6)
+        feat7_ = self.conv7_in(feat7)
 
         feat1_avg = self.avg_pool(feat1_).view(batch, 1, channel)
         feat2_avg = self.avg_pool(feat2_).view(batch, 1, channel)
         feat3_avg = self.avg_pool(feat3_).view(batch, 1, channel)
         feat4_avg = self.avg_pool(feat4_).view(batch, 1, channel)
         feat5_avg = self.avg_pool(feat5_).view(batch, 1, channel)
-        # feat6_avg = self.avg_pool(feat6_).view(batch, 1, channel)
-        # feat7_avg = self.avg_pool(feat7_).view(batch, 1, channel)
+        feat6_avg = self.avg_pool(feat6_).view(batch, 1, channel)
+        feat7_avg = self.avg_pool(feat7_).view(batch, 1, channel)
         feedback_avg = self.avg_pool(feedback).view(batch, 1, channel)
 
-        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feat5_avg, feedback_avg], dim=1)
+        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
+        combined_fc2 = torch.cat([feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
         batch_adj = batch_adj.cuda(device_id)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
+        batch_adj2 = self.adj2.repeat(batch, 1, 1)
+        batch_adj2 = batch_adj2.cuda(device_id)
+        feat_mean2, feat_cat2 = self.gcn2(combined_fc2, batch_adj2)
+
         excitation1 = self.fc_one(feat_cat).view(batch, channel * 2, 1, 1)
         excitation2 = self.fc_two(feat_cat).view(batch, channel * 2, 1, 1)
         excitation3 = self.fc_three(feat_cat).view(batch, channel * 2, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel * 2, 1, 1)
-        excitation5 = self.fc_five(feat_cat).view(batch, channel * 2, 1, 1)
-        # excitation6 = self.fc_three(feat_cat).view(batch, channel * 2, 1, 1)
-        # excitation7 = self.fc_four(feat_cat).view(batch, channel * 2, 1, 1)
+        excitation5 = self.fc_five(feat_cat2).view(batch, channel * 2, 1, 1)
+        excitation6 = self.fc_three(feat_cat2).view(batch, channel * 2, 1, 1)
+        excitation7 = self.fc_seven(feat_cat2).view(batch, channel * 2, 1, 1)
 
         feedback1 = F.interpolate(feedback, size=feat1_.size()[2:], mode='bilinear')
         feat1_re = torch.cat([feat1_, feedback1], dim=1) * excitation1
@@ -525,20 +536,20 @@ class SEMany2Many3(nn.Module):
         feat4_re = torch.cat([feat4_, feedback4], dim=1) * excitation4
         feedback5 = F.interpolate(feedback, size=feat5_.size()[2:], mode='bilinear')
         feat5_re = torch.cat([feat5_, feedback5], dim=1) * excitation5
-        # feedback6 = F.interpolate(feedback, size=feat6_.size()[2:], mode='bilinear')
-        # feat6_re = torch.cat([feat6_, feedback6], dim=1) * excitation6
-        # feedback7 = F.interpolate(feedback, size=feat7_.size()[2:], mode='bilinear')
-        # feat7_re = torch.cat([feat7_, feedback7], dim=1) * excitation7
+        feedback6 = F.interpolate(feedback, size=feat6_.size()[2:], mode='bilinear')
+        feat6_re = torch.cat([feat6_, feedback6], dim=1) * excitation6
+        feedback7 = F.interpolate(feedback, size=feat7_.size()[2:], mode='bilinear')
+        feat7_re = torch.cat([feat7_, feedback7], dim=1) * excitation7
 
         feat1_re = self.conv1_out(feat1_re) + feat1
         feat2_re = self.conv2_out(feat2_re) + feat2
         feat3_re = self.conv3_out(feat3_re) + feat3
         feat4_re = self.conv4_out(feat4_re) + feat4
         feat5_re = self.conv5_out(feat5_re) + feat5
-        # feat6_re = self.conv6_out(feat6_re) + feat6
-        # feat7_re = self.conv7_out(feat7_re) + feat7
+        feat6_re = self.conv6_out(feat6_re) + feat6
+        feat7_re = self.conv7_out(feat7_re) + feat7
 
-        return feat1_re, feat2_re, feat3_re, feat4_re, feat5_re
+        return feat1_re, feat2_re, feat3_re, feat4_re, feat5_re, feat6_re, feat7_re
 
 class SEMany2Many4(nn.Module):
     def __init__(self, many, dim_one):
