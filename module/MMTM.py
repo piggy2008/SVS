@@ -523,7 +523,7 @@ class SEMany2Many3(nn.Module):
         excitation3 = self.fc_three(feat_cat).view(batch, channel * 2, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel * 2, 1, 1)
         excitation5 = self.fc_five(feat_cat2).view(batch, channel * 2, 1, 1)
-        excitation6 = self.fc_three(feat_cat2).view(batch, channel * 2, 1, 1)
+        excitation6 = self.fc_six(feat_cat2).view(batch, channel * 2, 1, 1)
         excitation7 = self.fc_seven(feat_cat2).view(batch, channel * 2, 1, 1)
 
         feedback1 = F.interpolate(feedback, size=feat1_.size()[2:], mode='bilinear')
