@@ -70,7 +70,9 @@ args = {
     'train_loader': 'flow_image3',
     # 'train_loader': 'video_sequence'
     'image_size': 430,
-    'crop_size': 380
+    'crop_size': 380,
+    'self_distill': 0.1,
+    'teacher_distill': 0.1
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
@@ -320,9 +322,11 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
                  + loss6 / 4 + loss7 / 8 + loss8 / 16
     distill_loss = loss6_k + loss7_k
     if args['distillation']:
-        total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
+        total_loss = total_loss + args['self_distill'] * distill_loss + args['teacher_distill'] * distill_loss_t
+        # total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
     else:
-        total_loss = total_loss + 0.1 * distill_loss
+        # total_loss = total_loss + 0.1 * distill_loss
+        total_loss = total_loss + args['self_distill'] * distill_loss
     total_loss.backward()
     optimizer.step()
 
