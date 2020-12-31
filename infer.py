@@ -26,7 +26,7 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2020-12-29 20:43:52'
+exp_name = 'VideoSaliency_2020-12-30 20:17:17'
 
 args = {
     'gnn': True,
