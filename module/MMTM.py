@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 0
+device_id = 1
 
 def L_Matrix(adj_npy, adj_size):
 
@@ -264,7 +264,7 @@ class SEQuart(nn.Module):
         # self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
         # self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
         # self.gate_d = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        self.gate = nn.Conv2d(dim, 4, kernel_size=1, bias=True)
+        self.gate = nn.Conv2d(dim, 64, kernel_size=1, bias=True)
 
     def initialize(self):
         weight_init(self)
@@ -297,18 +297,19 @@ class SEQuart(nn.Module):
         # atten_c = self.gate_c(feat_cat)
         # atten_d = self.gate_d(feat_cat)
         # attention_vector = torch.cat([atten_a, atten_b, atten_c, atten_d], dim=1)
-        attention_vector = self.gate(feat_cat)
-        attention_vector = self.softmax(attention_vector)
 
-        attention_vector_a, attention_vector_b = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :]
-        attention_vector_c, attention_vector_d = attention_vector[:, 2:3, :, :], attention_vector[:, 3:4, :, :]
-        merge_feature = low * attention_vector_a + high * attention_vector_b + \
-                        flow * attention_vector_c + feedback * attention_vector_d
+        attention_vector = self.gate(feat_cat)
+        # attention_vector = self.softmax(attention_vector)
+        #
+        # attention_vector_a, attention_vector_b = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :]
+        # attention_vector_c, attention_vector_d = attention_vector[:, 2:3, :, :], attention_vector[:, 3:4, :, :]
+        # merge_feature = low * attention_vector_a + high * attention_vector_b + \
+        #                 flow * attention_vector_c + feedback * attention_vector_d
         # bug backup
         # merge_feature = low * attention_vector_a + high * attention_vector_b + \
         #                 flow * attention_vector_c * feedback * attention_vector_d
 
-        return merge_feature
+        return attention_vector
 
 class SEMany2Many(nn.Module):
     def __init__(self, many, dim_one):
