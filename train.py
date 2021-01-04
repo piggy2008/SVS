@@ -71,7 +71,7 @@ args = {
     # 'train_loader': 'video_sequence'
     'image_size': 430,
     'crop_size': 380,
-    'self_distill': 0.3,
+    'self_distill': 0.1,
     'teacher_distill': 0.5
 }
 

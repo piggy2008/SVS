@@ -172,12 +172,13 @@ class SETriplet(nn.Module):
         return out_a, out_b, out_c, merge_feature
 
 class SETriplet2(nn.Module):
-    def __init__(self, dim_a, dim_b, dim_c, dim_out):
+    def __init__(self, dim_a, dim_b, dim_c):
         super(SETriplet2, self).__init__()
         dim = dim_a + dim_b + dim_c
 
         self.gcn = GCN(3, 64, 64)
-        self.adj = torch.from_numpy(np.array(coarse_adj_list)).float()
+        coarse_adj = np.ones([3, 3])
+        self.adj = torch.from_numpy(L_Matrix(coarse_adj, 3)).float()
 
         self.fc_one = nn.Sequential(
             nn.Linear(dim, dim_a),
@@ -194,9 +195,10 @@ class SETriplet2(nn.Module):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.softmax = nn.Softmax(dim=1)
 
-        self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
-        self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate = nn.Conv2d(dim, 64, kernel_size=1, bias=True)
 
     def initialize(self):
         weight_init(self)
@@ -218,19 +220,20 @@ class SETriplet2(nn.Module):
         weighted_feat_c = c + excitation1 * a + excitation2 * b
 
         feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
-        atten_a = self.gate_a(feat_cat)
-        atten_b = self.gate_b(feat_cat)
-        atten_c = self.gate_c(feat_cat)
+        merge_feature = self.gate(feat_cat)
+        # atten_a = self.gate_a(feat_cat)
+        # atten_b = self.gate_b(feat_cat)
+        # atten_c = self.gate_c(feat_cat)
 
-        attention_vector = torch.cat([atten_a, atten_b, atten_c], dim=1)
-        attention_vector = self.softmax(attention_vector)
-        attention_vector_a, attention_vector_b, attention_vector_c = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :], attention_vector[:, 2:3, :, :]
-
-        merge_feature = a * attention_vector_a + b * attention_vector_b + c * attention_vector_c
-        out_a = torch.relu((a + merge_feature) / 2)
-        out_b = torch.relu((b + merge_feature) / 2)
-        out_c = torch.relu((c + merge_feature) / 2)
-        return out_a, out_b, out_c, merge_feature
+        # attention_vector = torch.cat([atten_a, atten_b, atten_c], dim=1)
+        # attention_vector = self.softmax(attention_vector)
+        # attention_vector_a, attention_vector_b, attention_vector_c = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :], attention_vector[:, 2:3, :, :]
+        #
+        # merge_feature = a * attention_vector_a + b * attention_vector_b + c * attention_vector_c
+        # out_a = torch.relu((a + merge_feature) / 2)
+        # out_b = torch.relu((b + merge_feature) / 2)
+        # out_c = torch.relu((c + merge_feature) / 2)
+        return merge_feature
 
 class SEQuart(nn.Module):
     def __init__(self, dim_a, dim_b, dim_c, dim_d):

@@ -119,6 +119,7 @@ class GFM2(nn.Module):
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
         self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        # self.gcn_fuse3 = SETriplet2(64, 64, 64)
         self.GNN = GNN
     def forward(self, low, high, flow=None, feedback=None):
         if flow is not None:
@@ -137,6 +138,7 @@ class GFM2(nn.Module):
                 fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
             else:
                 fuse = out2h * out2l * out2f
+                # fuse = self.gcn_fuse3(out2l, out2h, out2f)
             out3h = self.conv3h(fuse) + out1h
             out4h = self.conv4h(out3h)
             out3l = self.conv3l(fuse) + out1l
@@ -250,7 +252,7 @@ class SFM2(nn.Module):
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
 
-        self.se_triplet = SETriplet2(64, 64, 64, 64)
+        self.se_triplet = SETriplet2(64, 64, 64)
 
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
@@ -264,7 +266,7 @@ class SFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
-        out2h_r, out2l_r, out2f_r, fuse = self.se_triplet(out2h, out2l, out2f)
+        fuse = self.se_triplet(out2h, out2l, out2f)
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
@@ -311,6 +313,37 @@ class CFM(nn.Module):
         out3v = F.relu(self.bn3v(self.conv3v(fuse )), inplace=True)+out1v
         out4v = F.relu(self.bn4v(self.conv4v(out3v)), inplace=True)
         return out4h, out4v
+
+    def initialize(self):
+        weight_init(self)
+
+class Decoder_flow(nn.Module):
+    def __init__(self):
+        super(Decoder_flow, self).__init__()
+        self.cfm45  = SFM2()
+        self.cfm34  = SFM2()
+        self.cfm23  = SFM2()
+
+    def forward(self, out2h, out3h, out4h, out5v, out2f, out3f, out4f, fback=None):
+        if fback is not None:
+            refine5      = F.interpolate(fback, size=out5v.size()[2:], mode='bilinear')
+            refine4      = F.interpolate(fback, size=out4h.size()[2:], mode='bilinear')
+            refine3      = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
+            refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
+            out5v        = out5v+refine5
+
+            out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
+            out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
+            out3h, out3v, out3b = self.cfm34(out3h + refine3, out4f, out3f + out4b + refine3)
+            out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
+            out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + out3b + refine2)
+        else:
+            out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
+            out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
+            out3h, out3v, out3b = self.cfm34(out3h, out4v, out3f + out4b)
+            out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
+            out2h, pred, out2b = self.cfm23(out2h, out3v, out2f + out3b)
+        return out2h, out3h, out4h, out5v, out2b, out3b, out4b, pred
 
     def initialize(self):
         weight_init(self)
@@ -400,7 +433,7 @@ class INet(nn.Module):
         self.flow_align2 = nn.Sequential(nn.Conv2d(128, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.flow_align1 = nn.Sequential(nn.Conv2d(64, 64, 1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
 
-        self.decoder1 = Decoder_flow2()
+        self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         # self.decoder3 = Decoder_flow2(GNN=GNN)
         self.se_many = SEMany2Many3(5, 4, 64)
