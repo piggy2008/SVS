@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 1
+device_id = 0
 
 def L_Matrix(adj_npy, adj_size):
 
