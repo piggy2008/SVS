@@ -119,7 +119,7 @@ class GFM2(nn.Module):
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
         self.gcn_fuse = SEQuart(64, 64, 64, 64)
-        self.gcn_fuse3 = SETriplet2(64, 64, 64)
+        # self.gcn_fuse3 = SETriplet2(64, 64, 64)
         self.GNN = GNN
     def forward(self, low, high, flow=None, feedback=None):
         if flow is not None:
@@ -137,8 +137,8 @@ class GFM2(nn.Module):
             if self.GNN:
                 fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
             else:
-                # fuse = out2h * out2l * out2f
-                fuse = self.gcn_fuse3(out2l, out2h, out2f)
+                fuse = out2h * out2l * out2f
+                # fuse = self.gcn_fuse3(out2l, out2h, out2f)
             out3h = self.conv3h(fuse) + out1h
             out4h = self.conv4h(out3h)
             out3l = self.conv3l(fuse) + out1l
