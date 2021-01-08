@@ -13,7 +13,7 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 # from concurrent.futures import ThreadPoolExecutor
 
 if __name__ == "__main__":
-    dataset_names = ['davis']
+    dataset_names = ['DAVSOD']
     snapshot = '60000'
     ckpt_path = './ckpt'
     exp_name = 'VideoSaliency_2021-01-03 19:49:18'
