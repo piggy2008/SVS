@@ -14,9 +14,9 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 
 if __name__ == "__main__":
     dataset_names = ['ViSal']
-    snapshot = '120000'
+    snapshot = '100000'
     ckpt_path = '/home/ty/code/I2V/ckpt'
-    exp_name = 'VideoSaliency_2020-07-21 13:01:22'
+    exp_name = 'VideoSaliency_2020-08-31 02:01:21'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT'),
