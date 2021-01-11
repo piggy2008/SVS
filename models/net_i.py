@@ -331,14 +331,16 @@ class Decoder_flow(nn.Module):
             refine3      = F.interpolate(fback, size=out3h.size()[2:], mode='bilinear')
             refine2      = F.interpolate(fback, size=out2h.size()[2:], mode='bilinear')
             out5v        = out5v+refine5
-
+            # print('out4h:', out4h.shape)
+            # print('refine4:', refine4.shape)
+            # print('out4f:', out4f.shape)
+            out4f = F.interpolate(out4f, size=refine4.size()[2:], mode='bilinear')
             out4h, out4v, out4b = self.cfm45(out4h + refine4, out5v, out4f + refine4)
-            print('out4h:', out4h.shape)
-            print('refine4:', refine4.shape)
-            print('out4f:', out4f.shape)
-            out4b = F.interpolate(out4b, size=out3f.size()[2:], mode='bilinear')
+            out4b = F.interpolate(out4b, size=refine3.size()[2:], mode='bilinear')
+            out3f = F.interpolate(out3f, size=refine3.size()[2:], mode='bilinear')
             out3h, out3v, out3b = self.cfm34(out3h + refine3, out4v, out3f + out4b + refine3)
-            out3b = F.interpolate(out3b, size=out2f.size()[2:], mode='bilinear')
+            out3b = F.interpolate(out3b, size=refine2.size()[2:], mode='bilinear')
+            out2f = F.interpolate(out2f, size=refine2.size()[2:], mode='bilinear')
             out2h, pred, out2b = self.cfm23(out2h+refine2, out3v, out2f + out3b + refine2)
         else:
             out4h, out4v, out4b = self.cfm45(out4h, out5v, out4f)
@@ -527,3 +529,4 @@ if __name__ == '__main__':
         net = INet(cfg=None, GNN=True)
         input = torch.zeros([2, 3, 380, 380])
         output = net(input, input)
+        output = net(input)
