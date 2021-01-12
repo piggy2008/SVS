@@ -268,21 +268,21 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     out1u, out2u, out2r, out3r, out4r, out5r, out2r_k, out3r_k, out4r_k, out5r_k, out2f, out3f, out4f, \
     out2f_k, out3f_k, out4f_k = net(inputs, flows)
 
-    loss0 = criterion(out1u, labels)
-    loss1 = criterion(out2u, labels)
-    loss2 = criterion(out2r, labels)
-    loss3 = criterion(out3r, labels)
-    loss4 = criterion(out4r, labels)
-    loss5 = criterion(out5r, labels)
+    loss0 = criterion_str(out1u, labels)
+    loss1 = criterion_str(out2u, labels)
+    loss2 = criterion_str(out2r, labels)
+    loss3 = criterion_str(out3r, labels)
+    loss4 = criterion_str(out4r, labels)
+    loss5 = criterion_str(out5r, labels)
 
     # loss2_k = criterion_kl(F.adaptive_avg_pool2d(out2r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
     # loss3_k = criterion_kl(F.adaptive_avg_pool2d(out3r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
     # loss4_k = criterion_kl(F.adaptive_avg_pool2d(out4r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
     # loss5_k = criterion_kl(F.adaptive_avg_pool2d(out5r_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
 
-    loss6 = criterion(out2f, labels)
-    loss7 = criterion(out3f, labels)
-    loss8 = criterion(out4f, labels)
+    loss6 = criterion_str(out2f, labels)
+    loss7 = criterion_str(out3f, labels)
+    loss8 = criterion_str(out4f, labels)
 
     loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
     loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
@@ -292,8 +292,8 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
 
     if args['distillation']:
         prediction, _, _, _, _ = teacher(inputs, flows)
-        loss0_t = criterion(out1u, F.sigmoid(prediction))
-        loss1_t = criterion(out2u, F.sigmoid(prediction))
+        loss0_t = criterion_str(out1u, F.sigmoid(prediction))
+        loss1_t = criterion_str(out2u, F.sigmoid(prediction))
         # loss2_t = criterion_str(out2r, F.sigmoid(prediction))
         # loss3_t = criterion_str(out3r, F.sigmoid(prediction))
         # loss4_t = criterion_str(out4r, F.sigmoid(prediction))
@@ -342,12 +342,12 @@ def train_single2(net, inputs, labels, optimizer, curr_iter):
 
     out1u, out2u, out2r, out3r, out4r, out5r = net(inputs)
 
-    loss0 = criterion(out1u, labels)
-    loss1 = criterion(out2u, labels)
-    loss2 = criterion(out2r, labels)
-    loss3 = criterion(out3r, labels)
-    loss4 = criterion(out4r, labels)
-    loss5 = criterion(out5r, labels)
+    loss0 = criterion_str(out1u, labels)
+    loss1 = criterion_str(out2u, labels)
+    loss2 = criterion_str(out2r, labels)
+    loss3 = criterion_str(out3r, labels)
+    loss4 = criterion_str(out4r, labels)
+    loss5 = criterion_str(out5r, labels)
 
     # loss6 = criterion_str(out3f_flow, labels)
 
