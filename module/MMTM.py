@@ -279,7 +279,7 @@ class SEQuart(nn.Module):
         # batch_adj = self.adj.repeat(batch, 1, 1)
         # batch_adj = batch_adj.cuda(device_id)
         # feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
-        feat_cat = self.avg_pool(combined)
+        feat_cat = self.avg_pool(combined).view(batch, 4 * channel)
         excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
         excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
@@ -598,7 +598,8 @@ class SEMany2Many4(nn.Module):
 if __name__ == '__main__':
         input = torch.rand([2, 64, 24, 24])
         # net = SEQuart(64, 64, 64, 64)
-        feat_list = [input, input, input]
-        net = SEMany2Many2(4, 64)
-        output = net(feat_list, input)
+        feat_list = [input, input, input, input, input]
+        # net = SEMany2Many3(5, 4, 64)
+        net = SEQuart(64, 64, 64, 64)
+        output = net(input, input, input, input)
 
