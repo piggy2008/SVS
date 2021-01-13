@@ -510,13 +510,13 @@ class INet(nn.Module):
             shape = x.size()[2:] if shape is None else shape
 
             pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
-            # pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
+            pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
 
             out2h_p = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
             out3h_p = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
             out4h_p = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
             out5h_p = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
-            return pred1a, out2h_p, out3h_p, out4h_p, out5h_p
+            return pred1a, pred2a, out2h_p, out3h_p, out4h_p, out5h_p
 
     def initialize(self):
         # if self.cfg.snapshot:
