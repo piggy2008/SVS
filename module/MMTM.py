@@ -290,7 +290,8 @@ class SEQuart(nn.Module):
         combined_fc_t = combined_fc.permute(0, 2, 1)
         mul = torch.bmm(combined_fc, combined_fc_t)
         batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
-        batch_adj = torch.norm(batch_adj, dim=2)
+        batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
+        batch_adj = batch_adj / batch_adj_norm
         print(batch_adj)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
         # feat_cat = self.avg_pool(feat_cat).view(batch, 4 * channel)
@@ -631,6 +632,9 @@ if __name__ == '__main__':
         print(mul.shape)
         a = mul / (input2_norm * input2_norm_t)
         print(a)
+        b = torch.norm(a, dim=2, keepdim=True)
+        c = a / b
+        print(c)
         # output = torch.cosine_similarity(input2, input2, dim=2)
         # print(output.shape)
         # print(output)
