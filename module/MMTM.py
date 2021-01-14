@@ -290,7 +290,7 @@ class SEQuart(nn.Module):
         combined_fc_t = combined_fc.permute(0, 2, 1)
         mul = torch.bmm(combined_fc, combined_fc_t)
         batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
-        # print(batch_adj)
+        print(batch_adj)
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
         # feat_cat = self.avg_pool(feat_cat).view(batch, 4 * channel)
         excitation1 = self.fc_one(feat_cat).view(batch, channel, 1, 1)
