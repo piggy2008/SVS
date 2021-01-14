@@ -13,10 +13,10 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 # from concurrent.futures import ThreadPoolExecutor
 
 if __name__ == "__main__":
-    dataset_names = ['davis']
-    snapshot = '60000'
+    dataset_names = ['ViSal']
+    snapshot = '40000'
     ckpt_path = '/home/ty/code/SVS/ckpt'
-    exp_name = 'VideoSaliency_2021-01-03 19:49:18'
+    exp_name = 'VideoSaliency_2021-01-13 14:45:27'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT'),
