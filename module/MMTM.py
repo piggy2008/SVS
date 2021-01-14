@@ -284,7 +284,7 @@ class SEQuart(nn.Module):
         combined = torch.cat([low, high, flow, feedback], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        # batch_adj = batch_adj.cuda(device_id)
+        batch_adj = batch_adj.cuda(device_id)
 
         # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
         # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
@@ -532,7 +532,7 @@ class SEMany2Many3(nn.Module):
         # combined_fc2 = torch.cat([feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         batch_adj = self.adj.repeat(batch, 1, 1)
-        # batch_adj = batch_adj.cuda(device_id)
+        batch_adj = batch_adj.cuda(device_id)
 
         # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
         # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
