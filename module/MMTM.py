@@ -207,14 +207,14 @@ class SETriplet2(nn.Module):
         batch, channel, _, _ = a.size()
         combined = torch.cat([a, b, c], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 3, channel)
-        # batch_adj = self.adj.repeat(batch, 1, 1)
-        # batch_adj = batch_adj.cuda(device_id)
+        batch_adj = self.adj.repeat(batch, 1, 1)
+        batch_adj = batch_adj.cuda(device_id)
 
-        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        combined_fc_t = combined_fc.permute(0, 2, 1)
-        mul = torch.bmm(combined_fc, combined_fc_t)
-        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        # combined_fc_t = combined_fc.permute(0, 2, 1)
+        # mul = torch.bmm(combined_fc, combined_fc_t)
+        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
 
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 

@@ -135,7 +135,7 @@ class GFM2(nn.Module):
             out1f = self.conv1f(flow)
             out2f = self.conv2f(out1f)
             if self.GNN:
-                fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
+                fuse = F.relu(self.gcn_fuse(out2l, out2h, out2f, feedback), inplace=True)
             else:
                 fuse = out2h * out2l * out2f
                 # fuse = self.gcn_fuse3(out2l, out2h, out2f)
@@ -266,7 +266,7 @@ class SFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
-        fuse = self.se_triplet(out2h, out2l, out2f)
+        fuse = F.relu(self.se_triplet(out2h, out2l, out2f), inplace=True)
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
