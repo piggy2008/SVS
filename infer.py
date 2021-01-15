@@ -26,11 +26,11 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-01-15 11:50:29'
+exp_name = 'VideoSaliency_2021-01-14 17:50:56'
 
 args = {
     'gnn': True,
-    'snapshot': '52000',  # your snapshot filename (exclude extension name)
+    'snapshot': '40000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -147,8 +147,8 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
-                    prediction =  torch.sigmoid(prediction)
+                    prediction2, prediction, prediction3, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
+                    prediction =  torch.sigmoid(prediction3)
 
                     end = time.time()
                     print('running time:', (end - start))
