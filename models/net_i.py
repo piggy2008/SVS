@@ -135,7 +135,7 @@ class GFM2(nn.Module):
             out1f = self.conv1f(flow)
             out2f = self.conv2f(out1f)
             if self.GNN:
-                fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
+                fuse = F.relu(self.gcn_fuse(out2l, out2h, out2f, feedback), inplace=True)
             else:
                 fuse = out2h * out2l * out2f
                 # fuse = self.gcn_fuse3(out2l, out2h, out2f)
@@ -266,7 +266,7 @@ class SFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
-        fuse = self.se_triplet(out2h, out2l, out2f)
+        fuse = F.relu(self.se_triplet(out2h, out2l, out2f), inplace=True)
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
@@ -502,9 +502,10 @@ class INet(nn.Module):
                    out2f_p, out3f_p, out4f_p, out2f, out3f, out4f
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
+            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
-            out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
+
+            # out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
             # out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)
             shape = x.size()[2:] if shape is None else shape
