@@ -147,7 +147,7 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, prediction3, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
+                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
 
                     end = time.time()
