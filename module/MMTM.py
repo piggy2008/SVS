@@ -295,7 +295,6 @@ class SEQuart(nn.Module):
         batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
         batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
         batch_adj = batch_adj / batch_adj_norm
-        print(batch_adj)
 
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
         # feat_cat = self.avg_pool(feat_cat).view(batch, 4 * channel)
