@@ -207,16 +207,16 @@ class SETriplet2(nn.Module):
         batch, channel, _, _ = a.size()
         combined = torch.cat([a, b, c], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 3, channel)
-        # batch_adj = self.adj.repeat(batch, 1, 1)
-        # batch_adj = batch_adj.cuda(device_id)
+        batch_adj = self.adj.repeat(batch, 1, 1)
+        batch_adj = batch_adj.cuda(device_id)
 
-        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        combined_fc_t = combined_fc.permute(0, 2, 1)
-        mul = torch.bmm(combined_fc, combined_fc_t)
-        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
-        batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
-        batch_adj = batch_adj / batch_adj_norm
+        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        # combined_fc_t = combined_fc.permute(0, 2, 1)
+        # mul = torch.bmm(combined_fc, combined_fc_t)
+        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        # batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
+        # batch_adj = batch_adj / batch_adj_norm
 
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
@@ -224,11 +224,13 @@ class SETriplet2(nn.Module):
         excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
 
-        weighted_feat_a = a + excitation2 * b + excitation3 * c
-        weighted_feat_b = b + excitation1 * a + excitation3 * c
-        weighted_feat_c = c + excitation1 * a + excitation2 * b
+        # weighted_feat_a = a + excitation2 * b + excitation3 * c
+        # weighted_feat_b = b + excitation1 * a + excitation3 * c
+        # weighted_feat_c = c + excitation1 * a + excitation2 * b
+        # feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
 
-        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
+        merge = excitation1 * a + excitation2 * b + excitation3 * c
+        feat_cat = torch.cat([a + merge, b + merge, c + merge], dim=1)
         merge_feature = self.gate(feat_cat)
         # atten_a = self.gate_a(feat_cat)
         # atten_b = self.gate_b(feat_cat)
