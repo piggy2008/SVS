@@ -50,7 +50,7 @@ args = {
     'KL': True,
     'structure': True,
     'iter_num': 100000,
-    'iter_save': 4000,
+    'iter_save': 1000,
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
