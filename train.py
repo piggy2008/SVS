@@ -54,7 +54,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
-    'lr': 5 * 1e-3,
+    'lr': 2 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -165,14 +165,14 @@ def main():
         teacher.cuda(device_id)
 
     net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
-    bkbone, flow_modules, remains = [], [], []
+    bkbone, flow_modules, triplet, remains = [], [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
             # param.requires_grad = False
             bkbone.append(param)
-        # elif 'flow' in name or 'linearf' in name or 'decoder' in name:
-        #     print('flow related:', name)
-        #     flow_modules.append(param)
+        elif 'se_triplet' in name:
+            print('se_triplet related:', name)
+            flow_modules.append(param)
         elif 'flow' in name or 'linearf' in name or 'decoder' in name:
             print('decoder related:', name)
             flow_modules.append(param)
@@ -221,13 +221,13 @@ def train(net, optimizer, teacher=None):
 
             optimizer.param_groups[0]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
-            optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[1]['lr'] = 5 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
             #
-            # optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
-            #                                                 ) ** args['lr_decay']
+            optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
+                                                            ) ** args['lr_decay']
             #
             # inputs, flows, labels, pre_img, pre_lab, cur_img, cur_lab, next_img, next_lab = data
             inputs, flows, labels, inputs2, labels2 = data
