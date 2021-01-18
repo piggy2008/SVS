@@ -187,7 +187,7 @@ def main():
     #      'lr': args['lr'], 'weight_decay': args['weight_decay']}
     # ], momentum=args['momentum'])
 
-    optimizer = optim.SGD([{'params': bkbone}, {'params': flow_modules}, {'params': remains}],
+    optimizer = optim.SGD([{'params': bkbone}, {'params': triplet}, {'params': flow_modules}, {'params': remains}],
                           lr=args['lr'], momentum=args['momentum'],
                           weight_decay=args['weight_decay'], nesterov=True)
 
