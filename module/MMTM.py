@@ -287,16 +287,16 @@ class SEQuart(nn.Module):
         batch, channel, _, _ = low.size()
         combined = torch.cat([low, high, flow, feedback], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 4, channel)
-        batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda(device_id)
+        # batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda(device_id)
 
-        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        # combined_fc_t = combined_fc.permute(0, 2, 1)
-        # mul = torch.bmm(combined_fc, combined_fc_t)
-        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
-        # batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
-        # batch_adj = batch_adj / batch_adj_norm
+        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        combined_fc_t = combined_fc.permute(0, 2, 1)
+        mul = torch.bmm(combined_fc, combined_fc_t)
+        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
+        batch_adj = batch_adj / batch_adj_norm
 
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
         # feat_cat = self.avg_pool(feat_cat).view(batch, 4 * channel)
@@ -305,14 +305,14 @@ class SEQuart(nn.Module):
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel, 1, 1)
 
-        # weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        # weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
-        # weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
-        # weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
-        # feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
+        weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
+        weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
+        weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
+        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
 
-        merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
+        # merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        # feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
         # atten_a = self.gate_a(feat_cat)
         # atten_b = self.gate_b(feat_cat)
         # atten_c = self.gate_c(feat_cat)
@@ -532,16 +532,16 @@ class SEMany2Many3(nn.Module):
         combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
         # combined_fc2 = torch.cat([feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
-        batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda(device_id)
+        # batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda(device_id)
 
-        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        # combined_fc_t = combined_fc.permute(0, 2, 1)
-        # mul = torch.bmm(combined_fc, combined_fc_t)
-        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
-        # batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
-        # batch_adj = batch_adj / batch_adj_norm
+        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        combined_fc_t = combined_fc.permute(0, 2, 1)
+        mul = torch.bmm(combined_fc, combined_fc_t)
+        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
+        batch_adj = batch_adj / batch_adj_norm
 
         feat_mean, feat_cat = self.gcn(combined_fc, batch_adj)
 
