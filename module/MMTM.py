@@ -305,14 +305,14 @@ class SEQuart(nn.Module):
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel, 1, 1)
 
-        weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
-        weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
-        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
+        # weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
+        # weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
+        # feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
 
-        # merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        # feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
+        merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
         # atten_a = self.gate_a(feat_cat)
         # atten_b = self.gate_b(feat_cat)
         # atten_c = self.gate_c(feat_cat)
