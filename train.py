@@ -54,7 +54,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
-    'lr': 2 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
