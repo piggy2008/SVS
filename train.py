@@ -34,8 +34,8 @@ torch.cuda.manual_seed(2021)
 # torch.backends.cudnn.deterministic = True
 # torch.backends.cudnn.benchmark = False
 
-random.seed(2020)
-np.random.seed(2020)
+random.seed(2021)
+np.random.seed(2021)
 # torch.cuda.set_device(device_id)
 
 
