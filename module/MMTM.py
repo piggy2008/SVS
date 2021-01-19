@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 1
+device_id = 3
 
 def L_Matrix(adj_npy, adj_size):
 
@@ -224,13 +224,13 @@ class SETriplet2(nn.Module):
         excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
 
-        weighted_feat_a = a + excitation2 * b + excitation3 * c
-        weighted_feat_b = b + excitation1 * a + excitation3 * c
-        weighted_feat_c = c + excitation1 * a + excitation2 * b
-        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
+        # weighted_feat_a = a + excitation2 * b + excitation3 * c
+        # weighted_feat_b = b + excitation1 * a + excitation3 * c
+        # weighted_feat_c = c + excitation1 * a + excitation2 * b
+        # feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c], dim=1)
 
-        # merge = excitation1 * a + excitation2 * b + excitation3 * c
-        # feat_cat = torch.cat([a + merge, b + merge, c + merge], dim=1)
+        merge = excitation1 * a + excitation2 * b + excitation3 * c
+        feat_cat = torch.cat([a + merge, b + merge, c + merge], dim=1)
         merge_feature = self.gate(feat_cat)
         # atten_a = self.gate_a(feat_cat)
         # atten_b = self.gate_b(feat_cat)
@@ -305,14 +305,14 @@ class SEQuart(nn.Module):
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel, 1, 1)
 
-        weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
-        weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
-        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
+        # weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
+        # weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
+        # weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
+        # feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
 
-        # merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        # feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
+        merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
         # atten_a = self.gate_a(feat_cat)
         # atten_b = self.gate_b(feat_cat)
         # atten_c = self.gate_c(feat_cat)
