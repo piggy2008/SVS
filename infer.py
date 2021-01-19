@@ -59,10 +59,10 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
