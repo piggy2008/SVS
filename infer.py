@@ -30,7 +30,7 @@ exp_name = 'VideoSaliency_2021-01-19 17:01:08'
 
 args = {
     'gnn': True,
-    'snapshot': '8000',  # your snapshot filename (exclude extension name)
+    'snapshot': '12000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -69,10 +69,10 @@ to_pil = transforms.ToPILImage()
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
