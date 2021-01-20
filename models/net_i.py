@@ -443,7 +443,7 @@ class INet(nn.Module):
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
         self.se_many = SEMany2Many3(5, 4, 64)
-        # self.se_many_flow = SEMany2Many(4, 64)
+
         # self.se_many2 = SEMany2Many(6, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
