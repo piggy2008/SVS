@@ -27,7 +27,7 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 2
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -49,12 +49,12 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 120000,
+    'iter_num': 200000,
     'iter_save': 4000,
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
-    'lr': 8 * 1e-3,
+    'lr': 6 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -223,7 +223,7 @@ def train(net, optimizer, teacher=None):
                                                                   ) ** args['lr_decay']
             optimizer.param_groups[1]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                             ) ** args['lr_decay']
-            optimizer.param_groups[2]['lr'] = args['lr'] * (1 - float(curr_iter) / args['iter_num']
+            optimizer.param_groups[2]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
                                                                   ) ** args['lr_decay']
             #
             # optimizer.param_groups[3]['lr'] = 0.1 * args['lr'] * (1 - float(curr_iter) / args['iter_num']
