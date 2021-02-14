@@ -31,8 +31,8 @@ device_id = 2
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
-# torch.backends.cudnn.deterministic = True
-# torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 random.seed(2021)
 np.random.seed(2021)
@@ -54,7 +54,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
-    'lr': 6 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
