@@ -498,7 +498,7 @@ class INet(nn.Module):
             out4f_p = F.interpolate(self.linearf4(out4f), size=shape, mode='bilinear')
 
             return pred1a, pred2a, pred3a, out2h_p, out3h_p, out4h_p, out5h_p, out2h, out3h, out4h, out5v,\
-                   out2f_p, out3f_p, out4f_p, out2f, out3f, out4f
+                   out2f_p, out3f_p, out4f_p, out2f, out3f, out4f, pred3
         else:
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
 

@@ -266,7 +266,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     optimizer.zero_grad()
 
     out1u, out2u, out3f_flow, out2r, out3r, out4r, out5r, out2r_k, out3r_k, out4r_k, out5r_k, out2f, out3f, out4f, \
-    out2f_k, out3f_k, out4f_k = net(inputs, flows)
+    out2f_k, out3f_k, out4f_k, pred3_k = net(inputs, flows)
 
     loss0 = criterion_str(out1u, labels)
     loss1 = criterion_str(out2u, labels)
@@ -284,9 +284,9 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     loss7 = criterion_str(out3f, labels)
     loss8 = criterion_str(out4f, labels)
 
-    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
-    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
-    # loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
     # print(loss6_k, '---', loss7_k)
     loss9 = criterion_str(out3f_flow, labels)
 
@@ -320,7 +320,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
 
     total_loss = (loss0 + loss1 + loss9) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16
-    distill_loss = loss6_k + loss7_k
+    distill_loss = loss6_k + loss7_k + loss8_k
     if args['distillation']:
         total_loss = total_loss + args['self_distill'] * distill_loss + args['teacher_distill'] * distill_loss_t
         # total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
