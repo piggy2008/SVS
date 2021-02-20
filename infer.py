@@ -26,11 +26,11 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-02-16 21:59:00'
+exp_name = 'VideoSaliency_2021-02-18 21:30:28'
 
 args = {
     'gnn': True,
-    'snapshot': '88000',  # your snapshot filename (exclude extension name)
+    'snapshot': '40000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -59,20 +59,20 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
