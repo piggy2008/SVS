@@ -54,7 +54,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 7,
     'last_iter': 0,
-    'lr': 6 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -284,9 +284,12 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     loss7 = criterion_str(out3f, labels)
     loss8 = criterion_str(out4f, labels)
 
-    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
-    loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+    # loss8_k = criterion_kl(F.adaptive_avg_pool2d(out4f_k, (1, 1)), F.adaptive_avg_pool2d(pred3_k, (1, 1)))
+
+    loss6_k = criterion_kl(F.adaptive_avg_pool2d(out2f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
+    loss7_k = criterion_kl(F.adaptive_avg_pool2d(out3f_k, (1, 1)), F.adaptive_avg_pool2d(out4f_k, (1, 1)))
     # print(loss6_k, '---', loss7_k)
     loss9 = criterion_str(out3f_flow, labels)
 
@@ -320,7 +323,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
 
     total_loss = (loss0 + loss1 + loss9) / 2 + loss2 / 2 + loss3 / 4 + loss4 / 8 + loss5 / 16 \
                  + loss6 / 4 + loss7 / 8 + loss8 / 16
-    distill_loss = loss6_k + loss7_k + loss8_k
+    distill_loss = loss6_k + loss7_k
     if args['distillation']:
         total_loss = total_loss + args['self_distill'] * distill_loss + args['teacher_distill'] * distill_loss_t
         # total_loss = total_loss + 0.1 * distill_loss + 0.5 * distill_loss_t
