@@ -19,7 +19,7 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 2
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
@@ -87,7 +87,7 @@ def main():
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
     # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
     net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth'),
-                                   map_location='cuda:0'))
+                                   map_location='cuda:2'))
     net.eval()
     net.cuda()
     results = {}
