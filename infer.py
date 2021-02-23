@@ -26,11 +26,11 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-02-20 11:20:51'
+exp_name = 'VideoSaliency_2021-02-22 11:31:51'
 
 args = {
     'gnn': True,
-    'snapshot': '116000',  # your snapshot filename (exclude extension name)
+    'snapshot': '40000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -45,10 +45,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-gt_root = os.path.join(davis_path, 'GT')
-flow_root = os.path.join(davis_path, 'flow')
-imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+# gt_root = os.path.join(davis_path, 'GT')
+# flow_root = os.path.join(davis_path, 'flow')
+# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
@@ -59,10 +59,10 @@ imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
@@ -87,7 +87,7 @@ def main():
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
     # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
     net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth'),
-                                   map_location='cuda:' + str(device_id)))
+                                   map_location='cuda:0'))
     net.eval()
     net.cuda()
     results = {}
