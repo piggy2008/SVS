@@ -30,7 +30,11 @@ exp_name = 'VideoSaliency_2021-02-28 10:46:00'
 
 args = {
     'gnn': True,
+<<<<<<< HEAD
     'snapshot': '84000',  # your snapshot filename (exclude extension name)
+=======
+    'snapshot': '32000',  # your snapshot filename (exclude extension name)
+>>>>>>> 991c77e4cd5ca08e00a987e74ba731b8e51b5e83
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
@@ -59,10 +63,10 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
