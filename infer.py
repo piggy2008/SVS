@@ -30,7 +30,11 @@ exp_name = 'VideoSaliency_2021-03-01 22:16:11'
 
 args = {
     'gnn': True,
+<<<<<<< HEAD
     'snapshot': '68000',  # your snapshot filename (exclude extension name)
+=======
+    'snapshot': '48000',  # your snapshot filename (exclude extension name)
+>>>>>>> 242becf33264e6a45c564097e3ae3ceb6caed5be
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
