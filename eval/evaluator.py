@@ -5,6 +5,7 @@ import numpy as np
 import torch
 from torchvision import transforms
 
+device_id = 2
 
 class Eval_thread():
     def __init__(self, loader, method, dataset, output_dir, cuda):
@@ -33,8 +34,8 @@ class Eval_thread():
             trans = transforms.Compose([transforms.ToTensor()])
             for pred, gt in self.loader:
                 if self.cuda:
-                    pred = trans(pred).cuda()
-                    gt = trans(gt).cuda()
+                    pred = trans(pred).cuda(device_id)
+                    gt = trans(gt).cuda(device_id)
                 else:
                     pred = trans(pred)
                     gt = trans(gt)
@@ -54,8 +55,8 @@ class Eval_thread():
             trans = transforms.Compose([transforms.ToTensor()])
             for pred, gt in self.loader:
                 if self.cuda:
-                    pred = trans(pred).cuda()
-                    gt = trans(gt).cuda()
+                    pred = trans(pred).cuda(device_id)
+                    gt = trans(gt).cuda(device_id)
                 else:
                     pred = trans(pred)
                     gt = trans(gt)
@@ -74,11 +75,11 @@ class Eval_thread():
             trans = transforms.Compose([transforms.ToTensor()])
             scores = torch.zeros(255)
             if self.cuda:
-                scores = scores.cuda()
+                scores = scores.cuda(device_id)
             for pred, gt in self.loader:
                 if self.cuda:
-                    pred = trans(pred).cuda()
-                    gt = trans(gt).cuda()
+                    pred = trans(pred).cuda(device_id)
+                    gt = trans(gt).cuda(device_id)
                 else:
                     pred = trans(pred)
                     gt = trans(gt)
@@ -95,8 +96,8 @@ class Eval_thread():
             trans = transforms.Compose([transforms.ToTensor()])
             for pred, gt in self.loader:
                 if self.cuda:
-                    pred = trans(pred).cuda()
-                    gt = trans(gt).cuda()
+                    pred = trans(pred).cuda(device_id)
+                    gt = trans(gt).cuda(device_id)
                 else:
                     pred = trans(pred)
                     gt = trans(gt)
@@ -125,8 +126,8 @@ class Eval_thread():
 
     def _eval_e(self, y_pred, y, num):
         if self.cuda:
-            score = torch.zeros(num).cuda()
-            thlist = torch.linspace(0, 1 - 1e-10, num).cuda()
+            score = torch.zeros(num).cuda(device_id)
+            thlist = torch.linspace(0, 1 - 1e-10, num).cuda(device_id)
         else:
             score = torch.zeros(num)
             thlist = torch.linspace(0, 1 - 1e-10, num)
@@ -141,8 +142,8 @@ class Eval_thread():
 
     def _eval_pr(self, y_pred, y, num):
         if self.cuda:
-            prec, recall = torch.zeros(num).cuda(), torch.zeros(num).cuda()
-            thlist = torch.linspace(0, 1 - 1e-10, num).cuda()
+            prec, recall = torch.zeros(num).cuda(device_id), torch.zeros(num).cuda(device_id)
+            thlist = torch.linspace(0, 1 - 1e-10, num).cuda(device_id)
         else:
             prec, recall = torch.zeros(num), torch.zeros(num)
             thlist = torch.linspace(0, 1 - 1e-10, num)
@@ -186,16 +187,16 @@ class Eval_thread():
         gt = gt.view(rows, cols)
         if gt.sum() == 0:
             if self.cuda:
-                X = torch.eye(1).cuda() * round(cols / 2)
-                Y = torch.eye(1).cuda() * round(rows / 2)
+                X = torch.eye(1).cuda(device_id) * round(cols / 2)
+                Y = torch.eye(1).cuda(device_id) * round(rows / 2)
             else:
                 X = torch.eye(1) * round(cols / 2)
                 Y = torch.eye(1) * round(rows / 2)
         else:
             total = gt.sum()
             if self.cuda:
-                i = torch.from_numpy(np.arange(0, cols)).cuda().float()
-                j = torch.from_numpy(np.arange(0, rows)).cuda().float()
+                i = torch.from_numpy(np.arange(0, cols)).cuda(device_id).float()
+                j = torch.from_numpy(np.arange(0, rows)).cuda(device_id).float()
             else:
                 i = torch.from_numpy(np.arange(0, cols)).float()
                 j = torch.from_numpy(np.arange(0, rows)).float()
