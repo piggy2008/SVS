@@ -27,7 +27,7 @@ if __name__ == "__main__":
         save_path = os.path.join(ckpt_path, exp_name, '(%s) %s_%s' % (exp_name, dataset, snapshot))
         # save_path = 'TENet/DAVIS-MGA'
         loader = EvalDataset(osp.join(save_path), osp.join(gt_root[dataset]))
-        thread = Eval_thread(loader, 'ours', dataset, './', False)
+        thread = Eval_thread(loader, 'ours', dataset, './', True)
         threads.append(thread)
     for thread in threads:
         print(thread.run())
