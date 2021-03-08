@@ -307,7 +307,7 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
         # loss8_t = criterion_str(out4f, F.sigmoid(prediction))
         # loss9_t = criterion_str(out3f_flow, F.sigmoid(prediction))
 
-        distill_loss_t = (loss0_t + loss1_t + loss9_t) / 2
+        distill_loss_t = (loss0_t + loss1_t) / 2
 
     # loss2_d = criterion_str(out2r, F.sigmoid(out2u))
     # loss3_d = criterion_str(out3r, F.sigmoid(out2u))
