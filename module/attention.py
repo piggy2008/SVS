@@ -61,10 +61,41 @@ class CAM_Module(nn.Module):
         out = out.view(batch, channel, height, width)
         return out
 
+class CAM_Module2(nn.Module):
+    """ Channel attention module"""
+    def __init__(self, in_dim):
+        super(CAM_Module2, self).__init__()
+        self.chanel_in = in_dim
+
+        self.query_conv = nn.Conv2d(in_channels=in_dim * 4, out_channels=in_dim, kernel_size=1)
+        self.key_conv = nn.Conv2d(in_channels=in_dim * 4, out_channels=in_dim, kernel_size=1)
+        self.value_conv = nn.Conv2d(in_channels=in_dim * 4, out_channels=in_dim, kernel_size=1)
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, low, high, flow, feedback):
+
+        batch, channel, height, width = low.size()
+
+        combined = torch.cat([low, high, flow, feedback], dim=1)
+
+        proj_query = self.query_conv(combined).view(batch, channel, -1)
+        proj_key = self.key_conv(combined).view(batch, channel, -1).permute(0, 2, 1)
+        energy = torch.bmm(proj_query, proj_key)
+        energy = ((self.chanel_in) ** -.5) * energy
+        attention = F.softmax(energy)
+        proj_value = self.value_conv(combined).view(batch, channel, -1)
+
+        out = torch.bmm(attention, proj_value)
+        out = out.view(batch, channel, height, width)
+        return out
+
 if __name__ == '__main__':
     x = torch.rand([2, 64, 70, 70])
     y = torch.rand([2, 64, 70, 70])
     z = torch.rand([2, 64, 70, 70])
-    model = CAM_Module(in_dim=64)
-    out = model(x, y, z)
+    b = torch.rand([2, 64, 70, 70])
+    model = CAM_Module2(in_dim=64)
+    out = model(x, y, z, b)
     print(out.size())

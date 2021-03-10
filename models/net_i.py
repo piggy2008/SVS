@@ -12,7 +12,7 @@ from module.TMC import TMC
 from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many, SEMany2Many2, SEMany2Many3, SEMany2Many4
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
-from module.attention import CAM_Module
+from module.attention import CAM_Module, CAM_Module2
 
 # from utils.utils_mine import visualize
 
@@ -119,8 +119,9 @@ class GFM2(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
-        self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        # self.gcn_fuse = SEQuart(64, 64, 64, 64)
         # self.gcn_fuse3 = SETriplet2(64, 64, 64)
+        self.attention = CAM_Module2(64)
         self.GNN = GNN
     def forward(self, low, high, flow=None, feedback=None):
         if flow is not None:
@@ -136,7 +137,7 @@ class GFM2(nn.Module):
             out1f = self.conv1f(flow)
             out2f = self.conv2f(out1f)
             if self.GNN:
-                fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
+                fuse = self.attention(out2l, out2h, out2f, feedback)
             else:
                 fuse = out2h * out2l * out2f
                 # fuse = self.gcn_fuse3(out2l, out2h, out2f)
