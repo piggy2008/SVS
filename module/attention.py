@@ -1,7 +1,39 @@
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+import math
 
+def weight_init(module):
+    for n, m in module.named_children():
+        print('initialize: '+n)
+        if isinstance(m, nn.Conv2d):
+            nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, (nn.BatchNorm2d, nn.InstanceNorm2d)):
+            nn.init.ones_(m.weight)
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Linear):
+            stdv = 1. / math.sqrt(m.weight.size(1))
+            m.weight.data.uniform_(-stdv, stdv)
+            # nn.init.kaiming_normal_(m.weight, mode='fan_in', nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+        elif isinstance(m, nn.Sequential):
+            weight_init(m)
+        elif isinstance(m, nn.ReLU):
+            pass
+        elif isinstance(m, nn.Sigmoid):
+            pass
+        elif isinstance(m, nn.Softmax):
+            pass
+        elif isinstance(m, nn.AdaptiveAvgPool2d):
+            pass
+        elif isinstance(m, GCN):
+            pass
+        else:
+            m.initialize()
 
 class CAM_Module(nn.Module):
     """ Channel attention module"""
@@ -13,7 +45,9 @@ class CAM_Module(nn.Module):
         self.key_conv = nn.Conv2d(in_channels=in_dim * 3, out_channels=in_dim, kernel_size=1)
         self.value_conv = nn.Conv2d(in_channels=in_dim * 3, out_channels=in_dim, kernel_size=1)
 
-        # self.softmax  = Softmax(dim=-1)
+    def initialize(self):
+        weight_init(self)
+
     def forward(self, low, high, flow):
 
         batch, channel, height, width = low.size()
