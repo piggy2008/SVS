@@ -588,7 +588,7 @@ if __name__ == '__main__':
     #                              joint_transform, img_transform, target_transform)
     # train_loader = DataLoader(train_set, batch_size=6, num_workers=12, shuffle=False)
 
-    train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2, joint_transform, img_transform,
+    train_set = ImageFlow3Folder(video_train_path, imgs_file2, imgs_file, joint_transform, img_transform,
                                  target_transform)
 
     train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
