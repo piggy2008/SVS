@@ -119,9 +119,9 @@ class GFM2(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
-        # self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        self.gcn_fuse = SEQuart(64, 64, 64, 64)
         # self.gcn_fuse3 = SETriplet2(64, 64, 64)
-        self.attention = CAM_Module2(64)
+        # self.attention = CAM_Module2(64)
         self.GNN = GNN
     def forward(self, low, high, flow=None, feedback=None):
         if flow is not None:
@@ -137,7 +137,7 @@ class GFM2(nn.Module):
             out1f = self.conv1f(flow)
             out2f = self.conv2f(out1f)
             if self.GNN:
-                fuse = self.attention(out2l, out2h, out2f, feedback)
+                fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
             else:
                 fuse = out2h * out2l * out2f
                 # fuse = self.gcn_fuse3(out2l, out2h, out2f)
@@ -254,8 +254,8 @@ class SFM2(nn.Module):
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
 
-        # self.se_triplet = SETriplet2(64, 64, 64)
-        self.attention = CAM_Module(in_dim=64)
+        self.se_triplet = SETriplet2(64, 64, 64)
+        # self.attention = CAM_Module(in_dim=64)
     def forward(self, low, high, flow):
         if high.size()[2:] != low.size()[2:]:
             high = F.interpolate(high, size=low.size()[2:], mode='bilinear')
@@ -268,7 +268,7 @@ class SFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         # fuse = out2h * out2l * out2f
-        fuse = self.attention(out2h, out2l, out2f)
+        fuse = self.se_triplet(out2h, out2l, out2f)
         out3h = self.conv3h(fuse) + out1h
         out4h = self.conv4h(out3h)
         out3l = self.conv3l(fuse) + out1l
