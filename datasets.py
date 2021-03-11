@@ -584,14 +584,14 @@ if __name__ == '__main__':
 
     # train_set = ImageFlowFolder(video_train_path, imgs_file,
     #                              joint_transform, img_transform, target_transform)
-    # train_set2 = VideoImageFolder(video_train_path, imgs_file2,
-    #                              joint_transform, img_transform, target_transform)
+    train_set2 = VideoImageFolder(video_train_path, imgs_file2,
+                                 joint_transform, img_transform, target_transform)
     # train_loader = DataLoader(train_set, batch_size=6, num_workers=12, shuffle=False)
 
-    train_set = ImageFlow3Folder(video_train_path, imgs_file2, imgs_file, joint_transform, img_transform,
-                                 target_transform)
+    # train_set = ImageFlow3Folder(video_train_path, imgs_file2, imgs_file, joint_transform, img_transform,
+    #                              target_transform)
 
-    train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
+    train_loader = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
     # train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
     from itertools import cycle
 
@@ -600,9 +600,9 @@ if __name__ == '__main__':
     for i, data in enumerate(train_loader):
         print('i=', i)
         # data1, data2 = data
-        inputs, flows, labels, inputs2, labels2 = data
+        # inputs, flows, labels, inputs2, labels2 = data
         # data2 = next(dataloader_iterator)
-        # input2, target2 = data2
+        inputs, target2 = data
         # first, second = data
         # input = input2.data.cpu().numpy()
         # flow = cur_img.data.cpu().numpy()
