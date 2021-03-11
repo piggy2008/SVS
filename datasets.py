@@ -576,32 +576,33 @@ if __name__ == '__main__':
     input_size = (200, 200)
     # imgs_file = '/home/ty/data/video_saliency/train_all_DAFB2_DAVSOD_5f.txt'
     # train_set = VideoSequenceFolder(video_seq_path, video_seq_gt_path, imgs_file, joint_transform, img_transform, target_transform)
-    imgs_file = '/home/ty/data/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
-    imgs_file2 = '/home/ty/data/Pre-train/pretrain_all_seq_DUT_TR_DAFB2.txt'
+    imgs_file = '/home/amax/data/ty/Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt'
+    imgs_file2 = '/home/amax/data/ty/Pre-train/pretrain_all_seq_DUT_TR_DAFB2.txt'
     # train_set = VideoImageFolder(video_train_path, imgs_file, joint_transform, img_transform, target_transform)
-    video_root = '/home/ty/data/video_saliency/train_all/DAFB2_DAVSOD'
-    video_gt_root = '/home/ty/data/video_saliency/train_all_gt2_revised/DAFB2_DAVSOD'
+    # video_root = '/home/ty/data/video_saliency/train_all/DAFB2_DAVSOD'
+    # video_gt_root = '/home/ty/data/video_saliency/train_all_gt2_revised/DAFB2_DAVSOD'
 
-    train_set = ImageFlowFolder(video_train_path, imgs_file,
-                                 joint_transform, img_transform, target_transform)
-    train_set2 = VideoImageFolder(video_train_path, imgs_file2,
-                                 joint_transform, img_transform, target_transform)
+    # train_set = ImageFlowFolder(video_train_path, imgs_file,
+    #                              joint_transform, img_transform, target_transform)
+    # train_set2 = VideoImageFolder(video_train_path, imgs_file2,
+    #                              joint_transform, img_transform, target_transform)
     # train_loader = DataLoader(train_set, batch_size=6, num_workers=12, shuffle=False)
 
-    # train_set = VideoFSImageFolder('/home/ty/data/davis/davis_test2', 'blackswan', use_first=True,
-    #                                joint_transform=joint_transform, transform=img_transform)
+    train_set = ImageFlow3Folder(video_train_path, imgs_file, imgs_file2, joint_transform, img_transform,
+                                 target_transform)
+
     train_loader = DataLoader(train_set, batch_size=6, num_workers=4, shuffle=True)
-    train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
+    # train_loader2 = DataLoader(train_set2, batch_size=6, num_workers=4, shuffle=True)
     from itertools import cycle
 
     torch.multiprocessing.set_sharing_strategy('file_system')
-    dataloader_iterator = iter(train_loader2)
+    # dataloader_iterator = iter(train_loader2)
     for i, data1 in enumerate(train_loader):
         print('i=', i)
         # data1, data2 = data
-        input, flow, target = data1
-        data2 = next(dataloader_iterator)
-        input2, target2 = data2
+        inputs, flows, labels, inputs2, labels2 = data
+        # data2 = next(dataloader_iterator)
+        # input2, target2 = data2
         # first, second = data
         # input = input2.data.cpu().numpy()
         # flow = cur_img.data.cpu().numpy()
@@ -622,4 +623,4 @@ if __name__ == '__main__':
         # plt.imshow(target[1, :, :, 0])
 
         # plt.show()
-        print(input2.size())
+        print(input.size())
