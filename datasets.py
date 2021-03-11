@@ -623,4 +623,4 @@ if __name__ == '__main__':
         # plt.imshow(target[1, :, :, 0])
 
         # plt.show()
-        print(input.size())
+        print(inputs.size())
