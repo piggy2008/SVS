@@ -597,7 +597,7 @@ if __name__ == '__main__':
 
     torch.multiprocessing.set_sharing_strategy('file_system')
     # dataloader_iterator = iter(train_loader2)
-    for i, data1 in enumerate(train_loader):
+    for i, data in enumerate(train_loader):
         print('i=', i)
         # data1, data2 = data
         inputs, flows, labels, inputs2, labels2 = data
