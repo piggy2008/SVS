@@ -27,7 +27,7 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 2
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -72,7 +72,7 @@ args = {
     'image_size': 430,
     'crop_size': 380,
     'self_distill': 0.1,
-    'teacher_distill': 0.6
+    'teacher_distill': 0.5
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
