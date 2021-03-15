@@ -219,7 +219,7 @@ if __name__ == '__main__':
         for i in range(args['start'], 200000, 4000):
             main(str(i))
     else:
-        main()
+        main(None)
 
 
 # BASNet
