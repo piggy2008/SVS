@@ -213,7 +213,7 @@ def main(snapshot):
 
 if __name__ == '__main__':
     if args['start'] > 0:
-        for i in range(args['start'], 200000, step=4000):
+        for i in range(args['start'], 200000, 4000):
             main(str(i))
     else:
         main()
