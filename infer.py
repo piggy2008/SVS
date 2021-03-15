@@ -207,7 +207,10 @@ def main(snapshot):
     print ('test results:')
     print (results)
     log_path = os.path.join('result_all.txt')
-    open(log_path, 'a').write(exp_name + ' ' + args['snapshot'] + '\n')
+    if snapshot is None:
+        open(log_path, 'a').write(exp_name + ' ' + args['snapshot'] + '\n')
+    else:
+        open(log_path, 'a').write(exp_name + ' ' + snapshot + '\n')
     open(log_path, 'a').write(str(results) + '\n\n')
 
 
