@@ -33,7 +33,8 @@ args = {
     'snapshot': '92000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
-    'input_size': (380, 380)
+    'input_size': (380, 380),
+    'start': 0
 }
 
 img_transform = transforms.Compose([
@@ -78,16 +79,20 @@ imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 # gt_root = os.path.join(mcl_path, 'GT')
 # imgs_path = os.path.join(mcl_path, 'MCL_test_single.txt')
 
-def main():
+def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
     net = INet(cfg=None, GNN=args['gnn'])
-
-    print ('load snapshot \'%s\' for testing' % args['snapshot'])
-    # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
-    # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
-    net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth'),
+    if snapshot is None:
+        print ('load snapshot \'%s\' for testing' % args['snapshot'])
+        # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
+        # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
+        net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth'),
                                    map_location='cuda:' + str(device_id)))
+    else:
+        print('load snapshot \'%s\' for testing' % snapshot)
+        net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, snapshot + '.pth'),
+                                       map_location='cuda:' + str(device_id)))
     net.eval()
     net.cuda()
     results = {}
@@ -207,7 +212,12 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if args['start'] > 0:
+        for i in range(args['start'], 200000, step=4000):
+            main(str(i))
+    else:
+        main()
+
 
 # BASNet
 # {'davis': {'fmeasure': 0.8566843568615541, 'mae': 0.032508174857025014}} 120000
