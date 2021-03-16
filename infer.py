@@ -30,11 +30,11 @@ exp_name = 'VideoSaliency_2021-03-15 16:48:01'
 
 args = {
     'gnn': True,
-    'snapshot': '116000',  # your snapshot filename (exclude extension name)
+    'snapshot': '128000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 160000
+    'start': 0
 }
 
 img_transform = transforms.Compose([
