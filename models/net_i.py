@@ -476,7 +476,7 @@ class INet(nn.Module):
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
+            out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
             out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
@@ -504,7 +504,7 @@ class INet(nn.Module):
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
 
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
-            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
+            out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
             # out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)
@@ -512,13 +512,13 @@ class INet(nn.Module):
 
             pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
             pred2a = F.interpolate(self.linearp2(pred2), size=shape, mode='bilinear')
-            # pred3a = F.interpolate(self.linearp3(pred3), size=shape, mode='bilinear')
+            pred3a = F.interpolate(self.linearp3(pred3), size=shape, mode='bilinear')
 
             out2h_p = F.interpolate(self.linearr2(out2h), size=shape, mode='bilinear')
             out3h_p = F.interpolate(self.linearr3(out3h), size=shape, mode='bilinear')
             out4h_p = F.interpolate(self.linearr4(out4h), size=shape, mode='bilinear')
             out5h_p = F.interpolate(self.linearr5(out5v), size=shape, mode='bilinear')
-            return pred1a, pred2a, out2h_p, out3h_p, out4h_p, out5h_p
+            return pred1a, pred2a, pred3a, out2h_p, out3h_p, out4h_p, out5h_p
 
     def initialize(self):
         # if self.cfg.snapshot:
