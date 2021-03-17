@@ -442,9 +442,9 @@ class SEMany2Many3(nn.Module):
         coarse_adj = np.ones([many, many])
         self.adj = torch.from_numpy(L_Matrix(coarse_adj, many)).float()
 
-        self.gcn2 = GCN(many2, dim_one, dim_one)
-        coarse_adj2 = np.ones([many2, many2])
-        self.adj2 = torch.from_numpy(L_Matrix(coarse_adj2, many2)).float()
+        # self.gcn2 = GCN(many2, dim_one, dim_one)
+        # coarse_adj2 = np.ones([many2, many2])
+        # self.adj2 = torch.from_numpy(L_Matrix(coarse_adj2, many2)).float()
 
         self.fc_one = nn.Sequential(
             nn.Linear(many * dim_one, 2 * dim_one),
