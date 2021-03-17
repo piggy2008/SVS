@@ -463,15 +463,15 @@ class SEMany2Many3(nn.Module):
             nn.Sigmoid()
         )
         self.fc_five = nn.Sequential(
-            nn.Linear(many2 * dim_one, 2 * dim_one),
+            nn.Linear(many * dim_one, 2 * dim_one),
             nn.Sigmoid()
         )
         self.fc_six = nn.Sequential(
-            nn.Linear(many2 * dim_one, 2 * dim_one),
+            nn.Linear(many * dim_one, 2 * dim_one),
             nn.Sigmoid()
         )
         self.fc_seven = nn.Sequential(
-            nn.Linear(many2 * dim_one, 2 * dim_one),
+            nn.Linear(many * dim_one, 2 * dim_one),
             nn.Sigmoid()
         )
 
