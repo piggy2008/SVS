@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from torchvision import transforms
 
-device_id = 2
+device_id = 0
 
 class Eval_thread():
     def __init__(self, loader, method, dataset, output_dir, cuda):
