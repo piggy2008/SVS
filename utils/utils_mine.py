@@ -2,6 +2,9 @@ import torch
 from models.net import SNet
 import numpy as np
 from matplotlib import pyplot as plt
+
+import sys
+sys.path.append('/home/tangyi/code/SVS')
 plt.style.use('classic')
 
 def MaxMinNormalization(x,Max,Min):
