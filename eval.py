@@ -14,9 +14,9 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 
 if __name__ == "__main__":
     dataset_names = ['DAVSOD']
-    snapshot = '168000'
+    snapshot = '200000'
     ckpt_path = '/home/amax/code/SVS/ckpt'
-    exp_name = 'VideoSaliency_2021-03-20 12:29:02'
+    exp_name = 'VideoSaliency_2021-03-22 21:07:37'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT'),
