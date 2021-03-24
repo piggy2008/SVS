@@ -529,7 +529,7 @@ class SEMany2Many3(nn.Module):
         # feat7_avg = self.avg_pool(feat7_).view(batch, 1, channel)
         feedback_avg = self.avg_pool(feedback).view(batch, 1, channel)
 
-        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
+        combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
         # combined_fc2 = torch.cat([feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
         # batch_adj = self.adj.repeat(batch, 1, 1)
@@ -565,7 +565,7 @@ class SEMany2Many3(nn.Module):
         feat3_re = torch.cat([feat3_, feedback3], dim=1) * excitation3
         feedback4 = F.interpolate(feedback, size=feat4_.size()[2:], mode='bilinear')
         feat4_re = torch.cat([feat4_, feedback4], dim=1) * excitation4
-        feedback5 = F.interpolate(feedback, size=feat5_.size()[2:], mode='bilinear')
+        # feedback5 = F.interpolate(feedback, size=feat5_.size()[2:], mode='bilinear')
         # feat5_re = torch.cat([feat5_, feedback5], dim=1) * excitation5
         # feedback6 = F.interpolate(feedback, size=feat6_.size()[2:], mode='bilinear')
         # feat6_re = torch.cat([feat6_, feedback6], dim=1) * excitation6
