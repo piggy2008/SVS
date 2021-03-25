@@ -19,14 +19,14 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 1
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-03-23 16:03:37'
+exp_name = 'VideoSaliency_2021-03-24 09:42:30'
 
 args = {
     'gnn': True,
