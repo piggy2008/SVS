@@ -477,7 +477,7 @@ class INet(nn.Module):
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
-            out2h, out3h, out4h, out5v= self.se_many(out2h, out3h, out4h, out5v, pred2)
+            out2h, out3h, out4h, out5v= self.se_many2(out2h, out3h, out4h, out5v, pred2)
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
             out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
@@ -505,7 +505,7 @@ class INet(nn.Module):
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
 
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
-            out2h, out3h, out4h, out5v= self.se_many(out2h, out3h, out4h, out5v, pred2)
+            out2h, out3h, out4h, out5v= self.se_many2(out2h, out3h, out4h, out5v, pred2)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
             # out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)
