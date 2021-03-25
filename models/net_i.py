@@ -9,7 +9,7 @@ import torch.nn.functional as F
 from MGA.ResNet import ResNet34
 from module.ConGRUCell import ConvGRUCell
 from module.TMC import TMC
-from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEMany2Many, SEMany2Many2, SEMany2Many3, SEMany2Many4
+from module.MMTM import MMTM, SETriplet, SETriplet2, SEQuart, SEQuart2, SEMany2Many, SEMany2Many2, SEMany2Many3, SEMany2Many4
 from module.alternate import Alternate, Alternate2
 from module.EP import EP
 from module.attention import CAM_Module, CAM_Module2
@@ -119,7 +119,8 @@ class GFM2(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
-        self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        # self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        self.gcn_fuse2 = SEQuart2(64, 64, 64, 64)
         # self.gcn_fuse3 = SETriplet2(64, 64, 64)
         # self.attention = CAM_Module2(64)
         self.GNN = GNN
@@ -444,8 +445,8 @@ class INet(nn.Module):
         self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
-        self.se_many = SEMany2Many3(8, 4, 64)
-        # self.se_many2 = SEMany2Many(6, 64)
+        # self.se_many = SEMany2Many3(8, 4, 64)
+        self.se_many2 = SEMany2Many4(6, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -476,7 +477,7 @@ class INet(nn.Module):
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
-            out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
+            out2h, out3h, out4h, out5v= self.se_many(out2h, out3h, out4h, out5v, pred2)
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
             out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
@@ -504,7 +505,7 @@ class INet(nn.Module):
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out3h, out4h, out5v)
 
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred1)
-            out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
+            out2h, out3h, out4h, out5v= self.se_many(out2h, out3h, out4h, out5v, pred2)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out3h, out4h, out5v, pred2)
             # feat_list2 = [out2h, out3h, out4h, out5v]
             # out2h, out3h, out4h, out5v = self.se_many2(feat_list2, pred2)

@@ -332,6 +332,69 @@ class SEQuart(nn.Module):
 
         return attention_vector
 
+class SEQuart2(nn.Module):
+    def __init__(self, dim_a, dim_b, dim_c, dim_d):
+        super(SEQuart2, self).__init__()
+        dim = dim_a + dim_b + dim_c + dim_d
+
+        # self.gcn = GCN(4, 64, 64)
+        # coarse_adj = np.ones([4, 4])
+        # self.adj = torch.from_numpy(L_Matrix(coarse_adj, 4)).float()
+
+        # self.fc_one = nn.Sequential(
+        #     nn.Linear(dim, dim_a),
+        #     nn.Sigmoid()
+        # )
+        # self.fc_two = nn.Sequential(
+        #     nn.Linear(dim, dim_b),
+        #     nn.Sigmoid()
+        # )
+        # self.fc_three = nn.Sequential(
+        #     nn.Linear(dim, dim_c),
+        #     nn.Sigmoid()
+        # )
+        # self.fc_four = nn.Sequential(
+        #     nn.Linear(dim, dim_c),
+        #     nn.Sigmoid()
+        # )
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.softmax = nn.Softmax(dim=1)
+
+        # self.gate_a = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_b = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_c = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        # self.gate_d = nn.Conv2d(dim, 1, kernel_size=1, bias=True)
+        self.gate = nn.Conv2d(dim, 64, kernel_size=1, bias=True)
+
+    def initialize(self):
+        weight_init(self)
+
+    def forward(self, low, high, flow, feedback):
+        batch, channel, _, _ = low.size()
+        combined = torch.cat([low, high, flow, feedback], dim=1)
+
+
+        # merge = excitation1 * low + excitation2 * high + excitation3 * flow + excitation4 * feedback
+        # feat_cat = torch.cat([low + merge, high + merge, flow + merge, feedback + merge], dim=1)
+        # atten_a = self.gate_a(feat_cat)
+        # atten_b = self.gate_b(feat_cat)
+        # atten_c = self.gate_c(feat_cat)
+        # atten_d = self.gate_d(feat_cat)
+        # attention_vector = torch.cat([atten_a, atten_b, atten_c, atten_d], dim=1)
+
+        attention_vector = self.gate(combined)
+        # attention_vector = self.softmax(attention_vector)
+        #
+        # attention_vector_a, attention_vector_b = attention_vector[:, 0:1, :, :], attention_vector[:, 1:2, :, :]
+        # attention_vector_c, attention_vector_d = attention_vector[:, 2:3, :, :], attention_vector[:, 3:4, :, :]
+        # merge_feature = low * attention_vector_a + high * attention_vector_b + \
+        #                 flow * attention_vector_c + feedback * attention_vector_d
+        # bug backup
+        # merge_feature = low * attention_vector_a + high * attention_vector_b + \
+        #                 flow * attention_vector_c * feedback * attention_vector_d
+
+        return attention_vector
+
 class SEMany2Many(nn.Module):
     def __init__(self, many, dim_one):
         super(SEMany2Many, self).__init__()
