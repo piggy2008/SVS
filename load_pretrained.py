@@ -37,4 +37,4 @@ def fuse_MGA_F3Net(mga_model_path, f3net_path, net, device_id=0):
 if __name__ == '__main__':
     net = SNet(cfg=None).cuda()
     net = fuse_MGA_F3Net('pre-trained/MGA_trained.pth', 'pre-trained/F3Net.pth', net)
-    torch.save(net.state_dict(), 'pre-trained/SNet.pth')
+    # torch.save(net.state_dict(), 'pre-trained/SNet.pth')
