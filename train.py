@@ -16,6 +16,7 @@ from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoIm
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
 from models.net_i import INet
+from models.net_i101 import INet101
 from MGA.mga_model import MGA_Network
 from torch.backends import cudnn
 import time
@@ -27,7 +28,8 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 0
+device_id = 3
+device_id2 = 1
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -52,9 +54,9 @@ args = {
     'iter_num': 200000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 5,
+    'train_batch_size': 6,
     'last_iter': 0,
-    'lr': 6.5 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -72,7 +74,7 @@ args = {
     'image_size': 430,
     'crop_size': 380,
     'self_distill': 0.1,
-    'teacher_distill': 0.6
+    'teacher_distill': 0.5
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
@@ -160,11 +162,11 @@ def main():
     if args['distillation']:
         teacher = MGA_Network(nInputChannels=3, n_classes=1, os=16,
                               img_backbone_type='resnet101', flow_backbone_type='resnet34')
-        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id)
+        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id2)
         teacher.eval()
-        teacher.cuda(device_id)
+        teacher.cuda(device_id2)
 
-    net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = INet101(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
@@ -199,7 +201,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = 0.5 * args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/SNet101.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
@@ -294,7 +296,10 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     loss9 = criterion_str(out3f_flow, labels)
 
     if args['distillation']:
+        inputs = inputs.cuda(device_id2)
+        flows = flows.cuda(device_id2)
         prediction, _, _, _, _ = teacher(inputs, flows)
+        prediction = prediction.cuda(device_id)
         loss0_t = criterion_str(out1u, F.sigmoid(prediction))
         loss1_t = criterion_str(out2u, F.sigmoid(prediction))
         # loss2_t = criterion_str(out2r, F.sigmoid(prediction))
