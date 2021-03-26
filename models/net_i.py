@@ -119,8 +119,8 @@ class GFM2(nn.Module):
                                     nn.ReLU(inplace=True))
         self.conv4f = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                     nn.ReLU(inplace=True))
-        # self.gcn_fuse = SEQuart(64, 64, 64, 64)
-        self.gcn_fuse2 = SEQuart2(64, 64, 64, 64)
+        self.gcn_fuse = SEQuart(64, 64, 64, 64)
+        # self.gcn_fuse2 = SEQuart2(64, 64, 64, 64)
         # self.gcn_fuse3 = SETriplet2(64, 64, 64)
         # self.attention = CAM_Module2(64)
         self.GNN = GNN
@@ -138,7 +138,7 @@ class GFM2(nn.Module):
             out1f = self.conv1f(flow)
             out2f = self.conv2f(out1f)
             if self.GNN:
-                fuse = self.gcn_fuse2(out2l, out2h, out2f, feedback)
+                fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
             else:
                 fuse = out2h * out2l * out2f
                 # fuse = self.gcn_fuse3(out2l, out2h, out2f)
@@ -445,8 +445,8 @@ class INet(nn.Module):
         self.decoder1 = Decoder_flow()
         self.decoder2 = Decoder_flow2(GNN=GNN)
         self.decoder3 = Decoder_flow2(GNN=GNN)
-        # self.se_many = SEMany2Many3(8, 4, 64)
-        self.se_many2 = SEMany2Many4(6, 64)
+        self.se_many = SEMany2Many3(5, 4, 64)
+        # self.se_many2 = SEMany2Many4(6, 64)
         # self.gnn_embedding = GNN_Embedding()
         self.linearp1 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
         self.linearp2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
@@ -477,7 +477,7 @@ class INet(nn.Module):
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
-            out2h, out3h, out4h, out5v= self.se_many2(out2h, out3h, out4h, out5v, pred2)
+            out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
             out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
