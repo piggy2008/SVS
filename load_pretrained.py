@@ -50,7 +50,8 @@ def fuse_MGA_F3Net2(mga_model_path, net, device_id=0):
             m_dict[k].data = mga_model.get(k_tmp)
         elif k.find('bkbone.') > -1:
             print('loading MGA RGB backbone key:', k)
-            k_tmp = k.replace('bkbone', '')
+            k_tmp = k.replace('bkbone.', '')
+            # print('loading MGA RGB backbone key:', k_tmp)
             m_dict[k].data = mga_model.get(k_tmp)
         else:
             print('not loading key:', k)
