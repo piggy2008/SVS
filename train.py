@@ -16,6 +16,7 @@ from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoIm
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
 from models.net_i import INet
+from models.net_i101 import INet101
 from MGA.mga_model import MGA_Network
 from torch.backends import cudnn
 import time
@@ -27,7 +28,8 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 2
+device_id = 3
+device_id2 = 1
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -160,9 +162,9 @@ def main():
     if args['distillation']:
         teacher = MGA_Network(nInputChannels=3, n_classes=1, os=16,
                               img_backbone_type='resnet101', flow_backbone_type='resnet34')
-        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id)
+        teacher = load_MGA(teacher, args['mga_model_path'], device_id=device_id2)
         teacher.eval()
-        teacher.cuda(device_id)
+        teacher.cuda(device_id2)
 
     net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
@@ -294,7 +296,10 @@ def train_single(net, inputs, flows, labels, optimizer, curr_iter, teacher):
     loss9 = criterion_str(out3f_flow, labels)
 
     if args['distillation']:
+        inputs = inputs.cuda(device_id2)
+        flows = flows.cuda(device_id2)
         prediction, _, _, _, _ = teacher(inputs, flows)
+        prediction = prediction.cuda(device_id)
         loss0_t = criterion_str(out1u, F.sigmoid(prediction))
         loss1_t = criterion_str(out2u, F.sigmoid(prediction))
         # loss2_t = criterion_str(out2r, F.sigmoid(prediction))

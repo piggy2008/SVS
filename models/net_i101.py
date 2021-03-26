@@ -362,9 +362,9 @@ class Decoder_flow2(nn.Module):
     def initialize(self):
         weight_init(self)
 
-class INet(nn.Module):
+class INet101(nn.Module):
     def __init__(self, cfg, GNN=False):
-        super(INet, self).__init__()
+        super(INet101, self).__init__()
         self.cfg      = cfg
         self.bkbone   = ResNet()
         self.flow_bkbone = ResNet34(nInputChannels=3, os=16, pretrained=False)
@@ -467,7 +467,7 @@ class INet(nn.Module):
 
 
 if __name__ == '__main__':
-        net = INet(cfg=None, GNN=True)
+        net = INet101(cfg=None, GNN=True)
         input = torch.zeros([2, 3, 380, 380])
         output = net(input)
         output = net(input)
