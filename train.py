@@ -28,8 +28,8 @@ import numpy as np
 
 cudnn.benchmark = True
 
-device_id = 3
-device_id2 = 1
+device_id = 0
+device_id2 = 0
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -54,7 +54,7 @@ args = {
     'iter_num': 200000,
     'iter_save': 4000,
     'iter_start_seq': 0,
-    'train_batch_size': 6,
+    'train_batch_size': 4,
     'last_iter': 0,
     'lr': 5 * 1e-3,
     'lr_decay': 0.9,
