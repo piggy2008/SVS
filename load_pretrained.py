@@ -1,6 +1,6 @@
 import torch
 from models.net import SNet
-from models.net_i101 import INet
+from models.net_i101 import INet101
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -55,6 +55,6 @@ def fuse_MGA_F3Net2(mga_model_path, net, device_id=0):
     return net
 
 if __name__ == '__main__':
-    net = INet(cfg=None).cuda()
+    net = INet101(cfg=None).cuda()
     net = fuse_MGA_F3Net2('pre-trained/MGA_trained.pth', net, device_id=1)
     torch.save(net.state_dict(), 'pre-trained/SNet101.pth')
