@@ -11,6 +11,7 @@ from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 # from models.net import SNet
 from models.net_i import INet
+from models.net_i101 import INet101
 from utils.utils_mine import load_part_of_model2, MaxMinNormalization
 import time
 from matplotlib import pyplot as plt
@@ -26,7 +27,7 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-03-25 15:09:54'
+exp_name = 'VideoSaliency_2021-03-26 21:09:58'
 
 args = {
     'gnn': True,
@@ -82,7 +83,7 @@ imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = INet(cfg=None, GNN=args['gnn'])
+    net = INet101(cfg=None, GNN=args['gnn'])
     if snapshot is None:
         print ('load snapshot \'%s\' for testing' % args['snapshot'])
         # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
