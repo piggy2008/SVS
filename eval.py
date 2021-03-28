@@ -14,7 +14,7 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 
 if __name__ == "__main__":
     dataset_names = ['ViSal']
-    snapshot = '84000'
+    snapshot = '24000'
     ckpt_path = '/home/tangyi/code/SVS/ckpt'
     exp_name = 'VideoSaliency_2021-03-25 22:05:25'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
