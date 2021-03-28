@@ -11,6 +11,7 @@ from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 # from models.net import SNet
 from models.net_i import INet
+from models.net_i101 import INet101
 from utils.utils_mine import load_part_of_model2, MaxMinNormalization
 import time
 from matplotlib import pyplot as plt
@@ -19,22 +20,22 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 1
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-03-24 16:40:17'
+exp_name = 'VideoSaliency_2021-03-26 17:15:24'
 
 args = {
     'gnn': True,
-    'snapshot': '172000',  # your snapshot filename (exclude extension name)
+    'snapshot': '156000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 0
+    'start': 40000
 }
 
 img_transform = transforms.Compose([
@@ -60,20 +61,20 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
@@ -82,7 +83,7 @@ imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = INet(cfg=None, GNN=args['gnn'])
+    net = INet101(cfg=None, GNN=args['gnn'])
     if snapshot is None:
         print ('load snapshot \'%s\' for testing' % args['snapshot'])
         # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))

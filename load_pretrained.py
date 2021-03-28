@@ -1,6 +1,6 @@
 import torch
 from models.net import SNet
-from models.net_i101 import INet
+from models.net_i101 import INet101
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -48,6 +48,11 @@ def fuse_MGA_F3Net2(mga_model_path, net, device_id=0):
             k_tmp = k.replace('flow_bkbone', 'resnet_aspp.backbone_features')
             # k_tmp.replace('flow_bkbone', 'resnet_aspp.backbone_features')
             m_dict[k].data = mga_model.get(k_tmp)
+        elif k.find('bkbone.') > -1:
+            print('loading MGA RGB backbone key:', k)
+            k_tmp = k.replace('bkbone.', '')
+            # print('loading MGA RGB backbone key:', k_tmp)
+            m_dict[k].data = mga_model.get(k_tmp)
         else:
             print('not loading key:', k)
 
@@ -55,6 +60,9 @@ def fuse_MGA_F3Net2(mga_model_path, net, device_id=0):
     return net
 
 if __name__ == '__main__':
-    net = INet(cfg=None).cuda()
-    net = fuse_MGA_F3Net2('pre-trained/MGA_trained.pth', net, device_id=1)
+    net = INet101(cfg=None).cuda()
+    # mga_model = torch.load('pre-trained/MGA_trained.pth')
+    # mga_keys = list(mga_model.keys())
+    # print(mga_keys)
+    net = fuse_MGA_F3Net2('pre-trained/MGA_trained.pth', net, device_id=0)
     torch.save(net.state_dict(), 'pre-trained/SNet101.pth')
