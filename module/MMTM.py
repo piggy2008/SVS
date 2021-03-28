@@ -21,7 +21,7 @@ coarse_adj_list2 = [
             [0.25, 0.25, 0.25, 0.25],  # 4
         ]
 
-device_id = 0
+device_id = 2
 
 def L_Matrix(adj_npy, adj_size):
 
@@ -287,14 +287,14 @@ class SEQuart(nn.Module):
         batch, channel, _, _ = low.size()
         combined = torch.cat([low, high, flow, feedback], dim=1)
         combined_fc = self.avg_pool(combined).view(batch, 4, channel)
-        batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda(device_id)
+        # batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda(device_id)
 
-        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        # combined_fc_t = combined_fc.permute(0, 2, 1)
-        # mul = torch.bmm(combined_fc, combined_fc_t)
-        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        combined_fc_t = combined_fc.permute(0, 2, 1)
+        mul = torch.bmm(combined_fc, combined_fc_t)
+        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
         # batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
         # batch_adj = batch_adj / batch_adj_norm
 
@@ -542,12 +542,12 @@ class SEMany2Many3(nn.Module):
         self.conv2_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.conv3_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.conv4_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
-        # self.conv5_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                               nn.ReLU(inplace=True))
-        # self.conv6_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                               nn.ReLU(inplace=True))
-        # self.conv7_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                               nn.ReLU(inplace=True))
+        self.conv5_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv6_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
+        self.conv7_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                      nn.ReLU(inplace=True))
 
         self.conv1_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                       nn.ReLU(inplace=True))
@@ -557,12 +557,12 @@ class SEMany2Many3(nn.Module):
                                       nn.ReLU(inplace=True))
         self.conv4_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
                                       nn.ReLU(inplace=True))
-        # self.conv5_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                                nn.ReLU(inplace=True))
-        # self.conv6_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                                nn.ReLU(inplace=True))
-        # self.conv7_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
-        #                                nn.ReLU(inplace=True))
+        self.conv5_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                       nn.ReLU(inplace=True))
+        self.conv6_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                       nn.ReLU(inplace=True))
+        self.conv7_out = nn.Sequential(nn.Conv2d(128, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64),
+                                       nn.ReLU(inplace=True))
 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.softmax = nn.Softmax(dim=1)
@@ -595,14 +595,14 @@ class SEMany2Many3(nn.Module):
         combined_fc = torch.cat([feat1_avg, feat2_avg, feat3_avg, feat4_avg, feedback_avg], dim=1)
         # combined_fc2 = torch.cat([feat5_avg, feat6_avg, feat7_avg, feedback_avg], dim=1)
         # combined_fc = self.avg_pool(combined).view(batch, 4, channel)
-        batch_adj = self.adj.repeat(batch, 1, 1)
-        batch_adj = batch_adj.cuda(device_id)
+        # batch_adj = self.adj.repeat(batch, 1, 1)
+        # batch_adj = batch_adj.cuda(device_id)
 
-        # combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
-        # combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
-        # combined_fc_t = combined_fc.permute(0, 2, 1)
-        # mul = torch.bmm(combined_fc, combined_fc_t)
-        # batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
+        combined_fc_norm = torch.norm(combined_fc, dim=2, keepdim=True)
+        combined_fc_norm_t = combined_fc_norm.permute(0, 2, 1)
+        combined_fc_t = combined_fc.permute(0, 2, 1)
+        mul = torch.bmm(combined_fc, combined_fc_t)
+        batch_adj = mul / (combined_fc_norm * combined_fc_norm_t)
         # batch_adj_norm = torch.norm(batch_adj, dim=2, keepdim=True)
         # batch_adj = batch_adj / batch_adj_norm
 
