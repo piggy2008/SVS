@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 #coding=utf-8
 import sys
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
@@ -402,18 +403,27 @@ class INet101(nn.Module):
         self.initialize()
 
     def forward(self, x, flow=None, shape=None):
+        start = time.time()
         out2h, out3h, out4h, out5v = self.bkbone(x) # layer1, layer2, layer3, layer4
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
         if flow is not None:
             flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
             out1f, out2f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2)
             out3f, out4f = self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
+            end1 = time.time()
+            print('backbone running time:', (end1 - start))
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
+            end2 = time.time()
+            print('raw fusion running time:', (end2 - end1))
             out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
             # out2f, out3f, out4f = self.se_many_flow(feat_flow_list, pred1)
             out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
             # feat_list2 = [out2h, out3h, out4h, out5v, out4f]
+            end3 = time.time()
+            print('local refinements running time:', (end3 - end2))
             out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
+            end4 = time.time()
+            print('global refinements running time:', (end4 - end3))
             # out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
             # out2h, out3h, out4h, out5v, out4f = self.se_many2(feat_list2, pred2)
             out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
