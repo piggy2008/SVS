@@ -20,14 +20,14 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 1
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-03-28 09:55:09'
+exp_name = 'VideoSaliency_2021-03-29 20:28:22'
 
 args = {
     'gnn': True,
@@ -35,7 +35,7 @@ args = {
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 168000
+    'start': 40000
 }
 
 img_transform = transforms.Compose([
@@ -61,20 +61,20 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-# gt_root = os.path.join(visal_path, 'GT')
-# flow_root = os.path.join(visal_path, 'flow')
-# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+gt_root = os.path.join(visal_path, 'GT')
+flow_root = os.path.join(visal_path, 'flow')
+imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
 # flow_root = os.path.join(vos_path, 'flow')
 # imgs_path = os.path.join(vos_path, 'VOS_test_single.txt')
 
-to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
-gt_root = os.path.join(davsod_path, 'GT')
-flow_root = os.path.join(davsod_path, 'flow')
-imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
+# to_test = {'DAVSOD': os.path.join(davsod_path, 'DAVSOD_test')}
+# gt_root = os.path.join(davsod_path, 'GT')
+# flow_root = os.path.join(davsod_path, 'flow')
+# imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
 # to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
 # gt_root = os.path.join(mcl_path, 'GT')
