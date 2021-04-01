@@ -35,7 +35,7 @@ args = {
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 32000
+    'start': 0
 }
 
 img_transform = transforms.Compose([
