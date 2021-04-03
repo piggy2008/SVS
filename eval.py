@@ -16,7 +16,7 @@ if __name__ == "__main__":
     dataset_names = ['davis']
     snapshot = '124000'
     ckpt_path = '/home/amax/code/SVS/ckpt'
-    exp_name = 'VideoSaliency_2021-03-31 17:35:40'
+    exp_name = 'VideoSaliency_2021-04-01 22:04:32'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT'),
