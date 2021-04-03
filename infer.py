@@ -20,14 +20,14 @@ from matplotlib import pyplot as plt
 torch.manual_seed(2020)
 
 # set which gpu to use
-device_id = 1
+device_id = 0
 torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-03-30 21:43:28'
+exp_name = 'VideoSaliency_2021-04-01 22:04:32'
 
 args = {
     'gnn': True,
@@ -47,10 +47,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-#to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-#gt_root = os.path.join(davis_path, 'GT')
-#flow_root = os.path.join(davis_path, 'flow')
-#imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+# gt_root = os.path.join(davis_path, 'GT')
+# flow_root = os.path.join(davis_path, 'flow')
+# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
@@ -83,7 +83,7 @@ imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = INet101(cfg=None, GNN=args['gnn'])
+    net = INet(cfg=None, GNN=args['gnn'])
     if snapshot is None:
         print ('load snapshot \'%s\' for testing' % args['snapshot'])
         # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
