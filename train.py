@@ -166,7 +166,7 @@ def main():
         teacher.eval()
         teacher.cuda(device_id2)
 
-    net = INet101(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
