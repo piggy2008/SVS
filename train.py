@@ -56,7 +56,7 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 10,
     'last_iter': 0,
-    'lr': 6.5 * 1e-3,
+    'lr': 5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -74,7 +74,7 @@ args = {
     'image_size': 430,
     'crop_size': 380,
     'self_distill': 0.1,
-    'teacher_distill': 0.6
+    'teacher_distill': 0.5
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
@@ -166,7 +166,7 @@ def main():
         teacher.eval()
         teacher.cuda(device_id2)
 
-    net = INet101(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
@@ -201,7 +201,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet101.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
