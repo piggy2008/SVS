@@ -62,7 +62,7 @@ args = {
     'momentum': 0.925,
     # 'snapshot': '',
     'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2021-04-06 11:56:00', '92000.pth'),
-    'pretrain': '',
+    # 'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
     'imgs_file': 'Pre-train/pretrain_all_seq_DAFB2_DAVSOD_flow.txt',
