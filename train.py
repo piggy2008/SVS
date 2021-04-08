@@ -60,7 +60,7 @@ args = {
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
-    # 'snapshot': '',
+    'snapshot': '',
     'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2021-04-06 11:56:00', '92000.pth'),
     # 'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
