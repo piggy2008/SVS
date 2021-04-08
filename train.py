@@ -56,12 +56,12 @@ args = {
     'iter_start_seq': 0,
     'train_batch_size': 10,
     'last_iter': 0,
-    'lr': 6.5 * 1e-3,
+    'lr': 0.0037,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
-    'snapshot': '',
-    # 'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2021-01-03 19:49:18', '44000.pth'),
+    # 'snapshot': '',
+    'pretrain': os.path.join(ckpt_path, 'VideoSaliency_2021-04-06 11:56:00', '92000.pth'),
     'pretrain': '',
     'mga_model_path': 'pre-trained/MGA_trained.pth',
     # 'imgs_file': 'Pre-train/pretrain_all_seq_DUT_DAFB2_DAVSOD.txt',
@@ -74,7 +74,7 @@ args = {
     'image_size': 430,
     'crop_size': 380,
     'self_distill': 0.1,
-    'teacher_distill': 0.6
+    'teacher_distill': 0.5
 }
 
 imgs_file = os.path.join(datasets_root, args['imgs_file'])
