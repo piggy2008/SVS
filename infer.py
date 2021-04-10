@@ -27,7 +27,7 @@ torch.cuda.set_device(device_id)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './ckpt'
 
-exp_name = 'VideoSaliency_2021-04-06 23:20:10'
+exp_name = 'VideoSaliency_2021-04-08 20:35:05'
 
 args = {
     'gnn': True,
@@ -35,7 +35,7 @@ args = {
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 0
+    'start': 96000
 }
 
 img_transform = transforms.Compose([
@@ -83,7 +83,7 @@ imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = INet(cfg=None, GNN=args['gnn'])
+    net = INet101(cfg=None, GNN=args['gnn'])
     if snapshot is None:
         print ('load snapshot \'%s\' for testing' % args['snapshot'])
         # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
