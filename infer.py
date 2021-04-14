@@ -7,7 +7,7 @@ from torch.autograd import Variable
 from torchvision import transforms
 
 from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path, \
-    davis_path, fbms_path, mcl_path, uvsd_path, visal_path, vos_path, segtrack_path, davsod_path
+    davis_path, fbms_path, mcl_path, uvsd_path, visal_path, vos_path, segtrack_path, davsod_path, saving_path
 from misc import check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 # from models.net import SNet
 from models.net_i import INet
@@ -25,17 +25,17 @@ torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
-ckpt_path = './ckpt'
+ckpt_path = saving_path
 
 exp_name = 'VideoSaliency_2021-04-13 22:08:40'
 
 args = {
     'gnn': True,
-    'snapshot': '192000',  # your snapshot filename (exclude extension name)
+    'snapshot': '104000',  # your snapshot filename (exclude extension name)
     'crf_refine': False,  # whether to use crf to refine results
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380),
-    'start': 36000
+    'start': 0
 }
 
 img_transform = transforms.Compose([
@@ -47,10 +47,10 @@ to_pil = transforms.ToPILImage()
 # to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
 # to_test = {'ecssd': ecssd_path}
 
-# to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
-# gt_root = os.path.join(davis_path, 'GT')
-# flow_root = os.path.join(davis_path, 'flow')
-# imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
+to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
+gt_root = os.path.join(davis_path, 'GT')
+flow_root = os.path.join(davis_path, 'flow')
+imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
 
 # to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
 # gt_root = os.path.join(fbms_path, 'GT')
@@ -61,10 +61,10 @@ to_pil = transforms.ToPILImage()
 # gt_root = os.path.join(segtrack_path, 'GT')
 # imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
-to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
-gt_root = os.path.join(visal_path, 'GT')
-flow_root = os.path.join(visal_path, 'flow')
-imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
+# to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
+# gt_root = os.path.join(visal_path, 'GT')
+# flow_root = os.path.join(visal_path, 'flow')
+# imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 
 # to_test = {'VOS': os.path.join(vos_path, 'VOS_test')}
 # gt_root = os.path.join(vos_path, 'GT')
