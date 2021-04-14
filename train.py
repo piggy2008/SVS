@@ -11,7 +11,7 @@ from torch.nn import functional as F
 from matplotlib import pyplot as plt
 
 import joint_transforms
-from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path
+from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path, saving_path
 from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder, ImageFlow3Folder
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
@@ -42,7 +42,7 @@ np.random.seed(2021)
 
 
 time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-ckpt_path = './ckpt'
+ckpt_path = saving_path
 exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
@@ -51,8 +51,8 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 200000,
-    'iter_save': 4000,
+    'iter_num': 10,
+    'iter_save': 5,
     'iter_start_seq': 0,
     'train_batch_size': 10,
     'last_iter': 0,

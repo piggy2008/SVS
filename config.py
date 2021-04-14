@@ -2,9 +2,12 @@
 import os
 
 # szu 169 sever
-datasets_root = '/home/tangyi/data'
+datasets_root = '/mnt/ssd/ty/data'
+save_root = '/mnt/ssd/ty/SVS'
 # local pc
 # datasets_root = '/home/qub/data/saliency'
+
+saving_path = os.path.join(save_root, 'ckpt')
 
 # For each dataset, I put images and masks together
 msra10k_path = os.path.join(datasets_root, 'msra10k')
