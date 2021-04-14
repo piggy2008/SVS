@@ -525,18 +525,18 @@ class SEMany2Many3(nn.Module):
             nn.Linear(many * dim_one, 2 * dim_one),
             nn.Sigmoid()
         )
-        # self.fc_five = nn.Sequential(
-        #     nn.Linear(many * dim_one, 2 * dim_one),
-        #     nn.Sigmoid()
-        # )
-        # self.fc_six = nn.Sequential(
-        #     nn.Linear(many * dim_one, 2 * dim_one),
-        #     nn.Sigmoid()
-        # )
-        # self.fc_seven = nn.Sequential(
-        #     nn.Linear(many * dim_one, 2 * dim_one),
-        #     nn.Sigmoid()
-        # )
+        self.fc_five = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_six = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
+        self.fc_seven = nn.Sequential(
+            nn.Linear(many * dim_one, 2 * dim_one),
+            nn.Sigmoid()
+        )
 
         self.conv1_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
         self.conv2_in = nn.Sequential(nn.Conv2d(64, 64, kernel_size=3, padding=1), nn.BatchNorm2d(64), nn.ReLU(inplace=True))
