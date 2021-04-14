@@ -11,7 +11,7 @@ from torch.nn import functional as F
 from matplotlib import pyplot as plt
 
 import joint_transforms
-from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path
+from config import msra10k_path, video_train_path, datasets_root, video_seq_gt_path, video_seq_path, saving_path
 from datasets import ImageFolder, VideoImageFolder, VideoSequenceFolder, VideoImage2Folder, ImageFlowFolder, ImageFlow2Folder, ImageFlow3Folder
 from misc import AvgMeter, check_mkdir, CriterionKL3, CriterionKL, CriterionPairWise, CriterionStructure
 from models.net import SNet
@@ -29,7 +29,7 @@ import numpy as np
 cudnn.benchmark = True
 
 device_id = 0
-device_id2 = 0
+device_id2 = 1
 
 torch.manual_seed(2021)
 torch.cuda.manual_seed(2021)
@@ -42,7 +42,7 @@ np.random.seed(2021)
 
 
 time_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
-ckpt_path = './ckpt'
+ckpt_path = saving_path
 exp_name = 'VideoSaliency' + '_' + time_str
 
 args = {
@@ -51,12 +51,12 @@ args = {
     'L2': False,
     'KL': True,
     'structure': True,
-    'iter_num': 200000,
-    'iter_save': 4000,
+    'iter_num': 10,
+    'iter_save': 5,
     'iter_start_seq': 0,
-    'train_batch_size': 5,
+    'train_batch_size': 10,
     'last_iter': 0,
-    'lr': 5 * 1e-3,
+    'lr': 6.5 * 1e-3,
     'lr_decay': 0.9,
     'weight_decay': 5e-4,
     'momentum': 0.925,
@@ -166,7 +166,7 @@ def main():
         teacher.eval()
         teacher.cuda(device_id2)
 
-    net = INet(cfg=None, GNN=args['gnn']).cuda(device_id).train()
+    net = INet101(cfg=None, GNN=args['gnn']).cuda(device_id).train()
     bkbone, flow_modules, remains = [], [], []
     for name, param in net.named_parameters():
         if 'bkbone' in name:
@@ -201,7 +201,7 @@ def main():
         optimizer.param_groups[1]['lr'] = args['lr']
         optimizer.param_groups[2]['lr'] = args['lr']
 
-    net = load_part_of_model(net, 'pre-trained/SNet.pth', device_id=device_id)
+    net = load_part_of_model(net, 'pre-trained/SNet101.pth', device_id=device_id)
     if len(args['pretrain']) > 0:
         print('pretrain model from ' + args['pretrain'])
         net = load_part_of_model(net, args['pretrain'], device_id=device_id)
