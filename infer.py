@@ -83,7 +83,7 @@ imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 def main(snapshot):
     # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
-    net = INet(cfg=None, GNN=args['gnn'])
+    net = INet101(cfg=None, GNN=args['gnn'])
     if snapshot is None:
         print ('load snapshot \'%s\' for testing' % args['snapshot'])
         # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
