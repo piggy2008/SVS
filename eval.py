@@ -13,10 +13,10 @@ from config import davis_path, fbms_path, mcl_path, uvsd_path, \
 # from concurrent.futures import ThreadPoolExecutor
 
 if __name__ == "__main__":
-    dataset_names = ['ViSal']
-    snapshot = '164000'
+    dataset_names = ['davis']
+    snapshot = '184000'
     ckpt_path = '/home/amax/code/SVS/ckpt'
-    exp_name = 'VideoSaliency_2021-04-26 13:13:52'
+    exp_name = 'VideoSaliency_2021-04-27 16:53:42'
     gt_root = {'davis': os.path.join(davis_path, 'GT'),
                'DAVSOD': os.path.join(davsod_path, 'GT'),
                'VOS': os.path.join(vos_path, 'GT'),
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     threads = []
     for dataset in dataset_names:
         save_path = os.path.join(ckpt_path, exp_name, '(%s) %s_%s' % (exp_name, dataset, snapshot))
-        # save_path = 'TENet/DAVIS-MGA'
+        # save_path = 'TENet/DAVIS'
         loader = EvalDataset(osp.join(save_path), osp.join(gt_root[dataset]))
         thread = Eval_thread(loader, 'ours', dataset, './', True)
         threads.append(thread)
